@@ -14,5 +14,6 @@
     <ClInclude Include="LLL.h" />
     <ClInclude Include="Process.h" />
     <ClInclude Include="Scheduler.h" />
+    <ClInclude Include="Structs.h" />
   </ItemGroup>
 </Project>
