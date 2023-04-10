@@ -1,9 +1,9 @@
-#include "Node.h"
 #pragma once
+#include "Node.h"
 template <typename T>
 class LinkedList
 {
-	Node* head,tail;
+	Node<T>* head,tail;
 public:
 	LinkedList() : head(nullptr),tail(nullptr){}
 	bool IsEmpty() {

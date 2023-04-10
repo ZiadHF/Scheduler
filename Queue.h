@@ -1,9 +1,9 @@
-#include "Node.h"
 #pragma once
+#include "Node.h"
 template <typename T>
 class Queue
 {
-	Node* head, tail;
+	Node<T>* head, tail;
 public:
 	Queue() : head(nullptr), tail(nullptr) {}
 	bool IsEmpty() {
