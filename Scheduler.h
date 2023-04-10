@@ -4,12 +4,13 @@
 #include<iostream>
 #include"Process.h"
 #include"Structs.h"
+#include"LLL.h"
 using namespace std;
 class Scheduler {
 private:
 	int RR_TS,RTF, MaxW, STL, ForkProb, FCFS_NUM, SJF_NUM, RR_NUM, PROCESS_NUM;
 	Queue* NEW, BLK, TRM;
-	List<SIGKILL> KILL_Process;
+	LLL<SIGKILL> KILL_Process;
 	
 public:
 	void LoadFromFile(string);
