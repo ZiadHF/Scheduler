@@ -97,7 +97,7 @@ void Scheduler::LoadFromFile(string file) {
 			}
 		}
 		Process* tempPro=new Process(Process_Data[0], Process_Data[1], Process_Data[2], Process_Data[3],IOArr);
-		NEW.enqueue(tempPro);
+		NEW.Enqueue(tempPro);
 		
 		//Testing function for printing all processes.
 		/*
@@ -128,11 +128,23 @@ void Scheduler::LoadFromFile(string file) {
 		SIGKILL temp3;
 		temp3.Kill_PID = misc[1];
 		temp3.Kill_Time = misc[0];
-		Kill_Process.add(temp3);
+		Kill_Process.Insert(temp3);
 	}
+	//Creating the list of available processes
 	ProccesorList = new Processor[FCFS_NUM + SJF_NUM + RR_NUM];
+	for (int i = 0; i < FCFS_NUM + SJF_NUM + RR_NUM; i++) {
+		if (i > 0 && i < FCFS_NUM) {
+			ProccesorList[i] = new FCFS;
+		}
+		if (i >= FCFS_NUM && i < PROCESS_NUM - RR_NUM) {
+			ProccesorList[i] = new SJF;
+		}
+		if (i >= FCFS_NUM + SJF_NUM && i < RR_NUM) {
+			ProccesorList[i] = new RR;
+		}
+	}
 }
-
+//Scheduler default constructor, initializes everything
 Scheduler::Scheduler() {
 	RR_TS = 0;
 	RTF = 0; 
@@ -144,8 +156,86 @@ Scheduler::Scheduler() {
 	RR_NUM = 0;
 	PROCESS_NUM = 0;
 }
-void Scheduler::AddForkedProcess(Process parent) {
-	Process* added = new Process(time, ++PROCESS_NUM, parent.ct, 0);
 
-
+//Creating the forked processes
+void Scheduler::AddForkedProcess(Process* parent) {
+	Process* added = new Process(SystemTime, ++PROCESS_NUM, parent->getWorkingTime(),0);
 }
+
+//Schedules processes in the shortest FCFS RDY Queue
+void Scheduler::ScheduleToShortestFCFS(Process* added) {
+	int index;
+	int shortest = -1;
+	for (int i = 0; i < FCFS_NUM; i++) {
+		if (ProccesorList[i].getqueuetime() > shortest) {
+			index = i;
+		}
+	}
+	ProcessorList[index]->AddtoRDY(added);
+}
+
+//Schedules processes in the shortest SJF RDY Queue
+void Scheduler::ScheduleToShortestSJF(Process* added) {
+	int index;
+	int shortest = -1;
+	for (int i = FCFS_NUM; i < PROCESS_NUM-RR_NUM; i++) {
+		if (ProccesorList[i].getqueuetime() > shortest) {
+			index = i;
+		}
+	}
+	ProcessorList[index]->AddtoRDY(added);
+}
+
+//Schedules processes in the Shortest RR RDY Queue
+void Scheduler::ScheduleToShortestRR(Process* added) {
+	int index;
+	int shortest = -1;
+	for (int i = SJF_NUM+FCFS_NUM; i < PROCESS_NUM; i++) {
+		if (ProccesorList[i].getqueuetime() > shortest) {
+			index = i;
+		}
+	}
+	ProcessorList[index]->AddtoRDY(added);
+}
+
+//Schedules processes in the shortest RDY Queue
+void Scheduler::ScheduleToShortestRR(Process* added) {
+	int index;
+	int shortest = -1;
+	for (int i = 0; i < PROCESS_NUM; i++) {
+		if (ProccesorList[i].getqueuetime() > shortest) {
+			index = i;
+		}
+	}
+	ProcessorList[index]->AddtoRDY(added);
+}
+
+//Kills a process with a kill signal
+bool Scheduler::KillProcess(int IDKill) {
+	Process* temp;
+	for (int i = 0; i < FCFS_NUM; i++) {
+		if (ProccesorList[i]->FindProcessByID(IDKill,temp)) {
+			ProcessorList[i]->RemoveProcess();
+			TRM.Enqueue(temp);
+			KillOrphans(temp);
+			return true;
+		}
+	}
+	return false;
+}
+
+//Kill Children with no parent
+void Scheduler::KillOrphans(Process* TRMParent) {
+	Process* temp;
+	temp = TRMParent->getChild();
+	while (temp) {
+		KillProcess(temp->getID());
+		temp = temp->getChild();
+	}
+}
+
+//Add to IO request list (BLK)
+void Scheduler::AddToBLK(Process* temp) { BLK.Enqueue(temp); }
+
+//Add to the termination list(TRM)
+void Scheduler::AddToTRM(Process* temp) { TRM.Enqueue(temp); }

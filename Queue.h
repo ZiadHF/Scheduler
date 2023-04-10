@@ -1,17 +1,17 @@
-#include "Node.h"
 #pragma once
+#include "Node.h"
 template <typename T>
-class LinkedList
+class Queue
 {
-	Node* head, tail;
+	Node<T>* head, tail;
 public:
-	LinkedList() : head(nullptr), tail(nullptr) {}
+	Queue() : head(nullptr), tail(nullptr) {}
 	bool IsEmpty() {
 		if (head)
 			return false;
 		return true;
 	}
-	bool Insert(T item) {
+	bool Enqueue(T item) {
 		Node<T>* ptr = new Node(item);
 		if (!ptr)
 			return false;
@@ -23,7 +23,7 @@ public:
 		tail->setNext(ptr);
 		tail = ptr;
 	}
-	bool Remove(T& item) {
+	bool Dequeue(T& item) {
 		if (IsEmpty)
 			return false;
 		item = head->getItem();
