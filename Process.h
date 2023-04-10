@@ -18,6 +18,7 @@ public:
 	int getWT();
 	int getN();
 	int ReturnTotalIO_D();
+	int getWorkingTime();
 	bool Decrement();
 };
 
