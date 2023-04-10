@@ -2,17 +2,14 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="LLL.cpp" />
     <ClCompile Include="Process.cpp" />
     <ClCompile Include="Scheduler.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ListADT.h" />
-    <ClInclude Include="QueueADT.h" />
-    <ClInclude Include="MinHeapADT.h" />
     <ClInclude Include="Node.h" />
-    <ClInclude Include="LLL.h" />
+    <ClInclude Include="LinkedList.h" />
     <ClInclude Include="Process.h" />
+    <ClInclude Include="Queue.h" />
     <ClInclude Include="Scheduler.h" />
     <ClInclude Include="Structs.h" />
   </ItemGroup>
