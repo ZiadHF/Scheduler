@@ -22,6 +22,7 @@
     <ClCompile Include="LLL.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Process.cpp" />
+    <ClCompile Include="Scheduler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ListADT.h" />
@@ -30,6 +31,8 @@
     <ClInclude Include="Node.h" />
     <ClInclude Include="Process.h" />
     <ClInclude Include="QueueADT.h" />
+    <ClInclude Include="Scheduler.h" />
+    <ClInclude Include="Structs.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
