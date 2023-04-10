@@ -32,6 +32,8 @@ int Process::getWT() { return WT; }
 
 int Process::getN() { return N; }
 
+int Process::getWorkingTime() { return WorkingTime; }
+
 int Process::ReturnTotalIO_D(){
 	int s = 0;
 	for (int i = 0; i < N; i++)
