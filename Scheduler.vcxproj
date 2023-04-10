@@ -21,12 +21,15 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Process.cpp" />
+    <ClCompile Include="Scheduler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LinkedList.h" />
     <ClInclude Include="Queue.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="Process.h" />
+    <ClInclude Include="QueueADT.h" />
+    <ClInclude Include="Scheduler.h" />
     <ClInclude Include="Structs.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

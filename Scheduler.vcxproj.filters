@@ -3,12 +3,14 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Process.cpp" />
+    <ClCompile Include="Scheduler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Node.h" />
     <ClInclude Include="LinkedList.h" />
     <ClInclude Include="Process.h" />
     <ClInclude Include="Queue.h" />
+    <ClInclude Include="Scheduler.h" />
     <ClInclude Include="Structs.h" />
   </ItemGroup>
 </Project>
