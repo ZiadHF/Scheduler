@@ -96,6 +96,9 @@ void Scheduler::LoadFromFile(string file) {
 					k += 2;
 			}
 		}
+		Process* tempPro=new Process(Process_Data[0], Process_Data[1], Process_Data[2], Process_Data[3],IOArr);
+		NEW.enqueue(tempPro);
+		
 		//Testing function for printing all processes.
 		/*
 			cout <<endl<< Process_Data[0] << " " << Process_Data[1] << " " << Process_Data[2] << " " << Process_Data[3] << " ";
@@ -103,8 +106,6 @@ void Scheduler::LoadFromFile(string file) {
 				cout << "(" << IOArr[u].R << "," << IOArr[u].D << ")";
 			}
 			cout << endl;
-			//Process temp(Process_Data[0], Process_Data[1], Process_Data[2], Process_Data[3], );
-			//NEW.enqueue(temp);
 		*/
 	}
 	//Looping on Kill Signals
@@ -127,8 +128,9 @@ void Scheduler::LoadFromFile(string file) {
 		SIGKILL temp3;
 		temp3.Kill_PID = misc[1];
 		temp3.Kill_Time = misc[0];
-		//KILL_Process.add(temp3);
+		Kill_Process.add(temp3);
 	}
+	ProccesorList = new Processor[FCFS_NUM + SJF_NUM + RR_NUM];
 }
 
 Scheduler::Scheduler() {
@@ -141,4 +143,9 @@ Scheduler::Scheduler() {
 	SJF_NUM = 0;
 	RR_NUM = 0;
 	PROCESS_NUM = 0;
+}
+void Scheduler::AddForkedProcess(Process parent) {
+	Process* added = new Process(time, ++PROCESS_NUM, parent.ct, 0);
+
+
 }
