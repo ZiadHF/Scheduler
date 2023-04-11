@@ -31,19 +31,12 @@ public:
 		head = head->getNext();
 		return true;
 	}
-	bool RemoveByID(int pID, Process& pro) {
-		Node<Process>* ptr = head;
-		Node<Process>* prevNode = head;
-		while (ptr) {
-			Process p = ptr->getItem();
-			if (p.getID() == pID) {
-				pro = p;
-				prevNode->setNext(ptr->getNext());
-				return true;
-			}
-			prevNode = ptr;
+	~Queue(){
+		Node<T>* ptr = head;
+		while (ptr){
+			Node<T>* tmp = ptr;
 			ptr = ptr->getNext();
+			delete tmp;
 		}
-		return false;
 	}
 };

@@ -46,5 +46,13 @@ public:
 		}
 		return false;
 	}
+	~LinkedList(){
+		Node<T>* ptr = head;
+		while (ptr){
+			Node<T>* tmp = ptr;
+			ptr = ptr->getNext();
+			delete tmp;
+		}
+	}
 };
 
