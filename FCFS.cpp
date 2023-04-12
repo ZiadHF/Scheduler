@@ -79,6 +79,3 @@ void FCFS::tick(Process* rem, Process* child, Process* blk) {
 int FCFS::getTotalTime() {
 	return totalTime;
 }
-int FCFS::getNumOfProcesses() {
-	return numOfProcesses;
-}
