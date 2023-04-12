@@ -26,6 +26,7 @@ void RR::tick(Process* rem, Process* child, Process* blk) {
 				Process* x;
 				list.Dequeue(x);
 				list.Enqueue(x);
+				currentProcess = nullptr;
 				return;
 			}
 			// Removing the process if the CT ended.
@@ -50,6 +51,7 @@ void RR::tick(Process* rem, Process* child, Process* blk) {
 			Process* x;
 			list.Dequeue(x);
 			list.Enqueue(x);
+			currentProcess = nullptr;
 			return;
 		}
 		// Removing the process if the CT ended.
