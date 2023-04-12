@@ -3,7 +3,8 @@
 template <typename T>
 class Queue
 {
-	Node<T>* head, tail;
+	Node<T>* head;
+	Node<T>* tail;
 public:
 	Queue() : head(nullptr), tail(nullptr) {}
 	bool IsEmpty() {
@@ -12,10 +13,10 @@ public:
 		return true;
 	}
 	bool Enqueue(T item) {
-		Node<T>* ptr = new Node(item);
+		Node<T>* ptr = new Node<T>(item);
 		if (!ptr)
 			return false;
-		if (IsEmpty) {
+		if (IsEmpty()) {
 			head = ptr;
 			tail = ptr;
 			return true;
@@ -24,7 +25,7 @@ public:
 		tail = ptr;
 	}
 	bool Dequeue(T& item) {
-		if (IsEmpty)
+		if (IsEmpty())
 			return false;
 		item = head->getItem();
 		Node<T>* ptr = head;
@@ -39,4 +40,5 @@ public:
 			delete tmp;
 		}
 	}
+	T Peek();
 };

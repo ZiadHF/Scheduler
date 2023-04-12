@@ -1,5 +1,5 @@
-#include "Structs.h"
 #pragma once
+#include "Structs.h"
 class Process
 {
 	const int pID,AT;

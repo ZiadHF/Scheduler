@@ -27,8 +27,6 @@ void Process::setChild(Process* child) { Child = child; }
 
 void Process::setRT(int rt) { RT = rt; }
 
-void Process::setRT(int rt) { RT = rt; }
-
 const int Process::getID() { return pID; }
 
 const int Process::getAT() { return AT; }
@@ -47,7 +45,7 @@ int Process::getWT() { return WT; }
 int Process::getN() { return N; }
 
 int Process::getWorkingTime() { return WorkingTime; }
-/*
+
 IO Process::getIO() {
 	return IOArr[currentIO];
 	
@@ -55,7 +53,6 @@ IO Process::getIO() {
 void Process::incrementIO() {
 	currentIO++;
 }
-*/
 
 int Process::getRemIOTime() { return RemIOTime; }
 
@@ -65,6 +62,7 @@ int Process::ReturnTotalIO_D(){
 	int s = 0;
 	for (int i = 0; i < N; i++)
 		s += IOArr[i].D;
+	return s;
 }
 
 bool Process::DecrementWorkingTime() {	

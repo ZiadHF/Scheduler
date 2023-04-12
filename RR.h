@@ -17,4 +17,5 @@ public:
 	void tick(Process* rem, Process* child, Process* blk);
 	int getTotalTime();
 	int getNumOfProcesses();
+	bool FindProcessByID(int id, Process* x);
 };

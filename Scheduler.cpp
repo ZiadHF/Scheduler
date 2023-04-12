@@ -1,3 +1,4 @@
+#pragma once
 #include "Scheduler.h"
 void Scheduler::LoadFromFile(string file) {
 	ifstream read;
@@ -134,10 +135,10 @@ void Scheduler::LoadFromFile(string file) {
 	ProcessorList = new Processor*[FCFS_NUM + SJF_NUM + RR_NUM];
 	for (int i = 0; i < FCFS_NUM + SJF_NUM + RR_NUM; i++) {
 		if (i > 0 && i < FCFS_NUM) {
-			ProcessorList[i] = new FCFS;
+			ProcessorList[i] = new FCFS(ForkProb);
 		}
 		if (i >= FCFS_NUM && i < PROCESS_NUM - RR_NUM) {
-			ProcessorList[i] = new SJF;
+			ProcessorList[i] = new RR(RR_TS);
 		}
 		if (i >= FCFS_NUM + SJF_NUM && i < RR_NUM) {
 			ProcessorList[i] = new RR(RR_TS);
@@ -179,7 +180,7 @@ void Scheduler::ScheduleToShortestFCFS(Process* added) {
 	int index;
 	int shortest = -1;
 	for (int i = 0; i < FCFS_NUM; i++) {
-		if (ProcessorList[i]->GetQueueTime() > shortest) {
+		if (ProcessorList[i]->getTotalTime() > shortest) {
 			index = i;
 		}
 	}
@@ -191,7 +192,7 @@ void Scheduler::ScheduleToShortestSJF(Process* added) {
 	int index;
 	int shortest = -1;
 	for (int i = FCFS_NUM; i < PROCESS_NUM-RR_NUM; i++) {
-		if (ProcessorList[i]->GetQueueTime() > shortest) {
+		if (ProcessorList[i]->getTotalTime() > shortest) {
 			index = i;
 		}
 	}
@@ -203,7 +204,7 @@ void Scheduler::ScheduleToShortestRR(Process* added) {
 	int index;
 	int shortest = -1;
 	for (int i = SJF_NUM+FCFS_NUM; i < PROCESS_NUM; i++) {
-		if (ProcessorList[i]->GetQueueTime() > shortest) {
+		if (ProcessorList[i]->getTotalTime() > shortest) {
 			index = i;
 		}
 	}
@@ -215,7 +216,7 @@ void Scheduler::ScheduleToShortest(Process* added) {
 	int index;
 	int shortest = -1;
 	for (int i = 0; i < PROCESS_NUM; i++) {
-		if (ProcessorList[i]->GetQueueTime() > shortest) {
+		if (ProcessorList[i]->getTotalTime() > shortest) {
 			index = i;
 		}
 	}
@@ -227,7 +228,7 @@ void Scheduler::ScheduleByLeastCount(Process* added) {
 	int index;
 	int least = -1;
 	for (int i = 0; i < PROCESS_NUM; i++) {
-		if (ProcessorList[i]->GetProcessCount() > least) {
+		if (ProcessorList[i]->getNumOfProcesses() > least) {
 			index = i;
 		}
 	}
@@ -236,10 +237,10 @@ void Scheduler::ScheduleByLeastCount(Process* added) {
 
 //Kills a process with a kill signal
 bool Scheduler::KillProcess(int IDKill) {
-	Process* temp;
+	Process* temp=nullptr;
 	for (int i = 0; i < FCFS_NUM; i++) {
 		if (ProcessorList[i]->FindProcessByID(IDKill,temp)) {
-			ProcessorList[i]->RemoveProcess(IDKill);
+			ProcessorList[i]->RemoveProcess(IDKill,temp);
 			temp->setTT(SystemTime);
 			TRM.Enqueue(temp);
 			KillOrphans(temp);

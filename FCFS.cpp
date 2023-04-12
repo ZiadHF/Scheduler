@@ -15,17 +15,19 @@ bool FCFS::FindProcessByID(int id, Process* x) {
 	return list.FindByID(id, x);
 }
 bool FCFS::RemoveProcess(int id,Process* x) {
-	if (list.RemoveByID(id, *x)) {
+	if (list.RemoveByID(id, x)) {
 		totalTime = totalTime - x->getWorkingTime();
 		numOfProcesses--;
+		return true;
 	}
+	return false;
 }
 void FCFS::tick(Process* rem, Process* child, Process* blk) {
 	//Case 1: no running process.
 	if (currentProcess == nullptr) {
-		bool processGet = list.RemoveHead(*currentProcess);
+		bool processGet = list.RemoveHead(currentProcess);
 		if (processGet) {
-			currentProcess->Decrement();
+			currentProcess->DecrementWorkingTime();
 			totalTime--;
 			// Removing the process if the CT ended.
 			if (currentProcess->getWorkingTime() == 0) {
@@ -52,7 +54,7 @@ void FCFS::tick(Process* rem, Process* child, Process* blk) {
 	}
 	//Case 2 Already one process in run 
 	else {
-		currentProcess->Decrement();
+		currentProcess->DecrementWorkingTime();
 		totalTime--;
 		// Removing the process if the CT ended.
 		if (currentProcess->getWorkingTime() == 0) {
@@ -78,4 +80,7 @@ void FCFS::tick(Process* rem, Process* child, Process* blk) {
 
 int FCFS::getTotalTime() {
 	return totalTime;
+}
+int FCFS::getNumOfProcesses(){
+	return numOfProcesses;
 }

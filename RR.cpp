@@ -1,5 +1,5 @@
+#pragma once
 #include"RR.h"
- 
 RR::RR(int t) {
 	TimeSlice = t;
 	remainingticks = t;
@@ -19,7 +19,7 @@ void RR::tick(Process* rem, Process* child, Process* blk) {
 		remainingticks = TimeSlice;
 		bool processGet = list.Dequeue(currentProcess);
 		if (processGet) {
-			currentProcess->Decrement();
+			currentProcess->DecrementWorkingTime();
 			remainingticks--;
 			totalTime--;
 			if (remainingticks == 0) {
@@ -44,7 +44,7 @@ void RR::tick(Process* rem, Process* child, Process* blk) {
 	}
 	//Case 2 Already one process in run 
 	else {
-		currentProcess->Decrement();
+		currentProcess->DecrementWorkingTime();
 		remainingticks--;
 		totalTime--;
 		if (remainingticks == 0) {
