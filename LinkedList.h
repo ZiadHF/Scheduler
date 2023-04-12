@@ -6,12 +6,14 @@ class LinkedList
 	Node<T>* head;
 	Node<T>* tail;
 public:
-	LinkedList() : head(nullptr),tail(nullptr){}
+	LinkedList() : head(nullptr),tail(nullptr){ }
+
 	bool IsEmpty() {
 		if (head)
 			return false;
 		return true;
 	}
+
 	bool RemoveHead(Process* x) {
 		if (IsEmpty()) {
 			return false;
@@ -20,24 +22,23 @@ public:
 		head = head->getNext();
 		return true;
 	}
-	bool FindByID(int pID, Process* x) {
+
+	bool FindByID(int pID, Process* p) {
 		if (IsEmpty()) {
 			return false;
 		}
-		Node<Process*>* curr = head;
-		while (curr->getNext() != nullptr) {
-			if (curr->getItem()->getID() == pID) {
-				x = curr->getItem();
+		Node<Process*>* ptr = head;
+		while (ptr) {
+			Process* p = ptr->getItem();
+			if (p->getID() == pID) {
+				p = ptr->getItem();
 				return true;
 			}
-			curr = curr->getNext();
-		}
-		if (curr->getItem()->getID() == pID) {
-			 x = curr->getItem();
-			return true;
+			ptr = ptr->getNext();
 		}
 		return false;
 	}
+
 	bool Insert(T item) {
 		Node<T>* ptr = new Node<T>(item);
 		if (!ptr)
@@ -49,8 +50,10 @@ public:
 		}
 		tail->setNext(ptr);
 		tail = ptr;
+		return true;
 	}
-	bool Remove(T& item) {
+
+	bool Remove(T item) {
 		if (IsEmpty())
 			return false;
 		item = head->getItem();
@@ -58,6 +61,7 @@ public:
 		head = head->getNext();
 		return true;
 	}
+
 	bool RemoveByID(int pID,Process* pro) {
 		Node<Process*>* ptr = head;
 		Node<Process*>* prevNode = head;
@@ -73,6 +77,9 @@ public:
 		}
 		return false;
 	}
+
+	T getFirstElement() { return head->getItem(); }
+
 	~LinkedList(){
 		Node<T>* ptr = head;
 		while (ptr){
@@ -81,6 +88,5 @@ public:
 			delete tmp;
 		}
 	}
-	T Peak();
 };
 

@@ -9,6 +9,7 @@ Process::Process(int a, int p, int ct, int io, IO* array) : pID(p), AT(a), CT(ct
 	Child = nullptr;
 	RemIOTime = 0;
 }
+
 Process::Process(int a, int p, int ct, int io) : pID(p), AT(a), CT(ct), N(io) {
 	WorkingTime = CT;
 	TT = 0;
@@ -18,11 +19,13 @@ Process::Process(int a, int p, int ct, int io) : pID(p), AT(a), CT(ct), N(io) {
 	Child = nullptr;
 	RemIOTime = 0;
 }
+
 void Process::setTT(int tt) {
 	TT = tt;
 	TRT = TT - AT;
 	WT = TRT - CT;
 }
+
 void Process::setChild(Process* child) { Child = child; }
 
 void Process::setRT(int rt) { RT = rt; }
@@ -32,6 +35,7 @@ const int Process::getID() { return pID; }
 const int Process::getAT() { return AT; }
 
 Process* Process::getChild() { return Child; }
+
 int Process::getRT() { return RT; }
 
 int Process::getCT() { return CT; }
@@ -50,6 +54,7 @@ IO Process::getIO() {
 	return IOArr[currentIO];
 	
 }
+
 void Process::incrementIO() {
 	currentIO++;
 }

@@ -16,7 +16,6 @@ public:
 	void setRT(int rt);
 	void setRemIOTime(int);
 	void setChild(Process*);
-
 	const int getID();
 	const int getAT();
 	int getRT();

@@ -7,11 +7,13 @@ class Queue
 	Node<T>* tail;
 public:
 	Queue() : head(nullptr), tail(nullptr) {}
+
 	bool IsEmpty() {
 		if (head)
 			return false;
 		return true;
 	}
+
 	bool Enqueue(T item) {
 		Node<T>* ptr = new Node<T>(item);
 		if (!ptr)
@@ -24,6 +26,7 @@ public:
 		tail->setNext(ptr);
 		tail = ptr;
 	}
+
 	bool Dequeue(T& item) {
 		if (IsEmpty())
 			return false;
@@ -32,13 +35,15 @@ public:
 		head = head->getNext();
 		return true;
 	}
-	~Queue(){
+
+	T Peek() { return head->getItem(); }
+
+	~Queue() {
 		Node<T>* ptr = head;
-		while (ptr){
+		while (ptr) {
 			Node<T>* tmp = ptr;
 			ptr = ptr->getNext();
 			delete tmp;
 		}
 	}
-	T Peek();
 };
