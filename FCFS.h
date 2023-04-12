@@ -5,14 +5,16 @@ class FCFS :public Processor {
 private:
 	LinkedList<Process*> list;
 	Process* currentProcess = nullptr;
-	int numOfProcesses;
-	int totalTime; // The variable that has the count
+	int numOfProcesses = 0 ;
+	float forkProb;
+	int totalTime = 0; // The variable that has the count
 public:
-	 FCFS();
+	 FCFS(float forkP);
 	 bool FindProcessByID(int id, Process* x);
-	 bool RemoveProcess(int id);
-	 Process AddtoRDY(Process* x);
-	 bool tick(Process* x);
-	 void AddProcess(Process* x);
+	 bool RemoveProcess(int id,Process* x);
+	 void AddtoRDY(Process* x);
+	 void tick(Process* rem, Process* child,Process* blk);
+	 int getTotalTime();
+	 int getNumOfProcesses();
 };
  

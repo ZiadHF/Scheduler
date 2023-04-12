@@ -11,16 +11,31 @@ public:
 			return false;
 		return true;
 	}
-	bool FindByID(int pID, Process& x) {
+	bool RemoveHead(Process& x) {
+		if (IsEmpty()) {
+			return false;
+		}
+		x = head->getItem();
+		head = head->getNext();
+		return true;
+	}
+	bool FindByID(int pID, Process* x) {
 		if (IsEmpty()) {
 			return false;
 		}
 		Node<Process>* curr = head;
 		while (curr->getNext() != null) {
-			if (curr->getitem().getID()) {
-
+			if (curr->getItem().getID() == pID) {
+				x = &curr->getItem();
+				return true;
 			}
+			curr = curr->getNext();
 		}
+		if (curr->getItem().getID == pId) {
+			 x = &curr->getItem();
+			return true;
+		}
+		return false;
 	}
 	bool Insert(T item) {
 		Node<T>* ptr = new Node(item);
