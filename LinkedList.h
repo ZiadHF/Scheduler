@@ -11,6 +11,17 @@ public:
 			return false;
 		return true;
 	}
+	bool FindByID(int pID, Process& x) {
+		if (IsEmpty()) {
+			return false;
+		}
+		Node<Process>* curr = head;
+		while (curr->getNext() != null) {
+			if (curr->getitem().getID()) {
+
+			}
+		}
+	}
 	bool Insert(T item) {
 		Node<T>* ptr = new Node(item);
 		if (!ptr)

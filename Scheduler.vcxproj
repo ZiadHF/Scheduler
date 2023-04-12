@@ -19,12 +19,15 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="FCFS.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Process.cpp" />
     <ClCompile Include="Scheduler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="FCFS.h" />
     <ClInclude Include="LinkedList.h" />
+    <ClInclude Include="Processor.h" />
     <ClInclude Include="Queue.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="Process.h" />
