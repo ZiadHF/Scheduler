@@ -17,13 +17,36 @@ private:
 public:
 	void LoadFromFile(string);
 	Scheduler();
-	void AddForkedProcess(Process*);
+	//Scheduling Functions
+	bool ScheduleNewlyArrived();
 	void ScheduleToShortest(Process*);
 	void ScheduleToShortestFCFS(Process*);
 	void ScheduleToShortestSJF(Process*);
 	void ScheduleToShortestRR(Process*);
+	void ScheduleByLeastCount(Process*);
+	//Process Addition And Removal;
+	void AddForkedProcess(Process*);
 	bool KillProcess(int);
 	void KillOrphans(Process*);
-	void AddToBLK(Process*);
-	void AddToTRM(Process*);
+	//Process Movement int lists
+	void SendToBLK(Process*);
+	void SendToTRM(Process*);
+	//Getters
+	int Get_RR_TimeSlice();
+	int GetRTF();
+	int GetMaxW();
+	int GetSTL_Time();
+	int GetPROCESSNUM();
+	int GetSystemTime();
+	int GetFCFS_NUM();
+	int GetSJF_NUM();
+	int GetRR_NUM();
+	int GetForkProb();
+	//SystemTime and Process Number Manipulation
+	void IncrementSystemTime();
+	void DecrementSystemTime();
+	void IncrementProcessNum();
+	void DecrementProcessNum();
+	void BLKProcessing();
+	
 };

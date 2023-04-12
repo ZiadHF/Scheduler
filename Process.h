@@ -3,7 +3,7 @@
 class Process
 {
 	const int pID,AT;
-	int RT, CT, TT, TRT, WT, N , WorkingTime;
+	int RT, CT, TT, TRT, WT, N , WorkingTime,RemIOTime;
 	IO* IOArr;
 	Process* Child;
 public:
@@ -11,6 +11,7 @@ public:
 	Process(int a, int p, int ct, int io);
 	void setTT(int tt);
 	void setRT(int rt);
+	void setRemIOTime(int);
 	void setChild(Process*);
 	const int getID();
 	const int getAT();
@@ -20,9 +21,11 @@ public:
 	int getTRT();
 	int getWT();
 	int getN();
+	int getRemIOTime();
+	bool DecrementRemIOTime();
 	int getWorkingTime();
 	Process* getChild();
 	int ReturnTotalIO_D();
-	bool Decrement();
+	bool DecrementWorkingTime();
 };
 

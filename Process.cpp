@@ -7,6 +7,7 @@ Process::Process(int a, int p, int ct, int io, IO* array) : pID(p), AT(a), CT(ct
 	WT = 0;
 	IOArr = array;
 	Child = nullptr;
+	RemIOTime = 0;
 }
 Process::Process(int a, int p, int ct, int io) : pID(p), AT(a), CT(ct), N(io) {
 	WorkingTime = CT;
@@ -15,6 +16,7 @@ Process::Process(int a, int p, int ct, int io) : pID(p), AT(a), CT(ct), N(io) {
 	WT = 0;
 	IOArr = nullptr;
 	Child = nullptr;
+	RemIOTime = 0;
 }
 void Process::setTT(int tt) {
 	TT = tt;
@@ -52,15 +54,25 @@ IO Process::getIO() {
 void Process::incrementIO() {
 	currentIO++;
 }
+
+int Process::getRemIOTime() { return RemIOTime; }
+
 int Process::ReturnTotalIO_D(){
 	int s = 0;
 	for (int i = 0; i < N; i++)
 		s += IOArr[i].D;
 }
 
-bool Process::Decrement() {	
+bool Process::DecrementWorkingTime() {	
 	if (WorkingTime == 0)
-		return true;
+		return false;
 	WorkingTime--;
-	return false;
+	return true;
+}
+
+bool Process::DecrementRemIOTime() {
+	if (RemIOTime == 0)
+		return false;
+	RemIOTime--;
+	return true;
 }
