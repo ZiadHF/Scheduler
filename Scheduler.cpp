@@ -162,6 +162,17 @@ void Scheduler::AddForkedProcess(Process* parent) {
 	Process* added = new Process(SystemTime, ++PROCESS_NUM, parent->getWorkingTime(),0);
 }
 
+//Schedule newly arrived process
+bool Scheduler::ScheduleNewlyArrived() {
+	Process* temp;
+	temp = NEW.Peak;
+	if (temp->getAT() == SystemTime) {
+		ScheduleByLeastCount(temp);
+		return true;
+	}
+	return false;
+
+}
 //Schedules processes in the shortest FCFS RDY Queue
 void Scheduler::ScheduleToShortestFCFS(Process* added) {
 	int index;
@@ -199,11 +210,23 @@ void Scheduler::ScheduleToShortestRR(Process* added) {
 }
 
 //Schedules processes in the shortest RDY Queue
-void Scheduler::ScheduleToShortestRR(Process* added) {
+void Scheduler::ScheduleToShortest(Process* added) {
 	int index;
 	int shortest = -1;
 	for (int i = 0; i < PROCESS_NUM; i++) {
 		if (ProccesorList[i].getqueuetime() > shortest) {
+			index = i;
+		}
+	}
+	ProcessorList[index]->AddtoRDY(added);
+}
+
+//Schedule according to process count in RDY Queue(Phase 1 Function)
+void Scheduler::ScheduleByLeastCount(Process* added) {
+	int index;
+	int least = -1;
+	for (int i = 0; i < PROCESS_NUM; i++) {
+		if (ProccesorList[i].getprocesscount() > least) {
 			index = i;
 		}
 	}
@@ -216,6 +239,7 @@ bool Scheduler::KillProcess(int IDKill) {
 	for (int i = 0; i < FCFS_NUM; i++) {
 		if (ProccesorList[i]->FindProcessByID(IDKill,temp)) {
 			ProcessorList[i]->RemoveProcess();
+			temp->setTT(SystemTime);
 			TRM.Enqueue(temp);
 			KillOrphans(temp);
 			return true;
@@ -235,7 +259,32 @@ void Scheduler::KillOrphans(Process* TRMParent) {
 }
 
 //Add to IO request list (BLK)
-void Scheduler::AddToBLK(Process* temp) { BLK.Enqueue(temp); }
+void Scheduler::SendToBLK(Process* temp) { BLK.Enqueue(temp); }
 
 //Add to the termination list(TRM)
-void Scheduler::AddToTRM(Process* temp) { TRM.Enqueue(temp); }
+void Scheduler::SendToTRM(Process* temp) { TRM.Enqueue(temp); }
+
+//Getters of data members
+int Scheduler::GetMaxW() { return MaxW; }
+int Scheduler::GetPROCESSNUM() { return PROCESS_NUM; }
+int Scheduler::GetRTF() { return RTF; }
+int Scheduler::GetSTL_Time() { return STL; }
+int Scheduler::GetSystemTime() { return SystemTime; }
+int Scheduler::Get_RR_TimeSlice() { return RR_TS; }
+int Scheduler::GetFCFS_NUM() { return FCFS_NUM; }
+int Scheduler::GetSJF_NUM() { return SJF_NUM; }
+int Scheduler::GetRR_NUM() { return RR_NUM; }
+int Scheduler::GetForkProb() { return ForkProb; }
+
+//Manipulating ProcessNumbers
+void Scheduler::IncrementProcessNum() { PROCESS_NUM++; }
+void Scheduler::DecrementProcessNum() { PROCESS_NUM--; }
+
+//Manipulating SystemTime
+void Scheduler::IncrementSystemTime() { SystemTime++; }
+void Scheduler::DecrementSystemTime() { SystemTime--; }
+void Scheduler::BLKProcessing() {
+	Process* temp = BLK.Peak();
+	if (!(temp->DecrementRemIOTime()))
+		ScheduleByLeastCount(temp);
+}
