@@ -11,6 +11,8 @@ public:
         Heap = new int[CAPACITY];
     }
 
+    int getSize() { return size; }
+
     int Parent(int i) { return ((i - 1) / 2); }
 
     int ChildL(int i) { return (2 * i + 1); }

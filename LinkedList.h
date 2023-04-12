@@ -3,10 +3,11 @@
 template <typename T>
 class LinkedList
 {
+	int count;
 	Node<T>* head;
 	Node<T>* tail;
 public:
-	LinkedList() : head(nullptr),tail(nullptr){ }
+	LinkedList() : head(nullptr),tail(nullptr),count(0){ }
 
 	bool IsEmpty() {
 		if (head)
@@ -39,6 +40,8 @@ public:
 		return false;
 	}
 
+	int getCount() { return count; }
+
 	bool Insert(T item) {
 		Node<T>* ptr = new Node<T>(item);
 		if (!ptr)
@@ -46,10 +49,12 @@ public:
 		if (IsEmpty()) {
 			head = ptr;
 			tail = ptr;
+			count++;
 			return true;
 		}
 		tail->setNext(ptr);
 		tail = ptr;
+		count++;
 		return true;
 	}
 
