@@ -14,5 +14,7 @@ public:
 	 Process AddtoRDY(Process* x);
 	 bool tick(Process* x);
 	 void AddProcess(Process* x);
+	 int GetQueueTime();
+	 int GetProcessCount();
 };
  

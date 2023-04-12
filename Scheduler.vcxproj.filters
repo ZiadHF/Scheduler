@@ -4,6 +4,8 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Process.cpp" />
     <ClCompile Include="Scheduler.cpp" />
+    <ClCompile Include="FCFS.cpp" />
+    <ClCompile Include="RR.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Node.h" />
@@ -12,5 +14,8 @@
     <ClInclude Include="Queue.h" />
     <ClInclude Include="Scheduler.h" />
     <ClInclude Include="Structs.h" />
+    <ClInclude Include="FCFS.h" />
+    <ClInclude Include="Processor.h" />
+    <ClInclude Include="RR.h" />
   </ItemGroup>
 </Project>

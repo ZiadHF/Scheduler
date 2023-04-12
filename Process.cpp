@@ -47,6 +47,7 @@ int Process::getWT() { return WT; }
 int Process::getN() { return N; }
 
 int Process::getWorkingTime() { return WorkingTime; }
+/*
 IO Process::getIO() {
 	return IOArr[currentIO];
 	
@@ -54,8 +55,11 @@ IO Process::getIO() {
 void Process::incrementIO() {
 	currentIO++;
 }
+*/
 
 int Process::getRemIOTime() { return RemIOTime; }
+
+void Process::setRemIOTime(int in) { RemIOTime = in; }
 
 int Process::ReturnTotalIO_D(){
 	int s = 0;

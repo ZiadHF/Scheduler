@@ -9,7 +9,7 @@ void FCFS::AddProcess(Process* x) {
 }
 
 bool FCFS::FindProcessByID(int id, Process* x) {
-	list.
+	list.;
 }
 //FCFS();
 //bool FindProcessByID(int id, Process* x);

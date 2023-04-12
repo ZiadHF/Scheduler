@@ -131,16 +131,16 @@ void Scheduler::LoadFromFile(string file) {
 		Kill_Process.Insert(temp3);
 	}
 	//Creating the list of available processes
-	ProccesorList = new Processor[FCFS_NUM + SJF_NUM + RR_NUM];
+	ProcessorList = new Processor*[FCFS_NUM + SJF_NUM + RR_NUM];
 	for (int i = 0; i < FCFS_NUM + SJF_NUM + RR_NUM; i++) {
 		if (i > 0 && i < FCFS_NUM) {
-			ProccesorList[i] = new FCFS;
+			ProcessorList[i] = new FCFS;
 		}
 		if (i >= FCFS_NUM && i < PROCESS_NUM - RR_NUM) {
-			ProccesorList[i] = new SJF;
+			ProcessorList[i] = new SJF;
 		}
 		if (i >= FCFS_NUM + SJF_NUM && i < RR_NUM) {
-			ProccesorList[i] = new RR;
+			ProcessorList[i] = new RR(RR_TS);
 		}
 	}
 }
@@ -155,6 +155,7 @@ Scheduler::Scheduler() {
 	SJF_NUM = 0;
 	RR_NUM = 0;
 	PROCESS_NUM = 0;
+	ProcessorList = nullptr;
 }
 
 //Creating the forked processes
@@ -165,7 +166,7 @@ void Scheduler::AddForkedProcess(Process* parent) {
 //Schedule newly arrived process
 bool Scheduler::ScheduleNewlyArrived() {
 	Process* temp;
-	temp = NEW.Peak;
+	temp = NEW.Peek();
 	if (temp->getAT() == SystemTime) {
 		ScheduleByLeastCount(temp);
 		return true;
@@ -178,7 +179,7 @@ void Scheduler::ScheduleToShortestFCFS(Process* added) {
 	int index;
 	int shortest = -1;
 	for (int i = 0; i < FCFS_NUM; i++) {
-		if (ProccesorList[i].getqueuetime() > shortest) {
+		if (ProcessorList[i]->GetQueueTime() > shortest) {
 			index = i;
 		}
 	}
@@ -190,7 +191,7 @@ void Scheduler::ScheduleToShortestSJF(Process* added) {
 	int index;
 	int shortest = -1;
 	for (int i = FCFS_NUM; i < PROCESS_NUM-RR_NUM; i++) {
-		if (ProccesorList[i].getqueuetime() > shortest) {
+		if (ProcessorList[i]->GetQueueTime() > shortest) {
 			index = i;
 		}
 	}
@@ -202,7 +203,7 @@ void Scheduler::ScheduleToShortestRR(Process* added) {
 	int index;
 	int shortest = -1;
 	for (int i = SJF_NUM+FCFS_NUM; i < PROCESS_NUM; i++) {
-		if (ProccesorList[i].getqueuetime() > shortest) {
+		if (ProcessorList[i]->GetQueueTime() > shortest) {
 			index = i;
 		}
 	}
@@ -214,7 +215,7 @@ void Scheduler::ScheduleToShortest(Process* added) {
 	int index;
 	int shortest = -1;
 	for (int i = 0; i < PROCESS_NUM; i++) {
-		if (ProccesorList[i].getqueuetime() > shortest) {
+		if (ProcessorList[i]->GetQueueTime() > shortest) {
 			index = i;
 		}
 	}
@@ -226,7 +227,7 @@ void Scheduler::ScheduleByLeastCount(Process* added) {
 	int index;
 	int least = -1;
 	for (int i = 0; i < PROCESS_NUM; i++) {
-		if (ProccesorList[i].getprocesscount() > least) {
+		if (ProcessorList[i]->GetProcessCount() > least) {
 			index = i;
 		}
 	}
@@ -237,8 +238,8 @@ void Scheduler::ScheduleByLeastCount(Process* added) {
 bool Scheduler::KillProcess(int IDKill) {
 	Process* temp;
 	for (int i = 0; i < FCFS_NUM; i++) {
-		if (ProccesorList[i]->FindProcessByID(IDKill,temp)) {
-			ProcessorList[i]->RemoveProcess();
+		if (ProcessorList[i]->FindProcessByID(IDKill,temp)) {
+			ProcessorList[i]->RemoveProcess(IDKill);
 			temp->setTT(SystemTime);
 			TRM.Enqueue(temp);
 			KillOrphans(temp);
@@ -284,7 +285,7 @@ void Scheduler::DecrementProcessNum() { PROCESS_NUM--; }
 void Scheduler::IncrementSystemTime() { SystemTime++; }
 void Scheduler::DecrementSystemTime() { SystemTime--; }
 void Scheduler::BLKProcessing() {
-	Process* temp = BLK.Peak();
+	Process* temp = BLK.Peek();
 	if (!(temp->DecrementRemIOTime()))
 		ScheduleByLeastCount(temp);
 }
