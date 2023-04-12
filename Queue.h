@@ -40,5 +40,5 @@ public:
 			delete tmp;
 		}
 	}
-	T Peek();
+	T Peek() { return head->getItem(); }
 };
