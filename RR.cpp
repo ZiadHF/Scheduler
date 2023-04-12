@@ -11,7 +11,13 @@ void RR::AddtoRDY(Process* x) {
 	list.Enqueue(x);
 }
 
- 
+bool RR::RemoveProcess(int id, Process* x) {
+	return false;
+
+}
+bool RR::FindProcessByID(int id, Process* x) {
+	return false;
+}
  
 void RR::tick(Process* rem, Process* child, Process* blk) {
 	//Case 1: no running process.
