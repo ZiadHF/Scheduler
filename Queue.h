@@ -5,9 +5,11 @@ class Queue
 {
 	Node<T>* head;
 	Node<T>* tail;
+	int count;
 public:
-	Queue() : head(nullptr), tail(nullptr) {}
+	Queue() : head(nullptr), tail(nullptr) { count = 0; }
 
+	int getCount() { return count; }
 	bool IsEmpty() {
 		if (head)
 			return false;
@@ -21,10 +23,13 @@ public:
 		if (IsEmpty()) {
 			head = ptr;
 			tail = ptr;
+			count++;
 			return true;
 		}
 		tail->setNext(ptr);
 		tail = ptr;
+		count++;
+		return true;
 	}
 
 	bool Dequeue(T& item) {

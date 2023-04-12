@@ -13,7 +13,7 @@ using namespace std;
 class Scheduler {
 public:
 private:
-	int RR_TS,RTF, MaxW, STL, ForkProb, FCFS_NUM, SJF_NUM, RR_NUM, PROCESS_NUM,SystemTime;
+	int RR_TS,RTF, MaxW, STL, ForkProb, FCFS_NUM, SJF_NUM, RR_NUM, PROCESS_NUM,SystemTime,PROCESSOR_NUM;
 	Queue<Process*>NEW, BLK, TRM;
 	LinkedList<SIGKILL> Kill_Process;
 	Processor** ProcessorList;
@@ -51,5 +51,6 @@ public:
 	void IncrementProcessNum();
 	void DecrementProcessNum();
 	void BLKProcessing();
-	
+	void Processing();
+	bool Terminate();
 };

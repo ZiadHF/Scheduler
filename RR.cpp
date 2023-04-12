@@ -15,6 +15,7 @@ bool RR::RemoveProcess(int id, Process* x) {
 	return false;
 
 }
+
 bool RR::FindProcessByID(int id, Process* x) {
 	return false;
 }
@@ -77,6 +78,7 @@ void RR::tick(Process* rem, Process* child, Process* blk) {
 int RR::getTotalTime() {
 	return totalTime;
 }
+
 int RR::getNumOfProcesses() {
 	return numOfProcesses;
 }

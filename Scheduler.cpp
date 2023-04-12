@@ -132,7 +132,8 @@ void Scheduler::LoadFromFile(string file) {
 		Kill_Process.Insert(temp3);
 	}
 	//Creating the list of available processes
-	ProcessorList = new Processor*[FCFS_NUM + SJF_NUM + RR_NUM];
+	PROCESSOR_NUM = FCFS_NUM + SJF_NUM + RR_NUM;
+	ProcessorList = new Processor*[PROCESSOR_NUM];
 	for (int i = 0; i < FCFS_NUM + SJF_NUM + RR_NUM; i++) {
 		if (i > 0 && i < FCFS_NUM) {
 			ProcessorList[i] = new FCFS(ForkProb);
@@ -290,5 +291,32 @@ void Scheduler::DecrementSystemTime() { SystemTime--; }
 void Scheduler::BLKProcessing() {
 	Process* temp = BLK.Peek();
 	if (!(temp->DecrementRemIOTime()))
-		ScheduleByLeastCount(temp);
+		ScheduleToShortest(temp);
+}
+void Scheduler::Processing() {
+	//Schedule Processes arriving at current timestep
+	ScheduleNewlyArrived();
+	//Check running processes
+	for (int i = 0; i < PROCESSOR_NUM; i++) {
+		Process* toblk=nullptr;
+		Process* totrm=nullptr;
+		Process* fork=nullptr;
+		ProcessorList[i]->tick(totrm,fork,toblk);
+		if (totrm) {
+			SendToTRM(totrm);
+			KillOrphans(totrm);
+		}
+		if (fork) { 
+			AddForkedProcess(fork);
+			ScheduleToShortestFCFS(fork);
+		}
+		if (toblk) { SendToBLK(toblk); }
+	}
+	//Processing of IO
+	BLKProcessing();
+}
+bool Scheduler::Terminate() {
+	if (TRM.getCount() == PROCESS_NUM)
+		return true;
+	return false;
 }
