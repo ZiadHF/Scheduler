@@ -157,6 +157,7 @@ Scheduler::Scheduler() {
 	RR_NUM = 0;
 	PROCESS_NUM = 0;
 	ProcessorList = nullptr;
+	SystemTime = 0;
 }
 
 //Creating the forked processes
@@ -175,6 +176,7 @@ bool Scheduler::ScheduleNewlyArrived() {
 	return false;
 
 }
+
 //Schedules processes in the shortest FCFS RDY Queue
 void Scheduler::ScheduleToShortestFCFS(Process* added) {
 	int index;
@@ -201,7 +203,7 @@ void Scheduler::ScheduleToShortestSJF(Process* added) {
 
 //Schedules processes in the Shortest RR RDY Queue
 void Scheduler::ScheduleToShortestRR(Process* added) {
-	int index;
+	int index=-1;
 	int shortest = -1;
 	for (int i = SJF_NUM+FCFS_NUM; i < PROCESS_NUM; i++) {
 		if (ProcessorList[i]->getTotalTime() > shortest) {
@@ -213,7 +215,7 @@ void Scheduler::ScheduleToShortestRR(Process* added) {
 
 //Schedules processes in the shortest RDY Queue
 void Scheduler::ScheduleToShortest(Process* added) {
-	int index;
+	int index=-1;
 	int shortest = -1;
 	for (int i = 0; i < PROCESS_NUM; i++) {
 		if (ProcessorList[i]->getTotalTime() > shortest) {
@@ -225,7 +227,7 @@ void Scheduler::ScheduleToShortest(Process* added) {
 
 //Schedule according to process count in RDY Queue(Phase 1 Function)
 void Scheduler::ScheduleByLeastCount(Process* added) {
-	int index;
+	int index=-1;
 	int least = -1;
 	for (int i = 0; i < PROCESS_NUM; i++) {
 		if (ProcessorList[i]->getNumOfProcesses() > least) {
