@@ -50,14 +50,9 @@ int Process::getN() { return N; }
 
 int Process::getWorkingTime() { return WorkingTime; }
 
-IO Process::getIO() {
-	return IOArr[currentIO];
-	
-}
+IO Process::getIO() { return IOArr[currentIO]; }
 
-void Process::incrementIO() {
-	currentIO++;
-}
+void Process::incrementIO() { currentIO++; }
 
 int Process::getRemIOTime() { return RemIOTime; }
 

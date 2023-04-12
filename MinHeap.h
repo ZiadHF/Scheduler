@@ -11,11 +11,11 @@ public:
         Heap = new int[CAPACITY];
     }
 
-    int Parent(int i) { return (i - 1) / 2; }
+    int Parent(int i) { return ((i - 1) / 2); }
 
-    int ChildL(int i) { return 2 * i + 1; }
+    int ChildL(int i) { return (2 * i + 1); }
 
-    int ChildR(int i) { return 2 * i + 2; }
+    int ChildR(int i) { return (2 * i + 2); }
 
     bool Insert(int key) {
         if (size == CAPACITY) {
@@ -47,7 +47,7 @@ public:
     bool IsEmpty() { return size == 0; }
 
     int getMin() {
-        if (size <= 0)
+        if (IsEmpty())
             return -1;
         if (size == 1) {
             size--;
@@ -60,7 +60,5 @@ public:
         return root;
     }
 
-    ~MinHeap() {
-        delete[] Heap;
-    }
+    ~MinHeap() { delete[] Heap; }
 };

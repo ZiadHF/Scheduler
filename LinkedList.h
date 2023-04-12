@@ -78,7 +78,7 @@ public:
 		return false;
 	}
 
-	T getFirstElement() { return head->getItem(); }
+	T getFirst() { return head->getItem(); }
 
 	~LinkedList(){
 		Node<T>* ptr = head;
