@@ -5,7 +5,10 @@ class Process
 	const int pID,AT;
 	int RT, CT, TT, TRT, WT, N , WorkingTime,RemIOTime;
 	IO* IOArr;
-	Process* Child;
+	Process* Child = nullptr;
+	int currentIO = 0;
+
+
 public:
 	Process(int a, int p, int ct, int io, IO* array);
 	Process(int a, int p, int ct, int io);
@@ -13,6 +16,7 @@ public:
 	void setRT(int rt);
 	void setRemIOTime(int);
 	void setChild(Process*);
+
 	const int getID();
 	const int getAT();
 	int getRT();
@@ -24,6 +28,8 @@ public:
 	int getRemIOTime();
 	bool DecrementRemIOTime();
 	int getWorkingTime();
+	IO getIO();
+	void incrementIO();
 	Process* getChild();
 	int ReturnTotalIO_D();
 	bool DecrementWorkingTime();
