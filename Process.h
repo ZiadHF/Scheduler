@@ -23,7 +23,6 @@ public:
 	int getWorkingTime();
 	Process* getChild();
 	int ReturnTotalIO_D();
-	int getWorkingTime();
 	bool Decrement();
 };
 
