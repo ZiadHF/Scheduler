@@ -13,7 +13,7 @@ using namespace std;
 class Scheduler {
 public:
 private:
-	int RR_TS,RTF, MaxW, STL, ForkProb, FCFS_NUM, SJF_NUM, RR_NUM, PROCESS_NUM,SystemTime;
+	int RR_TS,RTF, MaxW, STL, ForkProb, FCFS_NUM, SJF_NUM, RR_NUM, PROCESS_NUM,SystemTime,PROCESSOR_NUM;
 	Queue<Process*>NEW, BLK, TRM;
 	LinkedList<SIGKILL> Kill_Process;
 	Processor** ProcessorList;
@@ -21,6 +21,7 @@ public:
 	void LoadFromFile(string);
 	Scheduler();
 	//Scheduling Functions
+	bool ScheduleNewlyArrivedPhase1();
 	bool ScheduleNewlyArrived();
 	void ScheduleToShortest(Process*);
 	void ScheduleToShortestFCFS(Process*);
@@ -51,5 +52,9 @@ public:
 	void IncrementProcessNum();
 	void DecrementProcessNum();
 	void BLKProcessing();
-	
+	void BLKProcessingPhase1();
+	void Processing();
+	void Phase1Processing();
+	bool Terminate();
+	void RemoveRandomProcessPhase1();
 };

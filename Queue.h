@@ -6,9 +6,11 @@ class Queue
 	int count;
 	Node<T>* head;
 	Node<T>* tail;
+	int count;
 public:
 	Queue() : head(nullptr), tail(nullptr) , count(0){}
 
+	int getCount() { return count; }
 	bool IsEmpty() {
 		if (head)
 			return false;
