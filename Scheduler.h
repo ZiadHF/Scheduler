@@ -21,6 +21,7 @@ public:
 	void LoadFromFile(string);
 	Scheduler();
 	//Scheduling Functions
+	bool ScheduleNewlyArrivedPhase1();
 	bool ScheduleNewlyArrived();
 	void ScheduleToShortest(Process*);
 	void ScheduleToShortestFCFS(Process*);
@@ -51,6 +52,9 @@ public:
 	void IncrementProcessNum();
 	void DecrementProcessNum();
 	void BLKProcessing();
+	void BLKProcessingPhase1();
 	void Processing();
+	void Phase1Processing();
 	bool Terminate();
+	void RemoveRandomProcessPhase1();
 };

@@ -1,4 +1,5 @@
 #pragma once
+#include<cstdlib>
 #include "Scheduler.h"
 void Scheduler::LoadFromFile(string file) {
 	ifstream read;
@@ -166,18 +167,29 @@ void Scheduler::AddForkedProcess(Process* parent) {
 	Process* added = new Process(SystemTime, ++PROCESS_NUM, parent->getWorkingTime(),0);
 }
 
-//Schedule newly arrived process
-bool Scheduler::ScheduleNewlyArrived() {
+//Schedule newly arrived process Phase1
+bool Scheduler::ScheduleNewlyArrivedPhase1() {
 	Process* temp;
 	temp = NEW.Peek();
 	if (temp->getAT() == SystemTime) {
+		NEW.Dequeue(temp);
 		ScheduleByLeastCount(temp);
 		return true;
 	}
 	return false;
 
 }
+bool Scheduler::ScheduleNewlyArrived() {
+	Process* temp;
+	temp = NEW.Peek();
+	if (temp->getAT() == SystemTime) {
+		NEW.Dequeue(temp);
+		ScheduleToShortest(temp);
+		return true;
+	}
+	return false;
 
+}
 //Schedules processes in the shortest FCFS RDY Queue
 void Scheduler::ScheduleToShortestFCFS(Process* added) {
 	int index;
@@ -229,10 +241,11 @@ void Scheduler::ScheduleToShortest(Process* added) {
 //Schedule according to process count in RDY Queue(Phase 1 Function)
 void Scheduler::ScheduleByLeastCount(Process* added) {
 	int index=-1;
-	int least = -1;
-	for (int i = 0; i < PROCESS_NUM; i++) {
-		if (ProcessorList[i]->getNumOfProcesses() > least) {
+	int least = ProcessorList[0]->getNumOfProcesses();
+	for (int i = 1; i < PROCESS_NUM; i++) {
+		if (ProcessorList[i]->getNumOfProcesses() < least) {
 			index = i;
+			least = ProcessorList[i]->getNumOfProcesses();
 		}
 	}
 	ProcessorList[index]->AddtoRDY(added);
@@ -319,4 +332,59 @@ bool Scheduler::Terminate() {
 	if (TRM.getCount() == PROCESS_NUM)
 		return true;
 	return false;
+}
+void Scheduler::Phase1Processing() {
+	ScheduleNewlyArrivedPhase1();
+	for(int i = 0; i < PROCESSOR_NUM; i++) {
+		ProcessorList[i]->MoveToRun();
+		if (!(ProcessorList[i]->JustArrived()))
+		{
+			Process* temp;
+			int random = 1 + rand() % 100;
+			if (random >= 1 && random <= 15) {
+				temp = ProcessorList[i]->GetRun();
+				SendToBLK(temp);
+			}
+			if (random >= 20 && random <= 30) { 
+				temp = ProcessorList[i]->GetRun();
+				ScheduleByLeastCount(temp);
+			}
+			if (random >= 50 && random <= 60) {
+				temp = ProcessorList[i]->GetRun();
+				SendToTRM(temp);
+			}
+		}
+	}
+	BLKProcessingPhase1();
+	RemoveRandomProcessPhase1();
+}
+void Scheduler::BLKProcessingPhase1() {
+	Process* temp;
+	temp=BLK.Peek();
+	int random;
+	random = 1 + rand() % 100;
+	if (temp){
+		if (random < 10) {
+			BLK.Dequeue(temp);
+			ScheduleByLeastCount(temp);
+		}
+	}
+}
+void Scheduler::RemoveRandomProcessPhase1() {
+	int random;
+	Process* temp;
+	for (int i = 0; i < FCFS_NUM; i++) {
+		if (ProcessorList[i]->getNumOfProcesses() != 0) {
+			while (1) {
+				random = 1 + rand() % PROCESS_NUM;
+				if (ProcessorList[i]->RemoveProcess(random, temp)) {
+					SendToTRM(temp);
+					break;
+				}
+			}
+		}
+	}
+
+
+
 }
