@@ -3,11 +3,12 @@
 template <typename T>
 class Queue
 {
+	int count;
 	Node<T>* head;
 	Node<T>* tail;
 	int count;
 public:
-	Queue() : head(nullptr), tail(nullptr) { count = 0; }
+	Queue() : head(nullptr), tail(nullptr) , count(0){}
 
 	int getCount() { return count; }
 	bool IsEmpty() {
@@ -40,6 +41,8 @@ public:
 		head = head->getNext();
 		return true;
 	}
+
+	int getCount() { return count; }
 
 	T Peek() { return head->getItem(); }
 
