@@ -3,9 +3,9 @@
 int main() {
 	Scheduler Test;
 	UI cmd;
-	Test.LoadFromFile(cmd.GetFileName());
+	//cmd.GetFileName()
+	Test.LoadFromFile("test.txt");
 	while (!Test.Terminate()) {
-	
-	
+		Test.Phase1Processing();
 	}
 }

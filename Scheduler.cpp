@@ -136,13 +136,13 @@ void Scheduler::LoadFromFile(string file) {
 	PROCESSOR_NUM = FCFS_NUM + SJF_NUM + RR_NUM;
 	ProcessorList = new Processor*[PROCESSOR_NUM];
 	for (int i = 0; i < FCFS_NUM + SJF_NUM + RR_NUM; i++) {
-		if (i > 0 && i < FCFS_NUM) {
+		if (i >= 0 && i < FCFS_NUM) {
 			ProcessorList[i] = new FCFS(ForkProb);
 		}
-		if (i >= FCFS_NUM && i < PROCESS_NUM - RR_NUM) {
+		if (i >= FCFS_NUM && i < (PROCESSOR_NUM - RR_NUM)) {
 			ProcessorList[i] = new RR(RR_TS);
 		}
-		if (i >= FCFS_NUM + SJF_NUM && i < RR_NUM) {
+		if (i >= FCFS_NUM + SJF_NUM && i < PROCESSOR_NUM) {
 			ProcessorList[i] = new RR(RR_TS);
 		}
 	}
@@ -171,8 +171,8 @@ void Scheduler::AddForkedProcess(Process* parent) {
 bool Scheduler::ScheduleNewlyArrivedPhase1() {
 	Process* temp;
 	temp = NEW.Peek();
-	if (temp->getAT() == SystemTime) {
-		NEW.Dequeue(temp);
+	if (temp!=nullptr && temp->getAT() == SystemTime) {
+		NEW.Dequeue(&temp);
 		ScheduleByLeastCount(temp);
 		return true;
 	}
@@ -183,7 +183,7 @@ bool Scheduler::ScheduleNewlyArrived() {
 	Process* temp;
 	temp = NEW.Peek();
 	if (temp->getAT() == SystemTime) {
-		NEW.Dequeue(temp);
+		NEW.Dequeue(&temp);
 		ScheduleToShortest(temp);
 		return true;
 	}
@@ -240,7 +240,7 @@ void Scheduler::ScheduleToShortest(Process* added) {
 
 //Schedule according to process count in RDY Queue(Phase 1 Function)
 void Scheduler::ScheduleByLeastCount(Process* added) {
-	int index=-1;
+	int index=0;
 	int least = ProcessorList[0]->getNumOfProcesses();
 	for (int i = 1; i < PROCESS_NUM; i++) {
 		if (ProcessorList[i]->getNumOfProcesses() < least) {
@@ -334,10 +334,10 @@ bool Scheduler::Terminate() {
 	return false;
 }
 void Scheduler::Phase1Processing() {
-	ScheduleNewlyArrivedPhase1();
+	while (ScheduleNewlyArrivedPhase1());
 	for(int i = 0; i < PROCESSOR_NUM; i++) {
 		
-		if (!(ProcessorList[i]->MoveToRun()))
+		if (!(ProcessorList[i]->MoveToRun())&&ProcessorList[i]->GetRun() != nullptr)
 		{
 			Process* temp;
 			int random = 1 + rand() % 100;
@@ -357,6 +357,7 @@ void Scheduler::Phase1Processing() {
 	}
 	BLKProcessingPhase1();
 	RemoveRandomProcessPhase1();
+	SystemTime++;
 }
 void Scheduler::BLKProcessingPhase1() {
 	Process* temp;
@@ -365,16 +366,16 @@ void Scheduler::BLKProcessingPhase1() {
 	random = 1 + rand() % 100;
 	if (temp){
 		if (random < 10) {
-			BLK.Dequeue(temp);
+			BLK.Dequeue(&temp);
 			ScheduleByLeastCount(temp);
 		}
 	}
 }
 void Scheduler::RemoveRandomProcessPhase1() {
 	int random;
-	Process* temp;
+	Process* temp=nullptr;
 	for (int i = 0; i < FCFS_NUM; i++) {
-		if (ProcessorList[i]->getNumOfProcesses() != 0) {
+		if (ProcessorList[i]->getNumOfProcesses() != 0&& ProcessorList[i]->getNumOfProcesses()!=1) {
 			while (1) {
 				random = 1 + rand() % PROCESS_NUM;
 				if (ProcessorList[i]->RemoveProcess(random, temp)) {
@@ -384,7 +385,4 @@ void Scheduler::RemoveRandomProcessPhase1() {
 			}
 		}
 	}
-
-
-
 }
