@@ -6,7 +6,6 @@ class Queue
 	int count;
 	Node<T>* head;
 	Node<T>* tail;
-	int count;
 public:
 	Queue() : head(nullptr), tail(nullptr) , count(0){}
 

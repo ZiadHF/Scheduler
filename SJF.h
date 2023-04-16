@@ -1,22 +1,19 @@
 #pragma once
 #include"Processor.h"
-#include"Queue.h"
-class RR :public Processor {
+#include"MinHeap.h"
+class FCFS :public Processor {
 private:
-	Queue<Process*> list;
+	MinHeap list;
 	Process* currentProcess = nullptr;
 	int numOfProcesses = 0;
+	float forkProb;
 	int totalTime = 0; // The variable that has the count
-	int remainingticks;
-	int TimeSlice;
 public:
-	RR(int t);
+	FCFS(float forkP);
+	bool FindProcessByID(int id, Process* x);
 	bool RemoveProcess(int id, Process* x);
-	bool MoveToRun(); 
-	Process* GetRun();
 	void AddtoRDY(Process* x);
 	void tick(Process* rem, Process* child, Process* blk);
 	int getTotalTime();
 	int getNumOfProcesses();
-	bool FindProcessByID(int id, Process* x);
 };

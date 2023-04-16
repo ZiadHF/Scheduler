@@ -10,6 +10,18 @@ void FCFS::AddtoRDY(Process* x) {
 	totalTime = totalTime + x->getCT();
 	list.Insert(x);
 }
+bool FCFS::MoveToRun() {
+	if (currentProcess == nullptr) {
+		list.RemoveHead(currentProcess);
+		return true;
+	}
+	return false;
+}
+Process* FCFS::GetRun() {
+	Process* x = currentProcess;
+	currentProcess = nullptr;
+	return x;
+}
 
 bool FCFS::FindProcessByID(int id, Process* x) {
 	return list.FindByID(id, x);

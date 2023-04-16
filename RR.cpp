@@ -19,7 +19,18 @@ bool RR::RemoveProcess(int id, Process* x) {
 bool RR::FindProcessByID(int id, Process* x) {
 	return false;
 }
- 
+bool RR::MoveToRun() {
+	if (currentProcess = nullptr) {
+		list.Dequeue(currentProcess);
+		return true;
+	}
+	return false;
+}
+Process* RR::GetRun() {
+	Process* x = currentProcess;
+	currentProcess = nullptr;
+	return x;
+ }
 void RR::tick(Process* rem, Process* child, Process* blk) {
 	//Case 1: no running process.
 	if (currentProcess == nullptr) {

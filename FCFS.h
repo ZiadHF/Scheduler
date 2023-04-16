@@ -15,6 +15,8 @@ public:
 	 void AddtoRDY(Process* x);
 	 void tick(Process* rem, Process* child,Process* blk);
 	 int getTotalTime();
+	 Process* GetRun();
 	 int getNumOfProcesses();
+	 bool MoveToRun();
 };
  
