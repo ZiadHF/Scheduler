@@ -8,4 +8,5 @@ int main() {
 	while (!Test.Terminate()) {
 		Test.Phase1Processing();
 	}
+	Test.PrintTRM();
 }

@@ -386,3 +386,6 @@ void Scheduler::RemoveRandomProcessPhase1() {
 		}
 	}
 }
+void Scheduler::PrintTRM() {
+	TRM.Print();
+}

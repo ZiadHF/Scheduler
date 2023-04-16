@@ -17,7 +17,7 @@ public:
 	}
 
 	bool Enqueue(T item) {
-		Node<T>* ptr = new Node<T>(item);
+		Node<T>* ptr = new Node<T>(&item);
 		if (!ptr)
 			return false;
 		if (IsEmpty()) {
@@ -53,9 +53,9 @@ public:
 		T item;
 		int i = count;
 		while (i != 0) {
-			Dequeue(item);
+			Dequeue(&item);
 			cout << item << " ";
-			Enqueue(item);
+			Enqueue(&item);
 			i--;
 		}
 	}

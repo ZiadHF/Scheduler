@@ -57,4 +57,5 @@ public:
 	int GetSJF_NUM();
 	int GetRR_NUM();
 	int GetForkProb();
+	void PrintTRM();
 };
