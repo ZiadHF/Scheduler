@@ -1,6 +1,11 @@
 #include"Scheduler.h"
-
+#include"UI.h"
 int main() {
 	Scheduler Test;
-	Test.LoadFromFile("test.txt");
+	UI cmd;
+	Test.LoadFromFile(cmd.GetFileName());
+	while (!Test.Terminate()) {
+	
+	
+	}
 }
