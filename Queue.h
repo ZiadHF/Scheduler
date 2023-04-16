@@ -38,12 +38,24 @@ public:
 		item = head->getItem();
 		Node<T>* ptr = head;
 		head = head->getNext();
+		count--;
 		return true;
 	}
 
 	int getCount() { return count; }
 
 	T Peek() { return head->getItem(); }
+
+	void Print() {
+		T item;
+		int i = count;
+		while (i != 0) {
+			Dequeue(item);
+			cout << item << " ";
+			Enqueue(item);
+			i--;
+		}
+	}
 
 	~Queue() {
 		Node<T>* ptr = head;

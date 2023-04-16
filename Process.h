@@ -1,4 +1,6 @@
 #pragma once
+#include <iostream>
+using namespace std;
 #include "Structs.h"
 class Process
 {
@@ -30,6 +32,10 @@ public:
 	IO getIO();
 	void incrementIO();
 	Process* getChild();
+	friend ostream& operator<<(ostream& os, Process*& p){
+			os << p->getID();
+			return os;
+	}
 	int ReturnTotalIO_D();
 	bool DecrementWorkingTime();
 };

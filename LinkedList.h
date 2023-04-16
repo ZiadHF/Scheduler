@@ -85,6 +85,14 @@ public:
 
 	T getFirst() { return head->getItem(); }
 
+	void Print() {
+		Node<T>* ptr = head;
+		while (ptr) {
+			cout << ptr->getItem() << " ";
+			ptr = ptr->getNext();
+		}
+	}
+
 	~LinkedList(){
 		Node<T>* ptr = head;
 		while (ptr){

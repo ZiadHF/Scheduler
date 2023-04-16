@@ -1,14 +1,15 @@
 #include <iostream>
+#include "Process.h"
 using namespace std;
 #pragma once
 
 class MinHeap {
-    int* Heap;
+    Process** Heap;
     int CAPACITY;
     int size;
 public:
     MinHeap(int c) : size(0), CAPACITY(c) {
-        Heap = new int[CAPACITY];
+        Heap = new Process*[CAPACITY];
     }
 
     int getSize() { return size; }
@@ -19,13 +20,13 @@ public:
 
     int ChildR(int i) { return (2 * i + 2); }
 
-    bool Insert(int key) {
+    bool Insert(Process* p) {
         if (size == CAPACITY) {
             return false;
         }
         int i = size;
-        Heap[size++] = key;
-        while (i != 0 && Heap[Parent(i)] > Heap[i]) {
+        Heap[size++] = p;
+        while (i != 0 && (Heap[Parent(i)]->getCT()) > (Heap[i]->getCT())) {
             swap(Heap[i], Heap[Parent(i)]);
             i = Parent(i);
         }
@@ -36,9 +37,9 @@ public:
         int l = ChildL(i);
         int r = ChildR(i);
         int smallest = i;
-        if (l < size && Heap[l] < Heap[i])
+        if (l < size && (Heap[l]->getCT()) < (Heap[i]->getCT()))
             smallest = l;
-        if (r < size && Heap[r] < Heap[smallest])
+        if (r < size && (Heap[r]->getCT()) < (Heap[smallest]->getCT()))
             smallest = r;
         if (smallest != i) {
             swap(Heap[i], Heap[smallest]);
@@ -48,18 +49,25 @@ public:
 
     bool IsEmpty() { return size == 0; }
 
-    int getMin() {
+    Process* getMin() {
         if (IsEmpty())
-            return -1;
+            return NULL;
         if (size == 1) {
             size--;
             return Heap[0];
         }
-        int root = Heap[0];
+        Process* root = Heap[0];
         Heap[0] = Heap[size - 1];
         size--;
         Heapify(0);
         return root;
+    }
+
+    void Print() {
+        for (int i = 0; i < size; i++) {
+            cout << Heap[i] << " ";
+        }
+        cout << endl;
     }
 
     ~MinHeap() { delete[] Heap; }
