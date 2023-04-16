@@ -336,8 +336,8 @@ bool Scheduler::Terminate() {
 void Scheduler::Phase1Processing() {
 	ScheduleNewlyArrivedPhase1();
 	for(int i = 0; i < PROCESSOR_NUM; i++) {
-		ProcessorList[i]->MoveToRun();
-		if (!(ProcessorList[i]->JustArrived()))
+		
+		if (!(ProcessorList[i]->MoveToRun()))
 		{
 			Process* temp;
 			int random = 1 + rand() % 100;

@@ -6,6 +6,7 @@
     <ClCompile Include="Scheduler.cpp" />
     <ClCompile Include="FCFS.cpp" />
     <ClCompile Include="RR.cpp" />
+    <ClCompile Include="UI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Node.h" />
@@ -17,5 +18,7 @@
     <ClInclude Include="FCFS.h" />
     <ClInclude Include="Processor.h" />
     <ClInclude Include="RR.h" />
+    <ClInclude Include="MinHeap.h" />
+    <ClInclude Include="UI.h" />
   </ItemGroup>
 </Project>

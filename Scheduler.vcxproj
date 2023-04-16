@@ -24,6 +24,7 @@
     <ClCompile Include="Process.cpp" />
     <ClCompile Include="RR.cpp" />
     <ClCompile Include="Scheduler.cpp" />
+    <ClCompile Include="UI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FCFS.h" />
@@ -36,6 +37,7 @@
     <ClInclude Include="RR.h" />
     <ClInclude Include="Scheduler.h" />
     <ClInclude Include="Structs.h" />
+    <ClInclude Include="UI.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
