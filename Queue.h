@@ -32,18 +32,21 @@ public:
 		return true;
 	}
 
-	bool Dequeue(T& item) {
+	bool Dequeue(T* item) {
 		if (IsEmpty())
 			return false;
-		item = head->getItem();
+		*item = head->getItem();
 		Node<T>* ptr = head;
 		head = head->getNext();
 		return true;
 	}
 
-	int getCount() { return count; }
 
-	T Peek() { return head->getItem(); }
+	T Peek() {
+		if(head)
+		return head->getItem();
+		return nullptr;
+	}
 
 	~Queue() {
 		Node<T>* ptr = head;

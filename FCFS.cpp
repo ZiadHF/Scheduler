@@ -1,6 +1,7 @@
 #include"FCFS.h"
 #include <cstdlib>
 #include <ctime>
+#include<iostream>
 FCFS::FCFS(float forkP) {
 	forkProb = forkP/100;
 }
@@ -12,14 +13,14 @@ void FCFS::AddtoRDY(Process* x) {
 }
 bool FCFS::MoveToRun() {
 	if (currentProcess == nullptr) {
-		list.RemoveHead(currentProcess);
+		Process** temp=&currentProcess;
+		list.RemoveHead(temp);
 		return true;
 	}
 	return false;
 }
 Process* FCFS::GetRun() {
 	Process* x = currentProcess;
-	currentProcess = nullptr;
 	return x;
 }
 
@@ -27,8 +28,9 @@ bool FCFS::FindProcessByID(int id, Process* x) {
 	return list.FindByID(id, x);
 }
 bool FCFS::RemoveProcess(int id,Process* x) {
-	if (list.RemoveByID(id, x)) {
-		totalTime = totalTime - x->getWorkingTime();
+	Process* temp=nullptr;
+	if (list.RemoveByID(id, &temp)) {
+		totalTime = totalTime - temp->getWorkingTime();
 		numOfProcesses--;
 		return true;
 	}
@@ -37,7 +39,7 @@ bool FCFS::RemoveProcess(int id,Process* x) {
 void FCFS::tick(Process* rem, Process* child, Process* blk) {
 	//Case 1: no running process.
 	if (currentProcess == nullptr) {
-		bool processGet = list.RemoveHead(currentProcess);
+		bool processGet = list.RemoveHead(&currentProcess);
 		if (processGet) {
 			currentProcess->DecrementWorkingTime();
 			totalTime--;
