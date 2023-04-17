@@ -16,6 +16,8 @@ public:
 	}
 
 	bool RemoveHead(Process** x) {
+		if (!head)
+			return false;
 		Node<Process*>* temp;
 		if (IsEmpty()) {
 			return false;
@@ -23,7 +25,10 @@ public:
 		*x = head->getItem();
 		temp = head;
 		head = head->getNext();
-		delete temp;
+		if (count == 1)
+			delete tail;
+		delete head;
+		count--;
 		return true;
 	}
 
@@ -65,11 +70,18 @@ public:
 	bool RemoveByID(int pID,Process** pro) {
 		Node<Process*>* ptr = head;
 		Node<Process*>* prevNode = head;
+		if (!head)
+			return false;
+		if (ptr->getItem()->getID() == pID) {
+			RemoveHead(pro);
+			return true;
+		}
 		while (ptr) {
 			Process* p = ptr->getItem();
 			if (p->getID() == pID) {
 				*pro = p;
 				prevNode->setNext(ptr->getNext());
+				delete ptr;
 				return true;
 			}
 			prevNode = ptr;

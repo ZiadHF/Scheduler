@@ -92,4 +92,6 @@ int RR::getTotalTime() {
 int RR::getNumOfProcesses() {
 	return numOfProcesses;
 }
-void RR::RemoveRun() { currentProcess = nullptr; }
+void RR::RemoveRun() { 
+	numOfProcesses--;
+	currentProcess = nullptr; }

@@ -98,4 +98,6 @@ int FCFS::getTotalTime() {
 int FCFS::getNumOfProcesses(){
 	return numOfProcesses;
 }
-void FCFS::RemoveRun() { currentProcess = nullptr; }
+void FCFS::RemoveRun() { 
+	numOfProcesses--;
+	currentProcess = nullptr; }

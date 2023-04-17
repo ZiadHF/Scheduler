@@ -242,7 +242,7 @@ void Scheduler::ScheduleToShortest(Process* added) {
 void Scheduler::ScheduleByLeastCount(Process* added) {
 	int index=0;
 	int least = ProcessorList[0]->getNumOfProcesses();
-	for (int i = 1; i < PROCESS_NUM; i++) {
+	for (int i = 1; i < PROCESSOR_NUM; i++) {
 		if (ProcessorList[i]->getNumOfProcesses() < least) {
 			index = i;
 			least = ProcessorList[i]->getNumOfProcesses();
@@ -381,7 +381,7 @@ void Scheduler::RemoveRandomProcessPhase1() {
 		if (ProcessorList[i]->getNumOfProcesses() != 0&& ProcessorList[i]->getNumOfProcesses()!=1) {
 			while (1) {
 				random = 1 + rand() % PROCESS_NUM;
-				if (ProcessorList[i]->RemoveProcess(random, &temp)) {
+				if (ProcessorList[i]->RemoveProcess(random, &temp)){
 					SendToTRM(temp);
 					break;
 				}
