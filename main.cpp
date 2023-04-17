@@ -6,7 +6,7 @@ int main() {
 	//cmd.GetFileName()
 	Test.LoadFromFile("test.txt");
 	while (!Test.Terminate()) {
-		Test.Phase1Processing();
+ 		Test.Phase1Processing();
 	}
 	Test.PrintTRM();
 }

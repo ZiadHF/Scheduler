@@ -11,7 +11,7 @@ private:
 	int TimeSlice;
 public:
 	RR(int t);
-	bool RemoveProcess(int id, Process* x);
+	bool RemoveProcess(int id, Process** x);
 	bool MoveToRun(); 
 	Process* GetRun();
 	void AddtoRDY(Process* x);
@@ -19,4 +19,5 @@ public:
 	int getTotalTime();
 	int getNumOfProcesses();
 	bool FindProcessByID(int id, Process* x);
+	void RemoveRun();
 };

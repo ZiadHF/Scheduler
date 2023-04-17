@@ -33,11 +33,12 @@ public:
 	}
 
 	bool Dequeue(T* item) {
+		Node<T>* temp=head;
 		if (IsEmpty())
 			return false;
 		*item = head->getItem();
-		Node<T>* ptr = head;
 		head = head->getNext();
+		delete temp;
 		count--;
 		return true;
 	}
@@ -50,9 +51,11 @@ public:
 	}
 
 	void Print() {
+		Process* temp;
 		Node<Process*>* ptr = head;
 		while (ptr) {
-			cout << ptr->getItem() << " ";
+			temp = ptr->getItem();
+			cout <<temp << " ";
 			ptr = ptr->getNext();
 		}
 	}

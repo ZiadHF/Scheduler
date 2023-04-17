@@ -27,9 +27,9 @@ Process* FCFS::GetRun() {
 bool FCFS::FindProcessByID(int id, Process* x) {
 	return list.FindByID(id, x);
 }
-bool FCFS::RemoveProcess(int id,Process* x) {
-	Process* temp=nullptr;
-	if (list.RemoveByID(id, &temp)) {
+bool FCFS::RemoveProcess(int id,Process** x) {
+	if (list.RemoveByID(id, x)) {
+		Process* temp = *x;
 		totalTime = totalTime - temp->getWorkingTime();
 		numOfProcesses--;
 		return true;
@@ -98,3 +98,4 @@ int FCFS::getTotalTime() {
 int FCFS::getNumOfProcesses(){
 	return numOfProcesses;
 }
+void FCFS::RemoveRun() { currentProcess = nullptr; }

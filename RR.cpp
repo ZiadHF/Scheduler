@@ -11,7 +11,7 @@ void RR::AddtoRDY(Process* x) {
 	list.Enqueue(x);
 }
 
-bool RR::RemoveProcess(int id, Process* x) {
+bool RR::RemoveProcess(int id, Process** x) {
 	return false;
 
 }
@@ -92,3 +92,4 @@ int RR::getTotalTime() {
 int RR::getNumOfProcesses() {
 	return numOfProcesses;
 }
+void RR::RemoveRun() { currentProcess = nullptr; }

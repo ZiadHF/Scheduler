@@ -256,7 +256,7 @@ bool Scheduler::KillProcess(int IDKill) {
 	Process* temp=nullptr;
 	for (int i = 0; i < FCFS_NUM; i++) {
 		if (ProcessorList[i]->FindProcessByID(IDKill,temp)) {
-			ProcessorList[i]->RemoveProcess(IDKill,temp);
+			ProcessorList[i]->RemoveProcess(IDKill,&temp);
 			temp->setTT(SystemTime);
 			TRM.Enqueue(temp);
 			KillOrphans(temp);
@@ -343,14 +343,17 @@ void Scheduler::Phase1Processing() {
 			int random = 1 + rand() % 100;
 			if (random >= 1 && random <= 15) {
 				temp = ProcessorList[i]->GetRun();
+				ProcessorList[i]->RemoveRun();
 				SendToBLK(temp);
 			}
 			if (random >= 20 && random <= 30) { 
 				temp = ProcessorList[i]->GetRun();
+				ProcessorList[i]->RemoveRun();
 				ScheduleByLeastCount(temp);
 			}
 			if (random >= 50 && random <= 60) {
 				temp = ProcessorList[i]->GetRun();
+				ProcessorList[i]->RemoveRun();
 				SendToTRM(temp);
 			}
 		}
@@ -378,7 +381,7 @@ void Scheduler::RemoveRandomProcessPhase1() {
 		if (ProcessorList[i]->getNumOfProcesses() != 0&& ProcessorList[i]->getNumOfProcesses()!=1) {
 			while (1) {
 				random = 1 + rand() % PROCESS_NUM;
-				if (ProcessorList[i]->RemoveProcess(random, temp)) {
+				if (ProcessorList[i]->RemoveProcess(random, &temp)) {
 					SendToTRM(temp);
 					break;
 				}
