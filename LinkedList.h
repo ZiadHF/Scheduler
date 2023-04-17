@@ -16,11 +16,14 @@ public:
 	}
 
 	bool RemoveHead(Process** x) {
+		Node<Process*>* temp;
 		if (IsEmpty()) {
 			return false;
 		}
 		*x = head->getItem();
+		temp = head;
 		head = head->getNext();
+		delete temp;
 		return true;
 	}
 
@@ -58,14 +61,6 @@ public:
 		return true;
 	}
 
-	bool Remove(T item) {
-		if (IsEmpty())
-			return false;
-		item = head->getItem();
-		Node<T>* ptr = head;
-		head = head->getNext();
-		return true;
-	}
 
 	bool RemoveByID(int pID,Process** pro) {
 		Node<Process*>* ptr = head;
@@ -86,7 +81,7 @@ public:
 	T getFirst() { return head->getItem(); }
 
 	void Print() {
-		Node<T>* ptr = head;
+		Node<Process*>* ptr = head;
 		while (ptr) {
 			cout << ptr->getItem() << " ";
 			ptr = ptr->getNext();

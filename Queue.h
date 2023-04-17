@@ -16,8 +16,8 @@ public:
 		return true;
 	}
 
-	bool Enqueue(T item) {
-		Node<T>* ptr = new Node<T>(&item);
+	bool Enqueue(T& item) {
+		Node<T>* ptr = new Node<T>(item);
 		if (!ptr)
 			return false;
 		if (IsEmpty()) {
@@ -50,13 +50,10 @@ public:
 	}
 
 	void Print() {
-		T item;
-		int i = count;
-		while (i != 0) {
-			Dequeue(&item);
-			cout << item << " ";
-			Enqueue(&item);
-			i--;
+		Node<Process*>* ptr = head;
+		while (ptr) {
+			cout << ptr->getItem() << " ";
+			ptr = ptr->getNext();
 		}
 	}
 
