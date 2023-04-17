@@ -20,7 +20,7 @@ bool RR::FindProcessByID(int id, Process* x) {
 	return false;
 }
 bool RR::MoveToRun() {
-	if (currentProcess = nullptr) {
+	if (currentProcess == nullptr) {
 		list.Dequeue(&currentProcess);
 		return true;
 	}
