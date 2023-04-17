@@ -9,6 +9,5 @@ private:
 public:
 	UI();
 	string GetFileName();
-
 };
 
