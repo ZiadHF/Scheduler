@@ -9,6 +9,7 @@
 #include"Processor.h"
 #include"FCFS.h"
 #include"RR.h"
+#include"SJF.h"
 using namespace std;
 class Scheduler {
 public:

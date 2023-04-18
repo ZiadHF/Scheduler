@@ -140,7 +140,7 @@ void Scheduler::LoadFromFile(string file) {
 			ProcessorList[i] = new FCFS(ForkProb);
 		}
 		if (i >= FCFS_NUM && i < (PROCESSOR_NUM - RR_NUM)) {
-			ProcessorList[i] = new RR(RR_TS);
+			ProcessorList[i] = new SJF;
 		}
 		if (i >= FCFS_NUM + SJF_NUM && i < PROCESSOR_NUM) {
 			ProcessorList[i] = new RR(RR_TS);
