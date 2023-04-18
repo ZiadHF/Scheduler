@@ -1,19 +1,21 @@
 #pragma once
 #include"Processor.h"
 #include"MinHeap.h"
-class FCFS :public Processor {
+class SJF :public Processor {
 private:
-	MinHeap list;
+	MinHeap list = MinHeap(100);
 	Process* currentProcess = nullptr;
 	int numOfProcesses = 0;
-	float forkProb;
 	int totalTime = 0; // The variable that has the count
 public:
-	FCFS(float forkP);
-	bool FindProcessByID(int id, Process* x);
-	bool RemoveProcess(int id, Process* x);
+	SJF();
+	bool RemoveProcess(int id, Process** x);
+	bool MoveToRun();
+	Process* GetRun();
 	void AddtoRDY(Process* x);
 	void tick(Process* rem, Process* child, Process* blk);
 	int getTotalTime();
 	int getNumOfProcesses();
+	bool FindProcessByID(int id, Process* x);
+	void RemoveRun();
 };

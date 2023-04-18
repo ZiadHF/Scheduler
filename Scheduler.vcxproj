@@ -24,6 +24,7 @@
     <ClCompile Include="Process.cpp" />
     <ClCompile Include="RR.cpp" />
     <ClCompile Include="Scheduler.cpp" />
+    <ClCompile Include="SJF.cpp" />
     <ClCompile Include="UI.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -36,6 +37,7 @@
     <ClInclude Include="Process.h" />
     <ClInclude Include="RR.h" />
     <ClInclude Include="Scheduler.h" />
+    <ClInclude Include="SJF.h" />
     <ClInclude Include="Structs.h" />
     <ClInclude Include="UI.h" />
   </ItemGroup>
