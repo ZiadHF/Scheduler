@@ -95,3 +95,6 @@ int RR::getNumOfProcesses() {
 void RR::RemoveRun() { 
 	numOfProcesses--;
 	currentProcess = nullptr; }
+Queue<Process*>& RR::getlist() {
+	return list;
+}

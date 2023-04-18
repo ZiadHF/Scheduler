@@ -39,3 +39,6 @@ void SJF::RemoveRun() {
 	numOfProcesses--;
 	currentProcess = nullptr;
 }
+MinHeap& SJF::getlist() {
+	return list;
+}

@@ -19,5 +19,6 @@ public:
 	 int getNumOfProcesses();
 	 bool MoveToRun();
 	 void RemoveRun();
+	 LinkedList<Process*>& getlist();
 };
  

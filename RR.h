@@ -20,4 +20,5 @@ public:
 	int getNumOfProcesses();
 	bool FindProcessByID(int id, Process* x);
 	void RemoveRun();
+	Queue<Process*>& getlist();
 };

@@ -5,7 +5,7 @@
 int main() {
 	srand(time(0));
 	Scheduler Test;
-	UI cmd;
+	UI cmd(0);
 	//cmd.GetFileName()
 	Test.LoadFromFile("test.txt");
 	while (!Test.Terminate()) {

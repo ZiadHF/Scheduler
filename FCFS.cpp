@@ -101,3 +101,6 @@ int FCFS::getNumOfProcesses(){
 void FCFS::RemoveRun() { 
 	numOfProcesses--;
 	currentProcess = nullptr; }
+LinkedList<Process*>& FCFS::getlist() {
+	return list;
+}
