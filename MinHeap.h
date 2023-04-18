@@ -69,6 +69,7 @@ public:
         }
         cout << endl;
     }
+    Process* PeekMin() { return Heap[0]; }
 
     ~MinHeap() { delete[] Heap; }
 };
