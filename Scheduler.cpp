@@ -442,3 +442,15 @@ void Scheduler::PrintSystemInfo() {
 	}
 	wind.printTRM(TRM, TRM.getCount());
 }
+
+Scheduler::~Scheduler() {
+		Process** temp = new Process * [PROCESS_NUM];
+	for (int i = 0; i < PROCESS_NUM; i++) {
+		TRM.Dequeue(&temp[i]);
+		delete temp[i];
+	}
+	delete[]temp;
+	for (int i = 0; i < PROCESSOR_NUM; i++) {
+		delete ProcessorList[i];
+	}
+}

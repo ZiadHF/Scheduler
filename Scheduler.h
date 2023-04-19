@@ -62,5 +62,5 @@ public:
 	void PrintTRM();
 	void incrementRunningProcessCount();
 	void PrintSystemInfo();
-	bool ProcessJustArrived(Process*);
+	~Scheduler();
 };

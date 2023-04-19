@@ -5,7 +5,7 @@ using namespace std;
 class Process
 {
 	const int pID,AT;
-	int RT, CT, TT, TRT, WT, N , WorkingTime,RemIOTime;
+	int RT, CT, TT, TRT, WT, N , WorkingTime,RemIOTime,ListChangeTime;
 	IO* IOArr;
 	Process* Child = nullptr;
 	int currentIO = 0;
@@ -18,6 +18,7 @@ public:
 	void setRT(int rt);
 	void setRemIOTime(int);
 	void setChild(Process*);
+	void setListChangeTime(int);
 	const int getID();
 	const int getAT();
 	int getRT();
@@ -27,6 +28,7 @@ public:
 	int getWT();
 	int getN();
 	int getRemIOTime();
+	int getListChangeTime();
 	bool DecrementRemIOTime();
 	int getWorkingTime();
 	IO getIO();

@@ -8,6 +8,8 @@ Process::Process(int a, int p, int ct, int io, IO* array) : pID(p), AT(a), CT(ct
 	IOArr = array;
 	Child = nullptr;
 	RemIOTime = 0;
+	ListChangeTime = AT;
+	TRT = 0;
 }
 
 Process::Process(int a, int p, int ct, int io) : pID(p), AT(a), CT(ct), N(io) {
@@ -18,6 +20,8 @@ Process::Process(int a, int p, int ct, int io) : pID(p), AT(a), CT(ct), N(io) {
 	IOArr = nullptr;
 	Child = nullptr;
 	RemIOTime = 0;
+	ListChangeTime = AT;
+	TRT = 0;
 }
 
 void Process::setTT(int tt) {
@@ -81,3 +85,6 @@ bool Process::DecrementRemIOTime() {
 bool Process::JustArrived(int t) {
 	return AT == t;
 }
+int Process::getListChangeTime() { return ListChangeTime; }
+
+void Process::setListChangeTime(int t) { ListChangeTime = t; }
