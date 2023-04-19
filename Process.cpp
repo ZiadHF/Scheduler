@@ -78,3 +78,6 @@ bool Process::DecrementRemIOTime() {
 	RemIOTime--;
 	return true;
 }
+bool Process::JustArrived(int t) {
+	return AT == t;
+}

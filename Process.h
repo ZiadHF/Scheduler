@@ -33,10 +33,12 @@ public:
 	void incrementIO();
 	Process* getChild();
 	friend ostream& operator<<(ostream& os, Process*& p){
-			os << p->getID();
+		int temp = p->getID();
+		os << temp;
 			return os;
 	}
 	int ReturnTotalIO_D();
 	bool DecrementWorkingTime();
+	bool JustArrived(int);
 };
 

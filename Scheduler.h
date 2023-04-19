@@ -9,11 +9,13 @@
 #include"Processor.h"
 #include"FCFS.h"
 #include"RR.h"
+#include"SJF.h"
+#include"UI.h"
 using namespace std;
 class Scheduler {
 public:
 private:
-	int RR_TS,RTF, MaxW, STL, ForkProb, FCFS_NUM, SJF_NUM, RR_NUM, PROCESS_NUM,SystemTime,PROCESSOR_NUM;
+	int RR_TS,RTF, MaxW, STL, ForkProb, FCFS_NUM, SJF_NUM, RR_NUM, PROCESS_NUM,SystemTime,PROCESSOR_NUM,RunningProcessesSum;
 	Queue<Process*>NEW, BLK, TRM;
 	LinkedList<SIGKILL> Kill_Process;
 	Processor** ProcessorList;
@@ -58,4 +60,7 @@ public:
 	int GetRR_NUM();
 	int GetForkProb();
 	void PrintTRM();
+	void incrementRunningProcessCount();
+	void PrintSystemInfo();
+	bool ProcessJustArrived(Process*);
 };

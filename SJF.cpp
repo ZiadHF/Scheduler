@@ -13,10 +13,13 @@ bool SJF::FindProcessByID(int id, Process* x) {
 }
 SJF::SJF() {
 }
-bool SJF::MoveToRun() {
-	if (currentProcess == nullptr) {
-		currentProcess = list.getMin();
-		return true;
+bool SJF::MoveToRun(int& RunningNum,int time) {
+	if (!(list.IsEmpty())) {
+		if (currentProcess == nullptr && !(list.PeekMin()->JustArrived(time))) {
+			RunningNum++;
+			currentProcess = list.getMin();
+			return true;
+		}
 	}
 	return false;
 }

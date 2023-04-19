@@ -11,11 +11,14 @@ void FCFS::AddtoRDY(Process* x) {
 	totalTime = totalTime + x->getCT();
 	list.Insert(x);
 }
-bool FCFS::MoveToRun() {
-	if (currentProcess == nullptr) {
-		Process** temp=&currentProcess;
-		list.RemoveHead(temp);
-		return true;
+bool FCFS::MoveToRun(int& RunningNum,int time) {
+	if (!(list.IsEmpty())) {
+		if (currentProcess == nullptr && !(list.getFirst()->JustArrived(time))) {
+			Process** temp = &currentProcess;
+			list.RemoveHead(temp);
+			RunningNum++;
+			return true;
+		}
 	}
 	return false;
 }

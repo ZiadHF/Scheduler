@@ -19,15 +19,16 @@ class UI
 private:
 
 public:
+	UI();
 	UI(int timestep);
 	string GetFileName();
-	void printFCFSProcessorInfo(FCFS obj,int ProccessorID);
-	void printRRProcessorInfo(RR obj, int ProccessorID);
-	void printSJFProcessorInfo(SJF obj, int ProccessorID);
-	void nextTS(int& ts);
+	void printFCFSProcessorInfo(FCFS* obj,int ProccessorID);
+	void printRRProcessorInfo(RR* obj, int ProccessorID);
+	void printSJFProcessorInfo(SJF* obj, int ProccessorID);
+	void nextTS();
 	void printBLK(Queue<Process*>& blk, int numOfBlkProcesses);
 	void printTRM(Queue<Process*>& trm, int numOfTRMProcesses);
 	void PrintRunBase(int Numofcurrentproccesses);
-	void printRunloop(int processorID, Process& running);
+	void printRunloop(int processorID, Process* running);
 };
 

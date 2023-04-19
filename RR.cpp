@@ -19,10 +19,13 @@ bool RR::RemoveProcess(int id, Process** x) {
 bool RR::FindProcessByID(int id, Process* x) {
 	return false;
 }
-bool RR::MoveToRun() {
-	if (currentProcess == nullptr) {
-		list.Dequeue(&currentProcess);
-		return true;
+bool RR::MoveToRun(int& RunningNum,int time) {
+	if (!(list.IsEmpty())) {
+		if (currentProcess == nullptr && !(list.Peek()->JustArrived(time))) {
+			list.Dequeue(&currentProcess);
+			RunningNum++;
+			return true;
+		}
 	}
 	return false;
 }

@@ -119,6 +119,14 @@ public:
 		while (ptr) {
 			temp = ptr->getItem();
 			if (temp->getID() == pID) {
+				if (ptr == tail) {
+					tail = prev;
+					*pro = temp;
+					count--;
+					tail->setNext(nullptr);
+					delete ptr;
+					return true;
+				}
 				prev->setNext(ptr->getNext());
 				*pro = temp;
 				delete ptr;

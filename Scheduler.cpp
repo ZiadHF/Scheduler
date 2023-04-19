@@ -140,7 +140,7 @@ void Scheduler::LoadFromFile(string file) {
 			ProcessorList[i] = new FCFS(ForkProb);
 		}
 		if (i >= FCFS_NUM && i < (PROCESSOR_NUM - RR_NUM)) {
-			ProcessorList[i] = new RR(RR_TS);
+			ProcessorList[i] = new SJF;
 		}
 		if (i >= FCFS_NUM + SJF_NUM && i < PROCESSOR_NUM) {
 			ProcessorList[i] = new RR(RR_TS);
@@ -160,6 +160,8 @@ Scheduler::Scheduler() {
 	PROCESS_NUM = 0;
 	ProcessorList = nullptr;
 	SystemTime = 0;
+	RunningProcessesSum = 0;
+	PROCESSOR_NUM = 0;
 }
 
 //Creating the forked processes
@@ -336,30 +338,34 @@ bool Scheduler::Terminate() {
 void Scheduler::Phase1Processing() {
 	while (ScheduleNewlyArrivedPhase1());
 	for(int i = 0; i < PROCESSOR_NUM; i++) {
-		
-		if (!(ProcessorList[i]->MoveToRun())&&ProcessorList[i]->GetRun() != nullptr)
+		ProcessorList[i]->MoveToRun(RunningProcessesSum,SystemTime);
+		if (ProcessorList[i]->GetRun() != nullptr)
 		{
 			Process* temp;
 			int random = 1 + rand() % 100;
 			if (random >= 1 && random <= 15) {
 				temp = ProcessorList[i]->GetRun();
 				ProcessorList[i]->RemoveRun();
+				RunningProcessesSum--;
 				SendToBLK(temp);
 			}
 			if (random >= 20 && random <= 30) { 
 				temp = ProcessorList[i]->GetRun();
 				ProcessorList[i]->RemoveRun();
+				RunningProcessesSum--;
 				ScheduleByLeastCount(temp);
 			}
 			if (random >= 50 && random <= 60) {
 				temp = ProcessorList[i]->GetRun();
 				ProcessorList[i]->RemoveRun();
+				RunningProcessesSum--;
 				SendToTRM(temp);
 			}
 		}
 	}
 	BLKProcessingPhase1();
 	RemoveRandomProcessPhase1();
+	PrintSystemInfo();
 	SystemTime++;
 }
 void Scheduler::BLKProcessingPhase1() {
@@ -391,4 +397,34 @@ void Scheduler::RemoveRandomProcessPhase1() {
 }
 void Scheduler::PrintTRM() {
 	TRM.Print();
+}
+void Scheduler::incrementRunningProcessCount() {
+	RunningProcessesSum++;
+}
+void Scheduler::PrintSystemInfo() {
+	UI wind(SystemTime);
+	for (int i = 0; i < FCFS_NUM + SJF_NUM + RR_NUM; i++) {
+		if (i >= 0 && i < FCFS_NUM) {
+			wind.printFCFSProcessorInfo((FCFS*)ProcessorList[i], i + 1);
+		}
+		if (i >= FCFS_NUM && i < (PROCESSOR_NUM - RR_NUM)) {
+			wind.printSJFProcessorInfo((SJF*)ProcessorList[i], i + 1);
+		}
+		if (i >= FCFS_NUM + SJF_NUM && i < PROCESSOR_NUM) {
+			wind.printRRProcessorInfo((RR*)ProcessorList[i], i + 1);
+		}
+	}
+	wind.printBLK(BLK, BLK.getCount());
+	wind.PrintRunBase(RunningProcessesSum);
+	for (int i = 0; i < PROCESSOR_NUM; i++) {
+		Process* temp=ProcessorList[i]->GetRun();
+		if (temp!=nullptr) {
+			wind.printRunloop(i + 1, temp);
+		}
+	}
+	wind.printTRM(TRM, TRM.getCount());
+}
+bool Scheduler::ProcessJustArrived(Process* check) {
+	int temp = check->getAT();
+	return (temp == SystemTime);
 }

@@ -17,7 +17,7 @@ public:
 	 int getTotalTime();
 	 Process* GetRun();
 	 int getNumOfProcesses();
-	 bool MoveToRun();
+	 bool MoveToRun(int& ,int);
 	 void RemoveRun();
 	 LinkedList<Process*>& getlist();
 };

@@ -12,7 +12,7 @@ private:
 public:
 	RR(int t);
 	bool RemoveProcess(int id, Process** x);
-	bool MoveToRun(); 
+	bool MoveToRun(int&,int); 
 	Process* GetRun();
 	void AddtoRDY(Process* x);
 	void tick(Process* rem, Process* child, Process* blk);
