@@ -16,7 +16,6 @@ class UI
 	friend ostream& operator << (ostream& output, FCFS& obj);
 	friend ostream& operator << (ostream& output, RR& obj);
 	friend ostream& operator << (ostream& output, SJF& obj);	
-private:
 
 public:
 	UI();

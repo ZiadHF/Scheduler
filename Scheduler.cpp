@@ -181,6 +181,8 @@ bool Scheduler::ScheduleNewlyArrivedPhase1() {
 	return false;
 
 }
+
+//Phase 2 Scheduling of new items(WIP)
 bool Scheduler::ScheduleNewlyArrived() {
 	Process* temp;
 	temp = NEW.Peek();
@@ -303,6 +305,8 @@ void Scheduler::DecrementProcessNum() { PROCESS_NUM--; }
 //Manipulating SystemTime
 void Scheduler::IncrementSystemTime() { SystemTime++; }
 void Scheduler::DecrementSystemTime() { SystemTime--; }
+
+//Processing functions
 void Scheduler::BLKProcessing() {
 	Process* temp = BLK.Peek();
 	if (!(temp->DecrementRemIOTime()))
@@ -330,11 +334,15 @@ void Scheduler::Processing() {
 	//Processing of IO
 	BLKProcessing();
 }
+
+//Termination condition
 bool Scheduler::Terminate() {
 	if (TRM.getCount() == PROCESS_NUM)
 		return true;
 	return false;
 }
+
+//Simple simulator function for Phase1
 void Scheduler::Phase1Processing() {
 	while (ScheduleNewlyArrivedPhase1());
 	for(int i = 0; i < PROCESSOR_NUM; i++) {
@@ -368,6 +376,8 @@ void Scheduler::Phase1Processing() {
 	PrintSystemInfo();
 	SystemTime++;
 }
+
+//BLK Processing using random numbers for Phase1
 void Scheduler::BLKProcessingPhase1() {
 	Process* temp;
 	temp=BLK.Peek();
@@ -380,6 +390,8 @@ void Scheduler::BLKProcessingPhase1() {
 		}
 	}
 }
+
+//Removing random functions from ready for Phase1
 void Scheduler::RemoveRandomProcessPhase1() {
 	int random;
 	Process* temp=nullptr;
@@ -395,12 +407,18 @@ void Scheduler::RemoveRandomProcessPhase1() {
 		}
 	}
 }
+
+//Print Termination list
 void Scheduler::PrintTRM() {
 	TRM.Print();
 }
+
+//Increase the Num of processes in run state of processors
 void Scheduler::incrementRunningProcessCount() {
 	RunningProcessesSum++;
 }
+
+//Print all System information
 void Scheduler::PrintSystemInfo() {
 	UI wind(SystemTime);
 	for (int i = 0; i < FCFS_NUM + SJF_NUM + RR_NUM; i++) {
@@ -423,8 +441,4 @@ void Scheduler::PrintSystemInfo() {
 		}
 	}
 	wind.printTRM(TRM, TRM.getCount());
-}
-bool Scheduler::ProcessJustArrived(Process* check) {
-	int temp = check->getAT();
-	return (temp == SystemTime);
 }

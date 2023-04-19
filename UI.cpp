@@ -12,12 +12,6 @@ string UI::GetFileName() {
 	cin >> temp;
 	return temp;
 }
-/*
-ostream& operator << (ostream& output, Process*& obj) {
-	output << obj.getID();
-	return output;
-}
-*/
 ostream& operator << (ostream& output, FCFS*& obj) {
 	output << obj->getlist().getCount() << " " << "RDY" << ": ";
 	obj->getlist().Print();
@@ -34,13 +28,22 @@ ostream& operator << (ostream& output, SJF*& obj) {
 	return output;
 }
 void UI::printFCFSProcessorInfo(FCFS* obj, int ProccessorID) {
-	cout << "processor " << ProccessorID << "[FCFS]: " << obj << endl;
+	cout << "Processor " << ProccessorID;
+	string name = "FCFS";
+	printf("[%-4s]: ", name.c_str());
+	cout << obj << endl;
 }
 void UI::printRRProcessorInfo(RR* obj, int ProccessorID) {
-	cout << "processor " << ProccessorID << "[RR]: " << obj << endl;
+	cout << "Processor " << ProccessorID;
+	string name = "RR";
+	printf("[%-4s]: ", name.c_str());
+	cout << obj << endl;
 }
 void UI::printSJFProcessorInfo(SJF* obj, int ProccessorID) {
-	cout << "processor " << ProccessorID <<	"[SJF]: " << obj << endl;
+	cout << "Processor " << ProccessorID;
+	string name = "SJF";
+	printf("[%-4s]: ", name.c_str());
+	cout << obj << endl;
 }
 void UI::nextTS() {
 	cout << "Press Enter to continue." << endl;
