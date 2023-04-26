@@ -186,7 +186,7 @@ bool Scheduler::ScheduleNewlyArrivedPhase1() {
 bool Scheduler::ScheduleNewlyArrived() {
 	Process* temp;
 	temp = NEW.Peek();
-	if (temp->getAT() == SystemTime) {
+	if (temp!=nullptr && temp->getAT() == SystemTime) {
 		NEW.Dequeue(&temp);
 		ScheduleToShortest(temp);
 		return true;
@@ -196,11 +196,12 @@ bool Scheduler::ScheduleNewlyArrived() {
 }
 //Schedules processes in the shortest FCFS RDY Queue
 void Scheduler::ScheduleToShortestFCFS(Process* added) {
-	int index;
-	int shortest = -1;
-	for (int i = 0; i < FCFS_NUM; i++) {
-		if (ProcessorList[i]->getTotalTime() > shortest) {
+	int index = 0;
+	int shortest = ProcessorList[0]->getTotalTime();
+	for (int i = 1; i < FCFS_NUM; i++) {
+		if (ProcessorList[i]->getTotalTime() < shortest) {
 			index = i;
+			shortest = ProcessorList[i]->getTotalTime();
 		}
 	}
 	ProcessorList[index]->AddtoRDY(added);
@@ -208,11 +209,12 @@ void Scheduler::ScheduleToShortestFCFS(Process* added) {
 
 //Schedules processes in the shortest SJF RDY Queue
 void Scheduler::ScheduleToShortestSJF(Process* added) {
-	int index;
-	int shortest = -1;
+	int index = FCFS_NUM;
+	int shortest = ProcessorList[index]->getTotalTime();
 	for (int i = FCFS_NUM; i < PROCESS_NUM-RR_NUM; i++) {
-		if (ProcessorList[i]->getTotalTime() > shortest) {
+		if (ProcessorList[i]->getTotalTime() < shortest) {
 			index = i;
+			shortest = ProcessorList[i]->getTotalTime();
 		}
 	}
 	ProcessorList[index]->AddtoRDY(added);
@@ -220,11 +222,12 @@ void Scheduler::ScheduleToShortestSJF(Process* added) {
 
 //Schedules processes in the Shortest RR RDY Queue
 void Scheduler::ScheduleToShortestRR(Process* added) {
-	int index=-1;
-	int shortest = -1;
-	for (int i = SJF_NUM+FCFS_NUM; i < PROCESS_NUM; i++) {
-		if (ProcessorList[i]->getTotalTime() > shortest) {
+	int index = SJF_NUM;
+	int shortest = ProcessorList[index]->getTotalTime();
+	for (int i = SJF_NUM; i < PROCESS_NUM; i++) {
+		if (ProcessorList[i]->getTotalTime() < shortest) {
 			index = i;
+			shortest = ProcessorList[i]->getTotalTime();
 		}
 	}
 	ProcessorList[index]->AddtoRDY(added);
@@ -232,11 +235,12 @@ void Scheduler::ScheduleToShortestRR(Process* added) {
 
 //Schedules processes in the shortest RDY Queue
 void Scheduler::ScheduleToShortest(Process* added) {
-	int index=-1;
-	int shortest = -1;
-	for (int i = 0; i < PROCESS_NUM; i++) {
-		if (ProcessorList[i]->getTotalTime() > shortest) {
+	int index=0;
+	int shortest = ProcessorList[0]->getTotalTime();
+	for (int i = 1; i < PROCESS_NUM; i++) {
+		if (ProcessorList[i]->getTotalTime() < shortest) {
 			index = i;
+			shortest = ProcessorList[i]->getTotalTime();
 		}
 	}
 	ProcessorList[index]->AddtoRDY(added);
@@ -314,7 +318,7 @@ void Scheduler::BLKProcessing() {
 }
 void Scheduler::Processing() {
 	//Schedule Processes arriving at current timestep
-	ScheduleNewlyArrived();
+	while (ScheduleNewlyArrived());
 	//Check running processes
 	for (int i = 0; i < PROCESSOR_NUM; i++) {
 		Process* toblk=nullptr;
