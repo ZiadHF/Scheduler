@@ -41,9 +41,10 @@ private:
 	void DecrementProcessNum();
 	void BLKProcessing();
 	void BLKProcessingPhase1();
-	void Processing();
 	void RemoveRandomProcessPhase1();
+	bool KillSignalProcessing();
 public:
+	void Processing();
 	Scheduler();
 	void LoadFromFile(string);
 	bool Terminate();

@@ -149,6 +149,33 @@ public:
 			ptr = ptr->getNext();
 		}
 	}
+	
+	bool CheckKillSignal(int* ID,int time) {
+		if (head != nullptr) {
+			Node<SIGKILL>* temp = head->getNext();
+			Node<SIGKILL>* prev = head;
+			if (prev->getItem().Kill_Time == time) {
+				*ID = prev->getItem().Kill_PID;
+				head = head->getNext();
+				delete prev;
+				return true;
+			}
+			while (temp) {
+				if (temp->getItem().Kill_Time == time) {
+					*ID = temp->getItem().Kill_PID;
+					prev->setNext(temp->getNext());
+					delete temp;
+					temp = nullptr;
+					return true;
+				}
+				prev = temp;
+				temp = temp->getNext();
+			}
+			*ID = 0;
+			return false;
+		}
+		return false;
+	}
 
 	~LinkedList(){
 		Node<T>* ptr = head;

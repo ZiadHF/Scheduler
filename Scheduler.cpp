@@ -237,7 +237,7 @@ void Scheduler::ScheduleToShortestRR(Process* added) {
 void Scheduler::ScheduleToShortest(Process* added) {
 	int index=0;
 	int shortest = ProcessorList[0]->getTotalTime();
-	for (int i = 1; i < PROCESS_NUM; i++) {
+	for (int i = 1; i < PROCESSOR_NUM; i++) {
 		if (ProcessorList[i]->getTotalTime() < shortest) {
 			index = i;
 			shortest = ProcessorList[i]->getTotalTime();
@@ -263,6 +263,14 @@ void Scheduler::ScheduleByLeastCount(Process* added) {
 bool Scheduler::KillProcess(int IDKill) {
 	Process* temp=nullptr;
 	for (int i = 0; i < FCFS_NUM; i++) {
+		if (ProcessorList[i]->GetRun() != nullptr) {
+			temp = ProcessorList[i]->GetRun();
+			if (temp->getID() == IDKill) {
+				ProcessorList[i]->RemoveRun();
+				TRM.Enqueue(temp);
+				return true;
+			}
+		}
 		if (ProcessorList[i]->FindProcessByID(IDKill,temp)) {
 			ProcessorList[i]->RemoveProcess(IDKill,&temp);
 			temp->setTT(SystemTime);
@@ -274,6 +282,16 @@ bool Scheduler::KillProcess(int IDKill) {
 	return false;
 }
 
+//KillSignalProcessing
+bool Scheduler::KillSignalProcessing() {
+	int temp=0;
+	Kill_Process.CheckKillSignal(&temp, SystemTime);
+	if (temp != 0) {
+		KillProcess(temp);
+		return true;
+	}
+	return false;
+}
 //Kill Children with no parent
 void Scheduler::KillOrphans(Process* TRMParent) {
 	Process* temp;
@@ -313,10 +331,14 @@ void Scheduler::DecrementSystemTime() { SystemTime--; }
 //Processing functions
 void Scheduler::BLKProcessing() {
 	Process* temp = BLK.Peek();
-	if (!(temp->DecrementRemIOTime()))
-		ScheduleToShortest(temp);
+	if (temp) {
+		if (!(temp->DecrementRemIOTime()))
+			ScheduleToShortest(temp);
+	}
 }
 void Scheduler::Processing() {
+	//Check for kill signals before processing
+	while (KillSignalProcessing());
 	//Schedule Processes arriving at current timestep
 	while (ScheduleNewlyArrived());
 	//Check running processes
@@ -324,7 +346,7 @@ void Scheduler::Processing() {
 		Process* toblk=nullptr;
 		Process* totrm=nullptr;
 		Process* fork=nullptr;
-		ProcessorList[i]->tick(totrm,fork,toblk);
+//		ProcessorList[i]->tick(totrm,fork,toblk);
 		if (totrm) {
 			SendToTRM(totrm);
 			KillOrphans(totrm);
@@ -337,6 +359,8 @@ void Scheduler::Processing() {
 	}
 	//Processing of IO
 	BLKProcessing();
+	PrintSystemInfo();
+	SystemTime++;
 }
 
 //Termination condition
@@ -375,7 +399,7 @@ void Scheduler::Phase1Processing() {
 			}
 		}
 	}
-	BLKProcessingPhase1();
+	BLKProcessing();
 	RemoveRandomProcessPhase1();
 	PrintSystemInfo();
 	SystemTime++;

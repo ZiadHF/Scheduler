@@ -1,5 +1,6 @@
 #pragma once
 #include "Process.h"
+#include"Structs.h"
 template <typename T>
 class Node {
 	T p;
