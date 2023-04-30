@@ -58,7 +58,10 @@ void FCFS::tick(Process* rem, Process* child, Process* blk) {
 			// To make the random num between 1 and 0.
 			double random_num = static_cast<double>(std::rand()) / RAND_MAX;
 			if (random_num <= forkProb) {
-				if (currentProcess->getChild() == nullptr) {
+				if (currentProcess->getLChild() == nullptr) {
+					child = currentProcess;
+				}
+				else if (currentProcess->getRChild() == nullptr) {
 					child = currentProcess;
 				}
 			}
@@ -84,7 +87,7 @@ void FCFS::tick(Process* rem, Process* child, Process* blk) {
 
 		double random_num = static_cast<double>(std::rand()) / RAND_MAX;
 		if (random_num <= forkProb) {
-			if (currentProcess->getChild() == nullptr) {
+			if (currentProcess->getLChild() == nullptr) {
 				child = currentProcess;
 			}
 		}

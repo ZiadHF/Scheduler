@@ -1,6 +1,7 @@
 #pragma once
 #include<cstdlib>
 #include "Scheduler.h"
+//Reads everything from an input file and does all necessary initializations
 void Scheduler::LoadFromFile(string file) {
 	ifstream read;
 	read.open(file);	
@@ -13,6 +14,7 @@ void Scheduler::LoadFromFile(string file) {
 		switch (i)
 		{
 		case(1):
+			//Handling the number of processors line
 			k = 0;
 			c = 0;
 			int processornumbers[3];
@@ -32,9 +34,11 @@ void Scheduler::LoadFromFile(string file) {
 			RR_NUM = processornumbers[2];
 			break;
 		case(2):
+			//The roundrobin time slice number
 			RR_TS = stoi(temp);
 			break;
 		case(3):
+			//Handling the RTF, MAxW, STL and fork probability in order
 			k = 0;
 			c = 0;
 			int misc[4];
@@ -55,6 +59,7 @@ void Scheduler::LoadFromFile(string file) {
 			ForkProb = misc[3];
 			break;
 		case(4):
+			//Number of processes
 			PROCESS_NUM = stoi(temp);
 			break;
 		}
@@ -132,7 +137,7 @@ void Scheduler::LoadFromFile(string file) {
 		temp3.Kill_Time = misc[0];
 		Kill_Process.Insert(temp3);
 	}
-	//Creating the list of available processes
+	//Creating the list of available processors
 	PROCESSOR_NUM = FCFS_NUM + SJF_NUM + RR_NUM;
 	ProcessorList = new Processor*[PROCESSOR_NUM];
 	for (int i = 0; i < FCFS_NUM + SJF_NUM + RR_NUM; i++) {
@@ -182,7 +187,7 @@ bool Scheduler::ScheduleNewlyArrivedPhase1() {
 
 }
 
-//Phase 2 Scheduling of new items(WIP)
+//Phase 2 Scheduling of new items into shortest RDY queue
 bool Scheduler::ScheduleNewlyArrived() {
 	Process* temp;
 	temp = NEW.Peek();
@@ -194,6 +199,7 @@ bool Scheduler::ScheduleNewlyArrived() {
 	return false;
 
 }
+
 //Schedules processes in the shortest FCFS RDY Queue
 void Scheduler::ScheduleToShortestFCFS(Process* added) {
 	int index = 0;
@@ -259,7 +265,7 @@ void Scheduler::ScheduleByLeastCount(Process* added) {
 	ProcessorList[index]->AddtoRDY(added);
 }
 
-//Kills a process with a kill signal
+//Searches for a process by id and terminates it(Only applicable in FCFS Processor)
 bool Scheduler::KillProcess(int IDKill) {
 	Process* temp=nullptr;
 	for (int i = 0; i < FCFS_NUM; i++) {
@@ -268,6 +274,7 @@ bool Scheduler::KillProcess(int IDKill) {
 			if (temp->getID() == IDKill) {
 				ProcessorList[i]->RemoveRun();
 				TRM.Enqueue(temp);
+				KillOrphans(temp);
 				return true;
 			}
 		}
@@ -282,23 +289,18 @@ bool Scheduler::KillProcess(int IDKill) {
 	return false;
 }
 
-//KillSignalProcessing
-bool Scheduler::KillSignalProcessing() {
-	int temp=0;
-	Kill_Process.CheckKillSignal(&temp, SystemTime);
-	if (temp != 0) {
-		KillProcess(temp);
-		return true;
-	}
-	return false;
-}
 //Kill Children with no parent
 void Scheduler::KillOrphans(Process* TRMParent) {
-	Process* temp;
-	temp = TRMParent->getChild();
-	while (temp) {
-		KillProcess(temp->getID());
-		temp = temp->getChild();
+	Process* tempR;
+	Process* tempL;
+	if (TRMParent != nullptr) {
+		tempL = TRMParent->getLChild();
+		if (tempL != nullptr)
+			KillProcess(tempL->getID());
+		tempR = TRMParent->getRChild();
+		if (tempR != nullptr)
+			KillProcess(tempR->getID());
+		
 	}
 }
 
@@ -306,7 +308,10 @@ void Scheduler::KillOrphans(Process* TRMParent) {
 void Scheduler::SendToBLK(Process* temp) { BLK.Enqueue(temp); }
 
 //Add to the termination list(TRM)
-void Scheduler::SendToTRM(Process* temp) { TRM.Enqueue(temp); }
+void Scheduler::SendToTRM(Process* temp) {
+	TRM.Enqueue(temp);
+	KillOrphans(temp);
+}
 
 //Getters of data members
 int Scheduler::GetMaxW() { return MaxW; }
@@ -362,19 +367,20 @@ void Scheduler::Processing() {
 	PrintSystemInfo();
 	SystemTime++;
 }
-
-//Termination condition
-bool Scheduler::Terminate() {
-	if (TRM.getCount() == PROCESS_NUM)
+bool Scheduler::KillSignalProcessing() {
+	int temp = 0;
+	Kill_Process.CheckKillSignal(&temp, SystemTime);
+	if (temp != 0) {
+		KillProcess(temp);
 		return true;
+	}
 	return false;
 }
-
-//Simple simulator function for Phase1
 void Scheduler::Phase1Processing() {
+	//Simple simulator function for Phase1
 	while (ScheduleNewlyArrivedPhase1());
-	for(int i = 0; i < PROCESSOR_NUM; i++) {
-		ProcessorList[i]->MoveToRun(RunningProcessesSum,SystemTime);
+	for (int i = 0; i < PROCESSOR_NUM; i++) {
+		ProcessorList[i]->MoveToRun(RunningProcessesSum, SystemTime);
 		if (ProcessorList[i]->GetRun() != nullptr)
 		{
 			Process* temp;
@@ -385,7 +391,7 @@ void Scheduler::Phase1Processing() {
 				RunningProcessesSum--;
 				SendToBLK(temp);
 			}
-			if (random >= 20 && random <= 30) { 
+			if (random >= 20 && random <= 30) {
 				temp = ProcessorList[i]->GetRun();
 				ProcessorList[i]->RemoveRun();
 				RunningProcessesSum--;
@@ -404,19 +410,25 @@ void Scheduler::Phase1Processing() {
 	PrintSystemInfo();
 	SystemTime++;
 }
-
-//BLK Processing using random numbers for Phase1
 void Scheduler::BLKProcessingPhase1() {
+	//BLK Processing using random numbers for Phase1
 	Process* temp;
-	temp=BLK.Peek();
+	temp = BLK.Peek();
 	int random;
 	random = 1 + rand() % 100;
-	if (temp){
+	if (temp) {
 		if (random < 10) {
 			BLK.Dequeue(&temp);
 			ScheduleByLeastCount(temp);
 		}
 	}
+}
+
+//Termination condition
+bool Scheduler::Terminate() {
+	if (TRM.getCount() == PROCESS_NUM)
+		return true;
+	return false;
 }
 
 //Removing random functions from ready for Phase1
