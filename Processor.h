@@ -11,4 +11,6 @@ public:
 	virtual int getTotalTime() = 0;
 	virtual int getNumOfProcesses() = 0;
 	virtual void RemoveRun() = 0;
+	virtual float GetBusy() = 0;
+	virtual float GetIdle() = 0;
 };

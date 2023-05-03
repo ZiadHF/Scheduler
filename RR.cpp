@@ -1,6 +1,6 @@
 #pragma once
 #include"RR.h"
-RR::RR(int t) {
+RR::RR(int t) : busy(0), idle(0) {
 	TimeSlice = t;
 	remainingticks = t;
 }
@@ -15,6 +15,10 @@ bool RR::RemoveProcess(int id, Process** x) {
 	return false;
 
 }
+
+void RR::IncrementBusy() { busy++; }
+
+void RR::IncrementIdle() { idle++; }
 
 bool RR::FindProcessByID(int id, Process* x) {
 	return false;
@@ -36,9 +40,11 @@ Process* RR::GetRun() {
 void RR::tick(Process* rem, Process* child, Process* blk) {
 	//Case 1: no running process.
 	if (currentProcess == nullptr) {
+		IncrementIdle();
 		remainingticks = TimeSlice;
 		bool processGet = list.Dequeue(&currentProcess);
 		if (processGet) {
+			IncrementBusy();
 			currentProcess->DecrementWorkingTime();
 			remainingticks--;
 			totalTime--;
@@ -65,6 +71,7 @@ void RR::tick(Process* rem, Process* child, Process* blk) {
 	//Case 2 Already one process in run 
 	else {
 		currentProcess->DecrementWorkingTime();
+		IncrementBusy();
 		remainingticks--;
 		totalTime--;
 		if (remainingticks == 0) {

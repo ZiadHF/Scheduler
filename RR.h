@@ -9,6 +9,7 @@ private:
 	int totalTime = 0; // The variable that has the count
 	int remainingticks;
 	int TimeSlice;
+	float busy,idle;
 public:
 	RR(int t);
 	bool RemoveProcess(int id, Process** x);
@@ -20,5 +21,7 @@ public:
 	int getNumOfProcesses();
 	bool FindProcessByID(int id, Process* x);
 	void RemoveRun();
+	void IncrementBusy();
+	void IncrementIdle();
 	Queue<Process*>& getlist();
 };

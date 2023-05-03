@@ -1,5 +1,6 @@
 #pragma once
 #include<cstdlib>
+#include <fstream>
 #include "Scheduler.h"
 //Reads everything from an input file and does all necessary initializations
 void Scheduler::LoadFromFile(string file) {
@@ -481,6 +482,30 @@ void Scheduler::PrintSystemInfo() {
 		}
 	}
 	wind.printTRM(TRM, TRM.getCount());
+}
+
+void Scheduler::OutputFile() {
+	ofstream outputFile("output.txt");
+	try {
+		outputFile.open("output.txt");
+		if (!outputFile.is_open())
+			throw runtime_error("Failed to open the file.");
+		outputFile << "TT \t pID \t AT \t CT \t IO_D \t\t WT \t RT \t TRT\n";
+		Process* ptr = new Process();
+		Process** tmp = &ptr;
+		int i = TRM.getCount();
+		while (i != 0) {
+			TRM.Dequeue(tmp);
+			outputFile << (*tmp)->getTT() << " \t " << (*tmp)->getID() << " \t " << (*tmp)->getAT() << " \t " << (*tmp)->getCT() << " \t " << (*tmp)->getIO_D();
+			outputFile << (*tmp)->getWT() << " \t " << (*tmp)->getRT() << " \t " << (*tmp)->getTRT() << endl;
+			TRM.Enqueue(*tmp);
+		}
+		delete ptr;
+		outputFile.close();
+	}
+	catch (const exception e) {
+		cerr << "Error: " << e.what() << std::endl;
+	}
 }
 
 Scheduler::~Scheduler() {

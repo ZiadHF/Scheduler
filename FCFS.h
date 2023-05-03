@@ -7,6 +7,7 @@ private:
 	Process* currentProcess = nullptr;
 	int numOfProcesses = 0 ;
 	float forkProb;
+	float busy,idle;
 	int totalTime = 0; // The variable that has the count
 public:
 	 FCFS(float forkP);
@@ -19,6 +20,8 @@ public:
 	 int getNumOfProcesses();
 	 bool MoveToRun(int& ,int);
 	 void RemoveRun();
+	 void IncrementBusy();
+	 void IncrementIdle();
 	 LinkedList<Process*>& getlist();
 };
  

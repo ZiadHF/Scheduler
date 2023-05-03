@@ -13,6 +13,7 @@ class Process
 
 
 public:
+	Process();
 	Process(int a, int p, int ct, int io, IO* array);
 	Process(int a, int p, int ct, int io);
 	void setTT(int tt);
@@ -23,6 +24,7 @@ public:
 	void setListChangeTime(int);
 	const int getID();
 	const int getAT();
+	int getIO_D();
 	int getRT();
 	int getCT();
 	int getTT();

@@ -3,6 +3,7 @@
 #include"MinHeap.h"
 class SJF :public Processor {
 private:
+	float busy,idle;
 	MinHeap list = MinHeap(100);
 	Process* currentProcess = nullptr;
 	int numOfProcesses = 0;
@@ -18,5 +19,7 @@ public:
 	int getNumOfProcesses();
 	bool FindProcessByID(int id, Process* x);
 	void RemoveRun();
+	void IncrementBusy();
+	void IncrementIdle();
 	MinHeap& getlist();
 };

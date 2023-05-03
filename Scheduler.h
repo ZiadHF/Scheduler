@@ -63,5 +63,6 @@ public:
 	void PrintTRM();
 	void incrementRunningProcessCount();
 	void PrintSystemInfo();
+	void OutputFile();
 	~Scheduler();
 };

@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include <ctime>
 #include<iostream>
-FCFS::FCFS(float forkP) {
+FCFS::FCFS(float forkP) : busy(0),idle(0) {
 	forkProb = forkP/100;
 }
 
@@ -42,8 +42,10 @@ bool FCFS::RemoveProcess(int id,Process** x) {
 void FCFS::tick(Process* rem, Process* child, Process* blk) {
 	//Case 1: no running process.
 	if (currentProcess == nullptr) {
+		IncrementIdle();
 		bool processGet = list.RemoveHead(&currentProcess);
 		if (processGet) {
+			IncrementBusy();
 			currentProcess->DecrementWorkingTime();
 			totalTime--;
 			// Removing the process if the CT ended.
@@ -74,6 +76,7 @@ void FCFS::tick(Process* rem, Process* child, Process* blk) {
 	}
 	//Case 2 Already one process in run 
 	else {
+		IncrementBusy();
 		currentProcess->DecrementWorkingTime();
 		totalTime--;
 		// Removing the process if the CT ended.
@@ -97,6 +100,11 @@ void FCFS::tick(Process* rem, Process* child, Process* blk) {
 		}
 	}
 }
+
+void FCFS::IncrementBusy() { busy++; }
+
+void FCFS::IncrementIdle() { idle++; }
+
 
 int FCFS::getTotalTime() {
 	return totalTime;

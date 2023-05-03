@@ -11,7 +11,7 @@ void SJF::AddtoRDY(Process* x) {
 bool SJF::FindProcessByID(int id, Process* x) {
 	return false;
 }
-SJF::SJF() {
+SJF::SJF() : busy(0),idle(0){
 }
 bool SJF::MoveToRun(int& RunningNum,int time) {
 	if (!(list.IsEmpty())) {
@@ -23,6 +23,10 @@ bool SJF::MoveToRun(int& RunningNum,int time) {
 	}
 	return false;
 }
+
+void SJF::IncrementBusy() { busy++; }
+
+void SJF::IncrementIdle() { idle++; }
 
 Process* SJF::GetRun() {
 	return currentProcess;

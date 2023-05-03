@@ -1,5 +1,7 @@
 #include "Process.h"
 
+Process::Process() : pID(),AT(){ }
+
 Process::Process(int a, int p, int ct, int io, IO* array) : pID(p), AT(a), CT(ct), N(io) {
 	WorkingTime = CT;
 	TT = 0;
@@ -59,6 +61,13 @@ int Process::getWT() { return WT; }
 int Process::getN() { return N; }
 
 int Process::getWorkingTime() { return WorkingTime; }
+
+int Process::getIO_D() {
+	int sum = 0;
+	for (int i = 0; i < N; i++)
+		sum += IOArr[i].D;
+	return sum;
+}
 
 IO Process::getIO() { return IOArr[currentIO]; }
 
