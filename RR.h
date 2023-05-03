@@ -23,5 +23,7 @@ public:
 	void RemoveRun();
 	void IncrementBusy();
 	void IncrementIdle();
+	float GetBusy();
+	float GetIdle();
 	Queue<Process*>& getlist();
 };

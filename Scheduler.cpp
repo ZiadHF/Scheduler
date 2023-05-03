@@ -310,6 +310,7 @@ void Scheduler::SendToBLK(Process* temp) { BLK.Enqueue(temp); }
 
 //Add to the termination list(TRM)
 void Scheduler::SendToTRM(Process* temp) {
+	SUM_TRT += temp->getTRT();
 	TRM.Enqueue(temp);
 	KillOrphans(temp);
 }
@@ -494,18 +495,44 @@ void Scheduler::OutputFile() {
 		Process* ptr = new Process();
 		Process** tmp = &ptr;
 		int i = TRM.getCount();
+		int totalwt = 0;
+		int totalrt = 0;
+		int totaltrt = SUM_TRT;
 		while (i != 0) {
 			TRM.Dequeue(tmp);
+			totalwt += (*tmp)->getWT();
+			totalrt += (*tmp)->getRT();
 			outputFile << (*tmp)->getTT() << " \t " << (*tmp)->getID() << " \t " << (*tmp)->getAT() << " \t " << (*tmp)->getCT() << " \t " << (*tmp)->getIO_D();
 			outputFile << (*tmp)->getWT() << " \t " << (*tmp)->getRT() << " \t " << (*tmp)->getTRT() << endl;
 			TRM.Enqueue(*tmp);
 		}
+		outputFile << endl << "Processes: " << PROCESS_NUM << endl;
+		outputFile << "AVG WT: " << totalwt / PROCESS_NUM << "\t\t AVG RT: " << totalrt / PROCESS_NUM << "\t\t AVG TRT: " << SUM_TRT / PROCESS_NUM << endl;
+		outputFile << "Processors: " << PROCESSOR_NUM <<  "[" << FCFS_NUM << " FCFS, " << SJF_NUM << " SJF, " << RR_NUM << "RR]" << endl;
+		outputFile << "Processor Load" << endl;
+		for (int i = 0; i < PROCESSOR_NUM; i++)
+			outputFile << "p" << i + 1 << "= " << int((ProcessorList[i]->GetBusy() / SUM_TRT))*100 << "% , \t\t";
+		outputFile << endl << "Processors Utilization" << endl;
+		int sumuti = 0;
+		for (int i = 0; i < PROCESSOR_NUM; i++) {
+			outputFile << "p" << i + 1 << "= " << int(((ProcessorList[i]->GetBusy()) / GetTotalIdleBusy())) * 100 << "% , \t\t";
+			sumuti += int(((ProcessorList[i]->GetBusy()) / GetTotalIdleBusy())) * 100;
+		}
+		outputFile << endl << "Average Utilization : " << sumuti / PROCESSOR_NUM * 100;
 		delete ptr;
 		outputFile.close();
 	}
 	catch (const exception e) {
 		cerr << "Error: " << e.what() << std::endl;
 	}
+}
+
+int Scheduler::GetTotalIdleBusy(){
+	int piss = 0;
+	for (int i = 0; i < PROCESSOR_NUM; i++) {
+		piss = piss + ProcessorList[i]->GetBusy() + ProcessorList[i]->GetIdle();
+	}
+	return piss;
 }
 
 Scheduler::~Scheduler() {

@@ -16,6 +16,10 @@ bool RR::RemoveProcess(int id, Process** x) {
 
 }
 
+float RR::GetIdle() { return idle; }
+
+float RR::GetBusy() { return busy; }
+
 void RR::IncrementBusy() { busy++; }
 
 void RR::IncrementIdle() { idle++; }

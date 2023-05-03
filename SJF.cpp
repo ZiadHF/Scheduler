@@ -24,6 +24,10 @@ bool SJF::MoveToRun(int& RunningNum,int time) {
 	return false;
 }
 
+float SJF::GetIdle() { return idle; }
+
+float SJF::GetBusy() { return busy; }
+
 void SJF::IncrementBusy() { busy++; }
 
 void SJF::IncrementIdle() { idle++; }
@@ -32,7 +36,9 @@ Process* SJF::GetRun() {
 	return currentProcess;
 }
 void SJF::tick(Process* rem, Process* child, Process* blk) {
-	//TODO
+	//TODOIST
+	IncrementBusy();
+	IncrementIdle();
 	return;
 }
 int SJF::getTotalTime() {

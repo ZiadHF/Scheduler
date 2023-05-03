@@ -15,7 +15,7 @@ using namespace std;
 class Scheduler {
 public:
 private:
-	int RR_TS,RTF, MaxW, STL, ForkProb, FCFS_NUM, SJF_NUM, RR_NUM, PROCESS_NUM,SystemTime,PROCESSOR_NUM,RunningProcessesSum;
+	int RR_TS,RTF, MaxW, STL, ForkProb, FCFS_NUM, SJF_NUM, RR_NUM, PROCESS_NUM,SystemTime,PROCESSOR_NUM,RunningProcessesSum, SUM_TRT;
 	Queue<Process*>NEW, BLK, TRM;
 	LinkedList<SIGKILL> Kill_Process;
 	Processor** ProcessorList;
@@ -59,6 +59,7 @@ public:
 	int GetFCFS_NUM();
 	int GetSJF_NUM();
 	int GetRR_NUM();
+	int GetTotalIdleBusy();
 	int GetForkProb();
 	void PrintTRM();
 	void incrementRunningProcessCount();

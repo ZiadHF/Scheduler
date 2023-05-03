@@ -27,6 +27,10 @@ Process* FCFS::GetRun() {
 	return x;
 }
 
+float FCFS::GetBusy() { return busy; }
+
+float FCFS::GetIdle() { return idle; }
+
 bool FCFS::FindProcessByID(int id, Process* x) {
 	return list.FindByID(id, x);
 }

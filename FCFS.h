@@ -22,6 +22,8 @@ public:
 	 void RemoveRun();
 	 void IncrementBusy();
 	 void IncrementIdle();
+	 float GetBusy();
+	 float GetIdle();
 	 LinkedList<Process*>& getlist();
 };
  
