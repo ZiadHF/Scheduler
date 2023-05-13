@@ -16,7 +16,7 @@ Process::Process(int a, int p, int ct,int dl, int io, IO* array,bool isFRK) : pI
 	isForked = false;
 }
 
-Process::Process(int a, int p, int ct, int io,int dl,bool isFRK) : pID(p), AT(a), CT(ct), N(io), DL(dl) {
+Process::Process(int a, int p, int ct, int dl,int io ,bool isFRK) : pID(p), AT(a), CT(ct), N(io), DL(dl) {
 	WorkingTime = CT;
 	TT = 0;
 	RT = 0;
