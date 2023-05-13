@@ -12,7 +12,7 @@ private:
 	int totalTime = 0; // The variable that has the count
 	Scheduler* s = nullptr;
 public:
-	SJF();
+	SJF(Scheduler*);
 	void SetScheduler(Scheduler*);
 	bool RemoveProcess(int id, Process** x);
 	bool MoveToRun(int&,int);

@@ -11,11 +11,12 @@
 #include"RR.h"
 #include"SJF.h"
 #include"UI.h"
+#include"EDF.h"
 using namespace std;
 class Scheduler {
 public:
 private:
-	int RR_TS,RTF, MaxW, STL, ForkProb, FCFS_NUM, SJF_NUM, RR_NUM, PROCESS_NUM,SystemTime,PROCESSOR_NUM,RunningProcessesSum, SUM_TRT;
+	int RR_TS,RTF, MaxW, STL, ForkProb, FCFS_NUM, SJF_NUM, RR_NUM, EDF_NUM, PROCESS_NUM,SystemTime,PROCESSOR_NUM,RunningProcessesSum, SUM_TRT,DLPass;
 	Queue<Process*>NEW, BLK, TRM;
 	LinkedList<SIGKILL> Kill_Process;
 	Processor** ProcessorList;

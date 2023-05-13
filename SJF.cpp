@@ -11,7 +11,8 @@ void SJF::AddtoRDY(Process* x) {
 bool SJF::FindProcessByID(int id, Process* x) {
 	return false;
 }
-SJF::SJF() : busy(0),idle(0){
+SJF::SJF(Scheduler* main) : busy(0),idle(0){
+	s = main;
 }
 bool SJF::MoveToRun(int& RunningNum,int time) {
 	if (!(list.IsEmpty())) {
@@ -39,8 +40,9 @@ void SJF::tick(Process* rem, Process* child, Process* blk) {
 	//TODOIST
 	IncrementBusy();
 	IncrementIdle();
-	s->SendToTRM(rem);
-	s->SendToBLK(blk);
+	int temp = 0;
+	//s->SendToTRM(rem);
+	//s->SendToBLK(blk);
 	return;
 }
 int SJF::getTotalTime() {

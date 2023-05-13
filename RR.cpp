@@ -1,8 +1,9 @@
 #pragma once
 #include"RR.h"
-RR::RR(int t) : busy(0), idle(0) {
+RR::RR(int t,Scheduler* main) : busy(0), idle(0) {
 	TimeSlice = t;
 	remainingticks = t;
+	s = main;
 }
 
 void RR::AddtoRDY(Process* x) {
@@ -43,6 +44,11 @@ Process* RR::GetRun() {
  }
 void RR::tick(Process* rem, Process* child, Process* blk) {
 	//Case 1: no running process.
+	
+
+
+
+	
 	if (currentProcess == nullptr) {
 		IncrementIdle();
 		remainingticks = TimeSlice;
@@ -99,6 +105,7 @@ void RR::tick(Process* rem, Process* child, Process* blk) {
 			currentProcess = nullptr;
 		}
 	}
+	
 }
 
 void RR::SetScheduler(Scheduler* sc) { s = sc; }

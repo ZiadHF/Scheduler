@@ -2,9 +2,10 @@
 #include <cstdlib>
 #include <ctime>
 #include<iostream>
-FCFS::FCFS(float forkP) : busy(0),idle(0) {
+FCFS::FCFS(float forkP,Scheduler* main) : busy(0),idle(0) {
 	//forkProb = forkP/100;
 	forkProb = forkP;
+	s = main;
 }
 
 void FCFS::AddtoRDY(Process* x) {
@@ -59,8 +60,6 @@ void FCFS::tick(Process* rem, Process* child, Process* blk) {
 				return;
 			}
 			// Checking the forking probability.
-			// Seeding the random number generator.
-			srand(time(0));
 			// Generate a random number between 0 and 100
 			int randomNumber = rand() % 101;
 			if (randomNumber <= forkProb)

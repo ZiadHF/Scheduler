@@ -18,7 +18,7 @@ void Scheduler::LoadFromFile(string file) {
 			//Handling the number of processors line
 			k = 0;
 			c = 0;
-			int processornumbers[3];
+			int processornumbers[4];
 			while (temp[k] != '\0') {
 				string temp2;
 				while (temp[k] != ' '&& temp[k] != '\0') {
@@ -33,6 +33,7 @@ void Scheduler::LoadFromFile(string file) {
 			FCFS_NUM = processornumbers[0];
 			SJF_NUM = processornumbers[1];
 			RR_NUM = processornumbers[2];
+			EDF_NUM = processornumbers[3];
 			break;
 		case(2):
 			//The roundrobin time slice number
@@ -70,7 +71,7 @@ void Scheduler::LoadFromFile(string file) {
 		getline(read, temp);
 		int k = 0;
 		int c = 0;
-		int Process_Data[4];
+		int Process_Data[5];
 		while (temp[k] != '\0'&&temp[k]!='(') {
 			string temp2;
 			while (temp[k] != ' '&& temp[k] != '\0' && temp[k] != '(') {
@@ -104,7 +105,7 @@ void Scheduler::LoadFromFile(string file) {
 					k += 2;
 			}
 		}
-		Process* tempPro=new Process(Process_Data[0], Process_Data[1], Process_Data[2], Process_Data[3],IOArr);
+		Process* tempPro=new Process(Process_Data[0], Process_Data[1], Process_Data[2], Process_Data[3],Process_Data[4],IOArr);
 		NEW.Enqueue(tempPro);
 		
 		//Testing function for printing all processes.
@@ -139,17 +140,20 @@ void Scheduler::LoadFromFile(string file) {
 		Kill_Process.Insert(temp3);
 	}
 	//Creating the list of available processors
-	PROCESSOR_NUM = FCFS_NUM + SJF_NUM + RR_NUM;
+	PROCESSOR_NUM = FCFS_NUM + SJF_NUM + RR_NUM+EDF_NUM;
 	ProcessorList = new Processor*[PROCESSOR_NUM];
-	for (int i = 0; i < FCFS_NUM + SJF_NUM + RR_NUM; i++) {
+	for (int i = 0; i < PROCESSOR_NUM; i++) {
 		if (i >= 0 && i < FCFS_NUM) {
-			ProcessorList[i] = new FCFS(ForkProb);
+			ProcessorList[i] = new FCFS(ForkProb,this);
 		}
-		if (i >= FCFS_NUM && i < (PROCESSOR_NUM - RR_NUM)) {
-			ProcessorList[i] = new SJF;
+		if (i >= FCFS_NUM && i < (FCFS_NUM+SJF_NUM)) {
+			ProcessorList[i] = new SJF(this);
 		}
-		if (i >= FCFS_NUM + SJF_NUM && i < PROCESSOR_NUM) {
-			ProcessorList[i] = new RR(RR_TS);
+		if (i >= FCFS_NUM + SJF_NUM && i < PROCESSOR_NUM-EDF_NUM) {
+			ProcessorList[i] = new RR(RR_TS,this);
+		}
+		if (i >= PROCESSOR_NUM - EDF_NUM && PROCESSOR_NUM) {
+			ProcessorList[i] = new EDF(this);
 		}
 	}
 }
@@ -163,11 +167,14 @@ Scheduler::Scheduler() {
 	FCFS_NUM = 0;
 	SJF_NUM = 0;
 	RR_NUM = 0;
+	EDF_NUM = 0;
 	PROCESS_NUM = 0;
 	ProcessorList = nullptr;
 	SystemTime = 0;
 	RunningProcessesSum = 0;
 	PROCESSOR_NUM = 0;
+	SUM_TRT = 0;
+	DLPass = 0;
 }
 
 //
@@ -281,16 +288,13 @@ bool Scheduler::KillProcess(int IDKill) {
 			temp = ProcessorList[i]->GetRun();
 			if (temp->getID() == IDKill) {
 				ProcessorList[i]->RemoveRun();
-				TRM.Enqueue(temp);
-				KillOrphans(temp);
+				SendToTRM(temp);
 				return true;
 			}
 		}
 		if (ProcessorList[i]->FindProcessByID(IDKill,temp)) {
 			ProcessorList[i]->RemoveProcess(IDKill,&temp);
-			temp->setTT(SystemTime);
-			TRM.Enqueue(temp);
-			KillOrphans(temp);
+			SendToTRM(temp);
 			return true;
 		}
 	}
@@ -308,7 +312,6 @@ void Scheduler::KillOrphans(Process* TRMParent) {
 		tempR = TRMParent->getRChild();
 		if (tempR != nullptr)
 			KillProcess(tempR->getID());
-		
 	}
 }
 
@@ -320,6 +323,10 @@ void Scheduler::SendToTRM(Process* temp) {
 	SUM_TRT += temp->getTRT();
 	TRM.Enqueue(temp);
 	KillOrphans(temp);
+	temp->setTT(SystemTime);
+	if (temp->getDL() > SystemTime) {
+		DLPass++;
+	}
 }
 
 //Getters of data members
@@ -353,6 +360,11 @@ void Scheduler::BLKProcessing() {
 		}
 	}
 }
+bool Scheduler::CheckBLK(Process* ptr) {
+	if (!ptr->DecrementRemIOTime())
+		return true;
+	return false;
+}
 void Scheduler::Processing() {
 	//Check for kill signals before processing
 	while (KillSignalProcessing());
@@ -363,7 +375,7 @@ void Scheduler::Processing() {
 		Process* toblk=nullptr;
 		Process* totrm=nullptr;
 		Process* fork=nullptr;
-//		ProcessorList[i]->tick(totrm,fork,toblk);
+		ProcessorList[i]->tick(totrm,fork,toblk);
 		if (totrm) {
 			SendToTRM(totrm);
 			KillOrphans(totrm);
@@ -437,11 +449,6 @@ void Scheduler::BLKProcessingPhase1() {
 }
 
 
-bool Scheduler::CheckBLK(Process* ptr) {
-	if (!ptr->DecrementRemIOTime())
-		return true;
-	return false;
-}
 
 //Termination condition
 bool Scheduler::Terminate() {
@@ -480,15 +487,18 @@ void Scheduler::incrementRunningProcessCount() {
 //Print all System information
 void Scheduler::PrintSystemInfo() {
 	UI wind(SystemTime);
-	for (int i = 0; i < FCFS_NUM + SJF_NUM + RR_NUM; i++) {
+	for (int i = 0; i < PROCESSOR_NUM; i++) {
 		if (i >= 0 && i < FCFS_NUM) {
 			wind.printFCFSProcessorInfo((FCFS*)ProcessorList[i], i + 1);
 		}
-		if (i >= FCFS_NUM && i < (PROCESSOR_NUM - RR_NUM)) {
+		if (i >= FCFS_NUM && i < (FCFS_NUM + SJF_NUM)) {
 			wind.printSJFProcessorInfo((SJF*)ProcessorList[i], i + 1);
 		}
-		if (i >= FCFS_NUM + SJF_NUM && i < PROCESSOR_NUM) {
+		if (i >= FCFS_NUM + SJF_NUM && i < PROCESSOR_NUM - EDF_NUM) {
 			wind.printRRProcessorInfo((RR*)ProcessorList[i], i + 1);
+		}
+		if (i >= PROCESSOR_NUM - EDF_NUM && PROCESSOR_NUM) {
+			wind.printEDFProcessorInfo((EDF*)ProcessorList[i], i + 1);
 		}
 	}
 	wind.printBLK(BLK, BLK.getCount());
@@ -505,9 +515,8 @@ void Scheduler::PrintSystemInfo() {
 void Scheduler::OutputFile() {
 	ofstream outputFile("output.txt");
 	try {
-		outputFile.open("output.txt");
 		if (!outputFile.is_open())
-			throw runtime_error("Failed to open the file.");
+		throw runtime_error("Failed to open the file.");
 		outputFile << "TT \t pID \t AT \t CT \t IO_D \t\t WT \t RT \t TRT\n";
 		Process* ptr = new Process();
 		Process** tmp = &ptr;
@@ -522,6 +531,7 @@ void Scheduler::OutputFile() {
 			outputFile << (*tmp)->getTT() << " \t " << (*tmp)->getID() << " \t " << (*tmp)->getAT() << " \t " << (*tmp)->getCT() << " \t " << (*tmp)->getIO_D();
 			outputFile << (*tmp)->getWT() << " \t " << (*tmp)->getRT() << " \t " << (*tmp)->getTRT() << endl;
 			TRM.Enqueue(*tmp);
+			i--;
 		}
 		outputFile << endl << "Processes: " << PROCESS_NUM << endl;
 		outputFile << "AVG WT: " << totalwt / PROCESS_NUM << "\t\t AVG RT: " << totalrt / PROCESS_NUM << "\t\t AVG TRT: " << SUM_TRT / PROCESS_NUM << endl;
@@ -553,6 +563,7 @@ int Scheduler::GetTotalIdleBusy(){
 }
 
 Scheduler::~Scheduler() {
+	
 		Process** temp = new Process * [PROCESS_NUM];
 	for (int i = 0; i < PROCESS_NUM; i++) {
 		TRM.Dequeue(&temp[i]);
@@ -562,4 +573,5 @@ Scheduler::~Scheduler() {
 	for (int i = 0; i < PROCESSOR_NUM; i++) {
 		delete ProcessorList[i];
 	}
+	
 }

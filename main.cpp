@@ -9,7 +9,7 @@ int main() {
 	//cmd.GetFileName()
 	Test.LoadFromFile("test.txt");
 	while (!Test.Terminate()) {
-		system("cls");
+		//system("cls");
 		Test.Processing();
 		//cmd.nextTS();
 	}

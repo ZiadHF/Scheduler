@@ -27,6 +27,11 @@ ostream& operator << (ostream& output, SJF*& obj) {
 	obj->getlist().Print();
 	return output;
 }
+ostream& operator << (ostream& output, EDF*& obj) {
+	output << obj->getlist().getSize() << " " << "RDY" << ": ";
+	obj->getlist().Print();
+	return output;
+}
 void UI::printFCFSProcessorInfo(FCFS* obj, int ProccessorID) {
 	cout << "Processor " << ProccessorID;
 	string name = "FCFS";
@@ -42,6 +47,12 @@ void UI::printRRProcessorInfo(RR* obj, int ProccessorID) {
 void UI::printSJFProcessorInfo(SJF* obj, int ProccessorID) {
 	cout << "Processor " << ProccessorID;
 	string name = "SJF";
+	printf("[%-4s]: ", name.c_str());
+	cout << obj << endl;
+}
+void UI::printEDFProcessorInfo(EDF* obj, int ProccessorID) {
+	cout << "Processor " << ProccessorID;
+	string name = "EDF";
 	printf("[%-4s]: ", name.c_str());
 	cout << obj << endl;
 }

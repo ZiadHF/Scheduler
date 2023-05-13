@@ -5,14 +5,14 @@
 class EDF :
     public Processor
 {
-	float busy, idle;
+	int busy, idle,totaltime;
 	MinHeap list = MinHeap(100,false);
 	Process* currentProcess = nullptr;
 	int numOfProcesses = 0;
 	Scheduler* s = nullptr;
 public:
 	//Constructor
-	EDF();
+	EDF(Scheduler*);
 	//Increments
 	void IncrementBusy();
 	void IncrementIdle();

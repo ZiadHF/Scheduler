@@ -14,7 +14,7 @@ private:
 	float busy,idle;
 	Scheduler* s = nullptr;
 public:
-	RR(int t);
+	RR(int t,Scheduler*);
 	void SetScheduler(Scheduler* );
 	bool RemoveProcess(int id, Process** x);
 	bool MoveToRun(int&,int); 

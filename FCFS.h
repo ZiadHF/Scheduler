@@ -13,7 +13,7 @@ private:
 	int totalTime = 0; // The variable that has the count
 	Scheduler* s = nullptr;
 public:
-	 FCFS(float forkP);
+	 FCFS(float forkP,Scheduler*);
 	 void SetScheduler(Scheduler*);
 	 bool FindProcessByID(int id, Process* x);
 	 bool RemoveProcess(int id,Process** x);

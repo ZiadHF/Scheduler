@@ -2,16 +2,16 @@
 
 //Constructor
 
-EDF::EDF(): idle(0), busy(0) {}
+EDF::EDF(Scheduler* main) : idle(0), busy(0), totaltime(0) { s = main; }
 
 
 //Adding, Moving and Removing
-
 void EDF::AddtoRDY(Process* p) {
 	numOfProcesses++;
+	totaltime = totaltime + p->getCT();
 	list.Insert(p);
 }
-bool EDF::MoveToRun(int& c,int y){
+bool EDF::MoveToRun(int& RunningNum,int time){
 	if (list.IsEmpty()){
 		idle++;
 		return false;
@@ -20,11 +20,13 @@ bool EDF::MoveToRun(int& c,int y){
 		busy++;
 		if (!currentProcess) {
 			currentProcess = list.getMin();
+			RunningNum++;
 			return true;
 		}
 		if (currentProcess->getDL() > list.PeekMin()->getDL()) {
 			AddtoRDY(currentProcess);
 			currentProcess = list.getMin();
+			RunningNum++;
 			return true;
 		}
 	}
@@ -45,11 +47,13 @@ void EDF::tick(Process* rem,Process* ch, Process* blk){
 			rem = currentProcess;
 			RemoveRun();
 			s->SendToTRM(rem);
+			return;
 		}
 		if (currentProcess->getCT() - currentProcess->getWorkingTime() == currentProcess->getIO().R) {
 			blk = currentProcess;
 			RemoveRun();
 			s->SendToBLK(blk);
+			return;
 		}
 	}
 }
@@ -73,7 +77,7 @@ MinHeap& EDF::getlist() { return list; }
 
 //Useless Functions
 
-int EDF::getTotalTime() { return 0; }
+int EDF::getTotalTime() { return totaltime; }
 bool EDF::FindProcessByID(int id, Process* x) { return true; }
 bool EDF::RemoveProcess(int id, Process** x) { return true; }
 EDF::~EDF() {}

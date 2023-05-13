@@ -68,8 +68,10 @@ int Process::getWorkingTime() { return WorkingTime; }
 
 int Process::getIO_D() {
 	int sum = 0;
-	for (int i = 0; i < N; i++)
-		sum += IOArr[i].D;
+	if (N!=0) {
+		for (int i = 0; i < N; i++)
+			sum += IOArr[i].D;
+	}
 	return sum;
 }
 
