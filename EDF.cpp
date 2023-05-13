@@ -12,9 +12,12 @@ void EDF::AddtoRDY(Process* p) {
 	list.Insert(p);
 }
 bool EDF::MoveToRun(int& c,int y){
-	if (list.IsEmpty())
+	if (list.IsEmpty()){
+		idle++;
 		return false;
+	}
 	else {
+		busy++;
 		if (!currentProcess) {
 			currentProcess = list.getMin();
 			return true;
