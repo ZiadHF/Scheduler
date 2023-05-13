@@ -1,6 +1,6 @@
 #pragma once
 #include"Process.h"
-#include "Scheduler.h"
+class Scheduler;
 class Processor {
 public:
 	virtual bool FindProcessByID(int id, Process* x) = 0;

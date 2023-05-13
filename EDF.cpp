@@ -73,7 +73,7 @@ MinHeap& EDF::getlist() { return list; }
 
 //Useless Functions
 
-int EDF::getTotalTime(){}
-bool EDF::FindProcessByID(int id, Process* x) {}
-bool EDF::RemoveProcess(int id, Process** x) {}
+int EDF::getTotalTime() { return 0; }
+bool EDF::FindProcessByID(int id, Process* x) { return true; }
+bool EDF::RemoveProcess(int id, Process** x) { return true; }
 EDF::~EDF() {}

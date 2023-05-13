@@ -1,6 +1,8 @@
 #pragma once
 #include"Processor.h"
+#include "Scheduler.h"
 #include"LinkedList.h"
+class Scheduler;
 class FCFS :public Processor {
 private:
 	LinkedList<Process*> list;
@@ -9,7 +11,7 @@ private:
 	float forkProb;
 	float busy,idle;
 	int totalTime = 0; // The variable that has the count
-	Scheduler* s;
+	Scheduler* s = nullptr;
 public:
 	 FCFS(float forkP);
 	 void SetScheduler(Scheduler*);

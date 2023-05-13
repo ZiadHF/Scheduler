@@ -1,5 +1,7 @@
 #pragma once
 #include "Processor.h"
+#include "Scheduler.h"
+
 class EDF :
     public Processor
 {

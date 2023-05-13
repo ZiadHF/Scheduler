@@ -1,6 +1,8 @@
 #pragma once
 #include"Processor.h"
 #include"MinHeap.h"
+#include "Scheduler.h"
+class Scheduler;
 class SJF :public Processor {
 private:
 	float busy,idle;
@@ -8,7 +10,7 @@ private:
 	Process* currentProcess = nullptr;
 	int numOfProcesses = 0;
 	int totalTime = 0; // The variable that has the count
-	Scheduler* s;
+	Scheduler* s = nullptr;
 public:
 	SJF();
 	void SetScheduler(Scheduler*);

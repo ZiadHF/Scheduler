@@ -10,6 +10,9 @@ using namespace std;
 #include "string"
 #include "conio.h"
 #include "Queue"
+class SJF;
+class FCFS;
+class RR;
 class UI
 {
 	friend ostream& operator << (ostream& output, Process& obj);

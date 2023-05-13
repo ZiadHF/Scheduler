@@ -1,6 +1,8 @@
 #pragma once
 #include"Processor.h"
 #include"Queue.h"
+#include "Scheduler.h"
+class Scheduler;
 class RR :public Processor {
 private:
 	Queue<Process*> list;
@@ -10,7 +12,7 @@ private:
 	int remainingticks;
 	int TimeSlice;
 	float busy,idle;
-	Scheduler* s;
+	Scheduler* s = nullptr;
 public:
 	RR(int t);
 	void SetScheduler(Scheduler* );

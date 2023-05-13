@@ -44,7 +44,7 @@ public:
 	}
 
 
-	T& Peek() {
+	T Peek() {
 		if(head)
 		return head->getItem();
 		return nullptr;
