@@ -20,15 +20,14 @@ private:
 	LinkedList<SIGKILL> Kill_Process;
 	Processor** ProcessorList;
 	//Scheduling Functions
+	void ScheduleByLeastCount(Process*);
 	bool ScheduleNewlyArrivedPhase1();
 	bool ScheduleNewlyArrived();
 	void ScheduleToShortest(Process*);
 	void ScheduleToShortestFCFS(Process*);
 	void ScheduleToShortestSJF(Process*);
 	void ScheduleToShortestRR(Process*);
-	void ScheduleByLeastCount(Process*);
 	//Process Addition And Removal;
-	void AddForkedProcess(Process*);
 	bool KillProcess(int);
 	void KillOrphans(Process*);
 	//Process Movement int lists
@@ -44,8 +43,11 @@ private:
 	bool KillSignalProcessing();
 public:
 	void Processing();
+	//Functions called by Processors
+	void AddForkedProcess(Process*);
 	void SendToTRM(Process*);
 	void SendToBLK(Process*);
+	//Others
 	Scheduler();
 	void LoadFromFile(string);
 	bool Terminate();
