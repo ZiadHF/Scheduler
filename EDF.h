@@ -9,7 +9,7 @@ class EDF :
 	MinHeap list = MinHeap(100,false);
 	Process* currentProcess = nullptr;
 	int numOfProcesses = 0;
-	Scheduler* s;
+	Scheduler* s = nullptr;
 public:
 	//Constructor
 	EDF();
