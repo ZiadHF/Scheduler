@@ -3,7 +3,8 @@
 #include <ctime>
 #include<iostream>
 FCFS::FCFS(float forkP) : busy(0),idle(0) {
-	forkProb = forkP/100;
+	//forkProb = forkP/100;
+	forkProb = forkP;
 }
 
 void FCFS::AddtoRDY(Process* x) {
@@ -59,22 +60,19 @@ void FCFS::tick(Process* rem, Process* child, Process* blk) {
 			}
 			// Checking the forking probability.
 			// Seeding the random number generator.
-			std::srand(std::time(0));
+			srand(time(0));
+			// Generate a random number between 0 and 100
+			int randomNumber = rand() % 101;
+			if (randomNumber <= forkProb)
+				if (!currentProcess->getLChild() || !currentProcess->getRChild())
+					s->AddForkedProcess(currentProcess);
 
-			// To make the random num between 1 and 0.
-			double random_num = static_cast<double>(std::rand()) / RAND_MAX;
-			if (random_num <= forkProb) {
-				if (currentProcess->getLChild() == nullptr) {
-					child = currentProcess;
-				}
-				else if (currentProcess->getRChild() == nullptr) {
-					child = currentProcess;
-				}
-			}
 			if (currentProcess->getCT() - currentProcess->getWorkingTime() == currentProcess->getIO().R) {
 				blk = currentProcess;
+				s->SendToBLK(blk);
 				currentProcess = nullptr;
 			}
+			
 		}
 
 	}
@@ -86,6 +84,7 @@ void FCFS::tick(Process* rem, Process* child, Process* blk) {
 		// Removing the process if the CT ended.
 		if (currentProcess->getWorkingTime() == 0) {
 			rem = currentProcess;
+			s->SendToTRM(rem);
 			currentProcess = nullptr;
 			return;
 		}
@@ -100,10 +99,13 @@ void FCFS::tick(Process* rem, Process* child, Process* blk) {
 		}
 		if (currentProcess->getCT() - currentProcess->getWorkingTime() == currentProcess->getIO().R) {
 			blk = currentProcess;
+			s->SendToBLK(blk);
 			currentProcess = nullptr;
 		}
 	}
 }
+
+void FCFS::SetScheduler(Scheduler* sc) { s = sc; }
 
 void FCFS::IncrementBusy() { busy++; }
 
@@ -119,6 +121,7 @@ int FCFS::getNumOfProcesses(){
 void FCFS::RemoveRun() { 
 	numOfProcesses--;
 	currentProcess = nullptr; }
+
 LinkedList<Process*>& FCFS::getlist() {
 	return list;
 }

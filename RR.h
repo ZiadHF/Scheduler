@@ -10,8 +10,10 @@ private:
 	int remainingticks;
 	int TimeSlice;
 	float busy,idle;
+	Scheduler* s;
 public:
 	RR(int t);
+	void SetScheduler(Scheduler* );
 	bool RemoveProcess(int id, Process** x);
 	bool MoveToRun(int&,int); 
 	Process* GetRun();

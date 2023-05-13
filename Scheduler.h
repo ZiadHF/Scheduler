@@ -32,8 +32,7 @@ private:
 	bool KillProcess(int);
 	void KillOrphans(Process*);
 	//Process Movement int lists
-	void SendToBLK(Process*);
-	void SendToTRM(Process*);
+	bool CheckBLK(Process*);
 	//SystemTime and Process Number Manipulation
 	void IncrementSystemTime();
 	void DecrementSystemTime();
@@ -45,6 +44,8 @@ private:
 	bool KillSignalProcessing();
 public:
 	void Processing();
+	void SendToTRM(Process*);
+	void SendToBLK(Process*);
 	Scheduler();
 	void LoadFromFile(string);
 	bool Terminate();

@@ -8,6 +8,7 @@
     <ClCompile Include="RR.cpp" />
     <ClCompile Include="UI.cpp" />
     <ClCompile Include="SJF.cpp" />
+    <ClCompile Include="EDF.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Node.h" />
@@ -22,5 +23,6 @@
     <ClInclude Include="MinHeap.h" />
     <ClInclude Include="UI.h" />
     <ClInclude Include="SJF.h" />
+    <ClInclude Include="EDF.h" />
   </ItemGroup>
 </Project>

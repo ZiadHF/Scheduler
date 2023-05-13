@@ -39,11 +39,15 @@ void SJF::tick(Process* rem, Process* child, Process* blk) {
 	//TODOIST
 	IncrementBusy();
 	IncrementIdle();
+	s->SendToTRM(rem);
+	s->SendToBLK(blk);
 	return;
 }
 int SJF::getTotalTime() {
 	return totalTime;
 }
+
+void SJF::SetScheduler(Scheduler* sc) { s = sc; }
 
 int SJF::getNumOfProcesses() {
 	return numOfProcesses;

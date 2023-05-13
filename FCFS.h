@@ -9,8 +9,10 @@ private:
 	float forkProb;
 	float busy,idle;
 	int totalTime = 0; // The variable that has the count
+	Scheduler* s;
 public:
 	 FCFS(float forkP);
+	 void SetScheduler(Scheduler*);
 	 bool FindProcessByID(int id, Process* x);
 	 bool RemoveProcess(int id,Process** x);
 	 void AddtoRDY(Process* x);

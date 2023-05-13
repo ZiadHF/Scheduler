@@ -4,12 +4,14 @@
 class SJF :public Processor {
 private:
 	float busy,idle;
-	MinHeap list = MinHeap(100);
+	MinHeap list = MinHeap(100,true);
 	Process* currentProcess = nullptr;
 	int numOfProcesses = 0;
 	int totalTime = 0; // The variable that has the count
+	Scheduler* s;
 public:
 	SJF();
+	void SetScheduler(Scheduler*);
 	bool RemoveProcess(int id, Process** x);
 	bool MoveToRun(int&,int);
 	Process* GetRun();

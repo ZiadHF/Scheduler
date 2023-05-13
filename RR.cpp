@@ -88,16 +88,20 @@ void RR::tick(Process* rem, Process* child, Process* blk) {
 		// Removing the process if the CT ended.
 		if (currentProcess->getWorkingTime() == 0) {
 			rem = currentProcess;
+			s->SendToTRM(rem);
 			currentProcess = nullptr;
 			return;
 		}
 		 
 		if (currentProcess->getCT() - currentProcess->getWorkingTime() == currentProcess->getIO().R) {
 			blk = currentProcess;
+			s->SendToBLK(blk);
 			currentProcess = nullptr;
 		}
 	}
 }
+
+void RR::SetScheduler(Scheduler* sc) { s = sc; }
 
 int RR::getTotalTime() {
 	return totalTime;

@@ -2,7 +2,7 @@
 
 Process::Process() : pID(),AT(){ }
 
-Process::Process(int a, int p, int ct, int io, IO* array) : pID(p), AT(a), CT(ct), N(io) {
+Process::Process(int a, int p, int ct,int dl, int io, IO* array,bool isFRK) : pID(p), AT(a), CT(ct), N(io), DL(dl) {
 	WorkingTime = CT;
 	TT = 0;
 	RT = 0;
@@ -13,9 +13,10 @@ Process::Process(int a, int p, int ct, int io, IO* array) : pID(p), AT(a), CT(ct
 	RemIOTime = 0;
 	ListChangeTime = AT;
 	TRT = 0;
+	isForked = false;
 }
 
-Process::Process(int a, int p, int ct, int io) : pID(p), AT(a), CT(ct), N(io) {
+Process::Process(int a, int p, int ct, int io,int dl,bool isFRK) : pID(p), AT(a), CT(ct), N(io), DL(dl) {
 	WorkingTime = CT;
 	TT = 0;
 	RT = 0;
@@ -26,6 +27,7 @@ Process::Process(int a, int p, int ct, int io) : pID(p), AT(a), CT(ct), N(io) {
 	RemIOTime = 0;
 	ListChangeTime = AT;
 	TRT = 0;
+	isForked = isFRK;
 }
 
 void Process::setTT(int tt) {
@@ -59,6 +61,8 @@ int Process::getTRT() { return TRT; }
 int Process::getWT() { return WT; }
 
 int Process::getN() { return N; }
+
+int Process::getDL() { return DL; }
 
 int Process::getWorkingTime() { return WorkingTime; }
 

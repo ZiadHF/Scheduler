@@ -7,8 +7,9 @@ class MinHeap {
     Process** Heap;
     int CAPACITY;
     int size;
+    bool SJF;
 public:
-    MinHeap(int c) : size(0), CAPACITY(c) {
+    MinHeap(int c,bool ch) : size(0), CAPACITY(c) , SJF(ch){
         Heap = new Process*[CAPACITY];
     }
 
@@ -26,10 +27,16 @@ public:
         }
         int i = size;
         Heap[size++] = p;
-        while (i != 0 && (Heap[Parent(i)]->getCT()) > (Heap[i]->getCT())) {
+        if (SJF)
+            while (i != 0 && (Heap[Parent(i)]->getCT()) > (Heap[i]->getCT())) {
             swap(Heap[i], Heap[Parent(i)]);
             i = Parent(i);
-        }
+            }
+        else
+            while (i != 0 && (Heap[Parent(i)]->getDL()) > (Heap[i]->getDL())) {
+                swap(Heap[i], Heap[Parent(i)]);
+                i = Parent(i);
+            }
         return true;
     }
 
@@ -37,13 +44,25 @@ public:
         int l = ChildL(i);
         int r = ChildR(i);
         int smallest = i;
-        if (l < size && (Heap[l]->getCT()) < (Heap[i]->getCT()))
-            smallest = l;
-        if (r < size && (Heap[r]->getCT()) < (Heap[smallest]->getCT()))
-            smallest = r;
-        if (smallest != i) {
-            swap(Heap[i], Heap[smallest]);
-            Heapify(smallest);
+        if (SJF) {
+            if (l < size && (Heap[l]->getCT()) < (Heap[i]->getCT()))
+                smallest = l;
+            if (r < size && (Heap[r]->getCT()) < (Heap[smallest]->getCT()))
+                smallest = r;
+            if (smallest != i) {
+                swap(Heap[i], Heap[smallest]);
+                Heapify(smallest);
+            }
+        }
+        else {
+            if (l < size && (Heap[l]->getDL()) < (Heap[i]->getDL()))
+                smallest = l;
+            if (r < size && (Heap[r]->getDL()) < (Heap[smallest]->getDL()))
+                smallest = r;
+            if (smallest != i) {
+                swap(Heap[i], Heap[smallest]);
+                Heapify(smallest);
+            }
         }
     }
 

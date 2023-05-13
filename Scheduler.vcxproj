@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="EDF.cpp" />
     <ClCompile Include="FCFS.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Process.cpp" />
@@ -28,6 +29,7 @@
     <ClCompile Include="UI.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="EDF.h" />
     <ClInclude Include="FCFS.h" />
     <ClInclude Include="LinkedList.h" />
     <ClInclude Include="MinHeap.h" />

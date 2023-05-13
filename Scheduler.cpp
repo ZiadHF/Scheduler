@@ -170,9 +170,16 @@ Scheduler::Scheduler() {
 	PROCESSOR_NUM = 0;
 }
 
+//
+
 //Creating the forked processes
 void Scheduler::AddForkedProcess(Process* parent) {
-	Process* added = new Process(SystemTime, ++PROCESS_NUM, parent->getWorkingTime(),0);
+	Process* added = new Process(SystemTime, ++PROCESS_NUM, parent->getWorkingTime(),0,true);
+	if (!parent->getLChild())
+		parent->setLChild(added);
+	else
+		parent->setRChild(added);
+	ScheduleToShortestFCFS(added);
 }
 
 //Schedule newly arrived process Phase1
@@ -339,8 +346,11 @@ void Scheduler::DecrementSystemTime() { SystemTime--; }
 void Scheduler::BLKProcessing() {
 	Process* temp = BLK.Peek();
 	if (temp) {
-		if (!(temp->DecrementRemIOTime()))
+		if (CheckBLK(temp)) {
+			Process** pt = &temp;
+			BLK.Dequeue(pt);
 			ScheduleToShortest(temp);
+		}
 	}
 }
 void Scheduler::Processing() {
@@ -424,6 +434,13 @@ void Scheduler::BLKProcessingPhase1() {
 			ScheduleByLeastCount(temp);
 		}
 	}
+}
+
+
+bool Scheduler::CheckBLK(Process* ptr) {
+	if (!ptr->DecrementRemIOTime())
+		return true;
+	return false;
 }
 
 //Termination condition
