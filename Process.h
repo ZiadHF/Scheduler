@@ -25,6 +25,7 @@ public:
 	const int getID();
 	const int getAT();
 	int getDL();
+	int getIOIncrement();
 	int getIO_D();
 	int getRT();
 	int getCT();
@@ -35,6 +36,7 @@ public:
 	int getRemIOTime();
 	int getListChangeTime();
 	bool DecrementRemIOTime();
+	bool CheckIO();
 	int getWorkingTime();
 	IO getIO();
 	void incrementIO();

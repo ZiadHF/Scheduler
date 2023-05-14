@@ -79,6 +79,14 @@ IO Process::getIO() {
 		return IOArr[currentIO];
 }
 
+bool Process::CheckIO() { 
+	if (N == 0 || currentIO > N)
+		return true;
+	return false;
+}
+
+int Process::getIOIncrement() { return currentIO; }
+
 void Process::incrementIO() { currentIO++; }
 
 int Process::getRemIOTime() { return RemIOTime; }

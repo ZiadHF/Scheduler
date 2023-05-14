@@ -105,7 +105,7 @@ void Scheduler::LoadFromFile(string file) {
 					k += 2;
 			}
 		}
-		Process* tempPro=new Process(Process_Data[0], Process_Data[1], Process_Data[2], Process_Data[3],Process_Data[4],IOArr);
+		Process* tempPro=new Process(Process_Data[0], Process_Data[1], Process_Data[2], Process_Data[4],Process_Data[3],IOArr);
 
 		NEW.Enqueue(tempPro);
 		
@@ -182,7 +182,7 @@ Scheduler::Scheduler() {
 
 //Creating the forked processes
 void Scheduler::AddForkedProcess(Process* parent) {
-	Process* added = new Process(SystemTime, ++PROCESS_NUM, parent->getWorkingTime(),0,true);
+	Process* added = new Process(SystemTime, ++PROCESS_NUM, parent->getWorkingTime(),parent->getDL(), 0, true);
 	if (!parent->getLChild())
 		parent->setLChild(added);
 	else

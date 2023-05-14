@@ -64,7 +64,7 @@ void RR::tick() {
 			list.Dequeue(&currentProcess);
 			return;
 		}
-		if (currentProcess->getN() == 0)
+		if (currentProcess->CheckIO())
 			return;
 		if (currentProcess->getCT() - currentProcess->getWorkingTime() == currentProcess->getIO().R) {
 			Process* blk = currentProcess;

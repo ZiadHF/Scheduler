@@ -29,6 +29,7 @@ bool EDF::MoveToRun(int& RunningNum,int time){
 			currentProcess = list.getMin();
 			return true;
 		}
+		return false;
 	}
 }
 void EDF::RemoveRun() {
@@ -51,7 +52,7 @@ void EDF::tick(){
 			s->SendToTRM(rem);
 			return;
 		}
-		if (currentProcess->getN() == 0)
+		if (currentProcess->CheckIO())
 			return;
 		if (currentProcess->getCT() - currentProcess->getWorkingTime() == currentProcess->getIO().R) {
 			Process* blk = currentProcess;
