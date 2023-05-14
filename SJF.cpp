@@ -41,7 +41,6 @@ void SJF::tick() {
 	int tmp2 = s->GetSystemTime();
 	MoveToRun(s->RunningProcessesSum, tmp2);
 	if (currentProcess) {
-		totalTime--;
 		IncrementBusy();
 		if (!currentProcess->DecrementWorkingTime()) {
 			Process* rem = currentProcess;
@@ -49,6 +48,7 @@ void SJF::tick() {
 			s->SendToTRM(rem);
 			return;
 		}
+		totalTime--;
 		if (currentProcess->CheckIO())
 			return;
 		if (currentProcess->getCT() - currentProcess->getWorkingTime() == currentProcess->getIO().R) {

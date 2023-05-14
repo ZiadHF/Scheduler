@@ -45,13 +45,13 @@ void EDF::tick(){
 	MoveToRun(s->RunningProcessesSum,tmp2);
 	if (currentProcess) {
 		IncrementBusy();
-		totalTime--;
 		if (!currentProcess->DecrementWorkingTime()) {
 			Process* rem = currentProcess;
 			RemoveRun();
 			s->SendToTRM(rem);
 			return;
 		}
+		totalTime--;
 		if (currentProcess->CheckIO())
 			return;
 		if (currentProcess->getCT() - currentProcess->getWorkingTime() == currentProcess->getIO().R) {

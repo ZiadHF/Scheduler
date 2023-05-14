@@ -32,6 +32,7 @@ bool RR::MoveToRun(int& RunningNum,int time) {
 	if (!(list.IsEmpty())) {
 		if (!currentProcess) {
 			list.Dequeue(&currentProcess);
+			remainingticks = TimeSlice;
 			RunningNum++;
 			return true;
 		}
@@ -48,15 +49,14 @@ void RR::tick() {
 	//Case 2 Already one process in run 
 	if (currentProcess){
 		IncrementBusy();
-		remainingticks = TimeSlice;
-		remainingticks--;
-		totalTime--;
 		if (!currentProcess->DecrementWorkingTime()) {
 			Process* rem = currentProcess;
 			RemoveRun();
 			s->SendToTRM(rem);
 			return;
 		}
+		remainingticks--;
+		totalTime--;
 		if (remainingticks == 0) {
 			list.Enqueue(currentProcess);
 			RemoveRun();

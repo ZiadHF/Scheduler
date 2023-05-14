@@ -56,7 +56,6 @@ void FCFS::tick() {
 	MoveToRun(s->RunningProcessesSum,tmp2);
 	if (currentProcess) {
 		IncrementBusy();
-		totalTime--;
 		// Removing the process if the CT ended.
 		if (!currentProcess->DecrementWorkingTime()) {
 			Process* rem = currentProcess;
@@ -64,6 +63,7 @@ void FCFS::tick() {
 			s->SendToTRM(rem);
 			return;
 		}
+		totalTime--;
 
 		// Checking the forking probability.
 		// Generate a random number between 0 and 100
