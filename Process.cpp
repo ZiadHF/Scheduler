@@ -10,7 +10,7 @@ Process::Process(int a, int p, int ct,int dl, int io, IO* array,bool isFRK) : pI
 	IOArr = array;
 	LChild = nullptr;
 	RChild = nullptr;
-	RemIOTime = 0;
+	RemIOTime = IOArr[currentIO].D;
 	ListChangeTime = AT;
 	TRT = 0;
 	isForked = false;
@@ -68,14 +68,16 @@ int Process::getWorkingTime() { return WorkingTime; }
 
 int Process::getIO_D() {
 	int sum = 0;
-	if (N!=0) {
+	if (N > 0) {
 		for (int i = 0; i < N; i++)
 			sum += IOArr[i].D;
 	}
 	return sum;
 }
 
-IO Process::getIO() { return IOArr[currentIO]; }
+IO Process::getIO() {
+		return IOArr[currentIO];
+}
 
 void Process::incrementIO() { currentIO++; }
 

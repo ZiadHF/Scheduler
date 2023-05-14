@@ -18,7 +18,7 @@ public:
 	 bool FindProcessByID(int id, Process* x);
 	 bool RemoveProcess(int id,Process** x);
 	 void AddtoRDY(Process* x);
-	 void tick(Process* rem, Process* child,Process* blk);
+	 void tick();
 	 int getTotalTime();
 	 Process* GetRun();
 	 int getNumOfProcesses();

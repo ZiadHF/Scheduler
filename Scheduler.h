@@ -30,7 +30,6 @@ private:
 	void ScheduleToShortestRR(Process*);
 	//Process Addition And Removal;
 	bool KillProcess(int);
-	void KillOrphans(Process*);
 	//Process Movement int lists
 	bool CheckBLK(Process*);
 	//SystemTime and Process Number Manipulation
@@ -48,6 +47,7 @@ public:
 	void AddForkedProcess(Process*);
 	void SendToTRM(Process*);
 	void SendToBLK(Process*);
+	void KillOrphans(Process*);
 	//Others
 	Scheduler();
 	void LoadFromFile(string);

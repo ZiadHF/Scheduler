@@ -20,7 +20,7 @@ public:
 	bool MoveToRun(int&,int); 
 	Process* GetRun();
 	void AddtoRDY(Process* x);
-	void tick(Process* rem, Process* child, Process* blk);
+	void tick();
 	int getTotalTime();
 	int getNumOfProcesses();
 	bool FindProcessByID(int id, Process* x);

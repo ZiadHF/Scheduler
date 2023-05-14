@@ -106,6 +106,7 @@ void Scheduler::LoadFromFile(string file) {
 			}
 		}
 		Process* tempPro=new Process(Process_Data[0], Process_Data[1], Process_Data[2], Process_Data[3],Process_Data[4],IOArr);
+
 		NEW.Enqueue(tempPro);
 		
 		//Testing function for printing all processes.
@@ -320,13 +321,12 @@ void Scheduler::SendToBLK(Process* temp) { BLK.Enqueue(temp); }
 
 //Add to the termination list(TRM)
 void Scheduler::SendToTRM(Process* temp) {
-	SUM_TRT += temp->getTRT();
 	TRM.Enqueue(temp);
 	KillOrphans(temp);
 	temp->setTT(SystemTime);
-	if (temp->getDL() > SystemTime) {
+	SUM_TRT += temp->getTRT();
+	if (temp->getDL() > SystemTime)
 		DLPass++;
-	}
 }
 
 //Getters of data members
@@ -355,6 +355,7 @@ void Scheduler::BLKProcessing() {
 	if (temp) {
 		if (CheckBLK(temp)) {
 			Process** pt = &temp;
+			temp->incrementIO();
 			BLK.Dequeue(pt);
 			ScheduleToShortest(temp);
 		}
@@ -371,21 +372,8 @@ void Scheduler::Processing() {
 	//Schedule Processes arriving at current timestep
 	while (ScheduleNewlyArrived());
 	//Check running processes
-	for (int i = 0; i < PROCESSOR_NUM; i++) {
-		Process* toblk=nullptr;
-		Process* totrm=nullptr;
-		Process* fork=nullptr;
-		ProcessorList[i]->tick(totrm,fork,toblk);
-		if (totrm) {
-			SendToTRM(totrm);
-			KillOrphans(totrm);
-		}
-		if (fork) { 
-			AddForkedProcess(fork);
-			ScheduleToShortestFCFS(fork);
-		}
-		if (toblk) { SendToBLK(toblk); }
-	}
+	for (int i = 0; i < PROCESSOR_NUM; i++)
+		ProcessorList[i]->tick();
 	//Processing of IO
 	BLKProcessing();
 	PrintSystemInfo();
@@ -524,25 +512,29 @@ void Scheduler::OutputFile() {
 		int totalwt = 0;
 		int totalrt = 0;
 		int totaltrt = SUM_TRT;
-		while (i != 0) {
+	/*	while (i != 0) {
 			TRM.Dequeue(tmp);
 			totalwt += (*tmp)->getWT();
 			totalrt += (*tmp)->getRT();
-			outputFile << (*tmp)->getTT() << " \t " << (*tmp)->getID() << " \t " << (*tmp)->getAT() << " \t " << (*tmp)->getCT() << " \t " << (*tmp)->getIO_D();
+			outputFile << (*tmp)->getTT() << " \t " << (*tmp)->getID() << " \t " << (*tmp)->getAT() << " \t " << (*tmp)->getCT() << " \t "; //<< (*tmp)->getIO_D();
 			outputFile << (*tmp)->getWT() << " \t " << (*tmp)->getRT() << " \t " << (*tmp)->getTRT() << endl;
 			TRM.Enqueue(*tmp);
 			i--;
 		}
+		*/
 		outputFile << endl << "Processes: " << PROCESS_NUM << endl;
 		outputFile << "AVG WT: " << totalwt / PROCESS_NUM << "\t\t AVG RT: " << totalrt / PROCESS_NUM << "\t\t AVG TRT: " << SUM_TRT / PROCESS_NUM << endl;
 		outputFile << "Processors: " << PROCESSOR_NUM <<  "[" << FCFS_NUM << " FCFS, " << SJF_NUM << " SJF, " << RR_NUM << "RR]" << endl;
 		outputFile << "Processor Load" << endl;
-		for (int i = 0; i < PROCESSOR_NUM; i++)
-			outputFile << "p" << i + 1 << "= " << int((ProcessorList[i]->GetBusy() / SUM_TRT))*100 << "% , \t\t";
+		for (int i = 0; i < PROCESSOR_NUM; i++) {
+			outputFile << "p" << i + 1 << "= " << (ProcessorList[i]->GetBusy() / SUM_TRT) * 100 << "% , \t\t";
+			if (i == 3)
+				outputFile << endl;
+		}
 		outputFile << endl << "Processors Utilization" << endl;
 		int sumuti = 0;
 		for (int i = 0; i < PROCESSOR_NUM; i++) {
-			outputFile << "p" << i + 1 << "= " << int(((ProcessorList[i]->GetBusy()) / GetTotalIdleBusy())) * 100 << "% , \t\t";
+			outputFile << "p" << i + 1 << "= " << (ProcessorList[i]->GetBusy() / GetTotalIdleBusy()) * 100 << "% , \t\t";
 			sumuti += int(((ProcessorList[i]->GetBusy()) / GetTotalIdleBusy())) * 100;
 		}
 		outputFile << endl << "Average Utilization : " << sumuti / PROCESSOR_NUM * 100;
@@ -555,16 +547,15 @@ void Scheduler::OutputFile() {
 }
 
 int Scheduler::GetTotalIdleBusy(){
-	int piss = 0;
+	int sum = 0;
 	for (int i = 0; i < PROCESSOR_NUM; i++) {
-		piss = piss + ProcessorList[i]->GetBusy() + ProcessorList[i]->GetIdle();
+		sum += ProcessorList[i]->GetBusy() + ProcessorList[i]->GetIdle();
 	}
-	return piss;
+	return sum;
 }
 
 Scheduler::~Scheduler() {
-	
-		Process** temp = new Process * [PROCESS_NUM];
+	Process** temp = new Process * [PROCESS_NUM];
 	for (int i = 0; i < PROCESS_NUM; i++) {
 		TRM.Dequeue(&temp[i]);
 		delete temp[i];

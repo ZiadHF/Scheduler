@@ -15,9 +15,12 @@ SJF::SJF(Scheduler* main) : busy(0),idle(0){
 	s = main;
 }
 bool SJF::MoveToRun(int& RunningNum,int time) {
-	if (!(list.IsEmpty())) {
-		if (currentProcess == nullptr && !(list.PeekMin()->JustArrived(time))) {
-			RunningNum++;
+	if (list.IsEmpty())
+		IncrementIdle();
+	else {
+		IncrementBusy();
+		RunningNum++;
+		if (!currentProcess) {
 			currentProcess = list.getMin();
 			return true;
 		}
@@ -33,17 +36,28 @@ void SJF::IncrementBusy() { busy++; }
 
 void SJF::IncrementIdle() { idle++; }
 
-Process* SJF::GetRun() {
-	return currentProcess;
-}
-void SJF::tick(Process* rem, Process* child, Process* blk) {
-	//TODOIST
-	IncrementBusy();
-	IncrementIdle();
-	int temp = 0;
-	//s->SendToTRM(rem);
-	//s->SendToBLK(blk);
-	return;
+Process* SJF::GetRun() { return currentProcess; }
+
+void SJF::tick() {
+	int tmp = s->GetSystemTime();
+	int tmp2 = s->GetSTL_Time();
+	MoveToRun(tmp, tmp2);
+	if (currentProcess) {
+		if (!currentProcess->DecrementWorkingTime()) {
+			Process* rem = currentProcess;
+			RemoveRun();
+			s->SendToTRM(rem);
+			return;
+		}
+		if (currentProcess->getN() == 0)
+			return;
+		if (currentProcess->getCT() - currentProcess->getWorkingTime() == currentProcess->getIO().R) {
+			Process* blk = currentProcess;
+			RemoveRun();
+			s->SendToBLK(blk);
+			return;
+		}
+	}
 }
 int SJF::getTotalTime() {
 	return totalTime;
@@ -51,9 +65,7 @@ int SJF::getTotalTime() {
 
 void SJF::SetScheduler(Scheduler* sc) { s = sc; }
 
-int SJF::getNumOfProcesses() {
-	return numOfProcesses;
-}
+int SJF::getNumOfProcesses() { return numOfProcesses; }
 void SJF::RemoveRun() {
 	numOfProcesses--;
 	currentProcess = nullptr;

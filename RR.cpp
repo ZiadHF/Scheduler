@@ -30,79 +30,46 @@ bool RR::FindProcessByID(int id, Process* x) {
 }
 bool RR::MoveToRun(int& RunningNum,int time) {
 	if (!(list.IsEmpty())) {
-		if (currentProcess == nullptr && !(list.Peek()->JustArrived(time))) {
+		IncrementBusy();
+		if (!currentProcess) {
 			list.Dequeue(&currentProcess);
 			RunningNum++;
 			return true;
 		}
+		return false;
 	}
+	IncrementIdle();
 	return false;
 }
-Process* RR::GetRun() {
-	Process* x = currentProcess;
-	return x;
- }
-void RR::tick(Process* rem, Process* child, Process* blk) {
-	//Case 1: no running process.
-	
+Process* RR::GetRun() { return currentProcess; }
 
-
-
-	
-	if (currentProcess == nullptr) {
-		IncrementIdle();
-		remainingticks = TimeSlice;
-		bool processGet = list.Dequeue(&currentProcess);
-		if (processGet) {
-			IncrementBusy();
-			currentProcess->DecrementWorkingTime();
-			remainingticks--;
-			totalTime--;
-			if (remainingticks == 0) {
-				Process* x;
-				list.Dequeue(&x);
-				list.Enqueue(x);
-				currentProcess = nullptr;
-				return;
-			}
-			// Removing the process if the CT ended.
-			if (currentProcess->getWorkingTime() == 0) {
-				rem = currentProcess;
-				return;
-			}
-		 
-			if (currentProcess->getCT() - currentProcess->getWorkingTime() == currentProcess->getIO().R) {
-				blk = currentProcess;
-				currentProcess = nullptr;
-			}
-		}
-
-	}
+void RR::tick() {
+	int tmp = s->GetSystemTime();
+	int tmp2 = s->GetSTL_Time();
+	MoveToRun(tmp, tmp2);
 	//Case 2 Already one process in run 
-	else {
-		currentProcess->DecrementWorkingTime();
-		IncrementBusy();
+	if (currentProcess){
+		remainingticks = TimeSlice;
 		remainingticks--;
 		totalTime--;
-		if (remainingticks == 0) {
-			Process* x;
-			list.Dequeue(&x);
-			list.Enqueue(x);
+		if (!currentProcess->DecrementWorkingTime()) {
+			Process* rem = currentProcess;
 			currentProcess = nullptr;
-			return;
-		}
-		// Removing the process if the CT ended.
-		if (currentProcess->getWorkingTime() == 0) {
-			rem = currentProcess;
 			s->SendToTRM(rem);
-			currentProcess = nullptr;
 			return;
 		}
-		 
-		if (currentProcess->getCT() - currentProcess->getWorkingTime() == currentProcess->getIO().R) {
-			blk = currentProcess;
-			s->SendToBLK(blk);
+		if (remainingticks == 0) {
+			list.Enqueue(currentProcess);
 			currentProcess = nullptr;
+			list.Dequeue(&currentProcess);
+			return;
+		}
+		if (currentProcess->getN() == 0)
+			return;
+		if (currentProcess->getCT() - currentProcess->getWorkingTime() == currentProcess->getIO().R) {
+			Process* blk = currentProcess;
+			currentProcess = nullptr;
+			s->SendToBLK(blk);
 		}
 	}
 	

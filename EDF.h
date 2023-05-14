@@ -5,10 +5,9 @@
 class EDF :
     public Processor
 {
-	int busy, idle,totaltime;
+	int busy, idle,totalTime, numOfProcesses = 0;
 	MinHeap list = MinHeap(100,false);
 	Process* currentProcess = nullptr;
-	int numOfProcesses = 0;
 	Scheduler* s = nullptr;
 public:
 	//Constructor
@@ -20,6 +19,7 @@ public:
 	void SetScheduler(Scheduler*);
 	float GetBusy();
 	float GetIdle();
+	int getTotalTime();
 	MinHeap& getlist();
 	int getNumOfProcesses();
 	Process* GetRun();
@@ -28,9 +28,8 @@ public:
 	bool MoveToRun(int&,int);
 	void RemoveRun();
 	//Ticking
-	void tick(Process* rem, Process* ch, Process* blk);
+	void tick();
 	//Useless Functions
-	int getTotalTime();
 	bool FindProcessByID(int id, Process* x);
 	bool RemoveProcess(int id, Process** x);
 	~EDF();
