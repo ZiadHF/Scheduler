@@ -49,14 +49,14 @@ void RR::tick() {
 	//Case 2 Already one process in run 
 	if (currentProcess){
 		IncrementBusy();
+		remainingticks = TimeSlice;
+		remainingticks--;
 		if (!currentProcess->DecrementWorkingTime()) {
 			Process* rem = currentProcess;
 			RemoveRun();
 			s->SendToTRM(rem);
 			return;
 		}
-		remainingticks--;
-		totalTime--;
 		if (remainingticks == 0) {
 			list.Enqueue(currentProcess);
 			currentProcess = nullptr;
