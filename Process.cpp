@@ -34,6 +34,10 @@ void Process::setTT(int tt) {
 	TT = tt;
 	TRT = TT - AT;
 	WT = TRT - CT;
+	//if (TRT < 0)
+		//TRT = 0;
+	//if (WT < 0)
+		//WT = 0;
 }
 
 void Process::setLChild(Process* child) { LChild = child; }

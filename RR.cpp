@@ -30,7 +30,6 @@ bool RR::FindProcessByID(int id, Process* x) {
 }
 bool RR::MoveToRun(int& RunningNum,int time) {
 	if (!(list.IsEmpty())) {
-		IncrementBusy();
 		if (!currentProcess) {
 			list.Dequeue(&currentProcess);
 			RunningNum++;
@@ -44,23 +43,23 @@ bool RR::MoveToRun(int& RunningNum,int time) {
 Process* RR::GetRun() { return currentProcess; }
 
 void RR::tick() {
-	int tmp = s->GetSystemTime();
-	int tmp2 = s->GetSTL_Time();
-	MoveToRun(tmp, tmp2);
+	int tmp2 = s->GetSystemTime();
+	MoveToRun(s->RunningProcessesSum, tmp2);
 	//Case 2 Already one process in run 
 	if (currentProcess){
+		IncrementBusy();
 		remainingticks = TimeSlice;
 		remainingticks--;
 		totalTime--;
 		if (!currentProcess->DecrementWorkingTime()) {
 			Process* rem = currentProcess;
-			currentProcess = nullptr;
+			RemoveRun();
 			s->SendToTRM(rem);
 			return;
 		}
 		if (remainingticks == 0) {
 			list.Enqueue(currentProcess);
-			currentProcess = nullptr;
+			RemoveRun();
 			list.Dequeue(&currentProcess);
 			return;
 		}
@@ -68,7 +67,8 @@ void RR::tick() {
 			return;
 		if (currentProcess->getCT() - currentProcess->getWorkingTime() == currentProcess->getIO().R) {
 			Process* blk = currentProcess;
-			currentProcess = nullptr;
+			totalTime -= currentProcess->getWorkingTime();
+			RemoveRun();
 			s->SendToBLK(blk);
 		}
 	}
@@ -86,7 +86,9 @@ int RR::getNumOfProcesses() {
 }
 void RR::RemoveRun() { 
 	numOfProcesses--;
+	s->RunningProcessesSum--;
 	currentProcess = nullptr; }
+
 Queue<Process*>& RR::getlist() {
 	return list;
 }

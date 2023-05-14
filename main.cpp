@@ -3,8 +3,8 @@
 #include<cstdlib>
 #include<ctime>
 int main() {
-	srand(1684093186);
-	//cout << time(0);
+	srand(time(0));
+	cout << time(0);
 	Scheduler Test;
 	UI cmd;
 	//cmd.GetFileName()

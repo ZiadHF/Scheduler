@@ -478,6 +478,8 @@ void Scheduler::PrintSystemInfo() {
 	for (int i = 0; i < PROCESSOR_NUM; i++) {
 		if (i >= 0 && i < FCFS_NUM) {
 			wind.printFCFSProcessorInfo((FCFS*)ProcessorList[i], i + 1);
+			if (i == 1)
+				cout << ProcessorList[i]->getTotalTime();
 		}
 		if (i >= FCFS_NUM && i < (FCFS_NUM + SJF_NUM)) {
 			wind.printSJFProcessorInfo((SJF*)ProcessorList[i], i + 1);
@@ -506,22 +508,20 @@ void Scheduler::OutputFile() {
 		if (!outputFile.is_open())
 		throw runtime_error("Failed to open the file.");
 		outputFile << "TT \t pID \t AT \t CT \t IO_D \t\t WT \t RT \t TRT\n";
-		Process* ptr = new Process();
-		Process** tmp = &ptr;
 		int i = TRM.getCount();
 		int totalwt = 0;
 		int totalrt = 0;
 		int totaltrt = SUM_TRT;
-	/*	while (i != 0) {
-			TRM.Dequeue(tmp);
-			totalwt += (*tmp)->getWT();
-			totalrt += (*tmp)->getRT();
-			outputFile << (*tmp)->getTT() << " \t " << (*tmp)->getID() << " \t " << (*tmp)->getAT() << " \t " << (*tmp)->getCT() << " \t "; //<< (*tmp)->getIO_D();
-			outputFile << (*tmp)->getWT() << " \t " << (*tmp)->getRT() << " \t " << (*tmp)->getTRT() << endl;
-			TRM.Enqueue(*tmp);
-			i--;
+		Process** temp = new Process * [PROCESS_NUM];
+		for (int i = 0; i < PROCESS_NUM; i++) {
+			TRM.Dequeue(&temp[i]);
+			totalwt += (temp[i])->getWT();
+			totalrt += (temp[i])->getRT();
+			outputFile << (temp[i])->getTT() << " \t " << (temp[i])->getID() << " \t " << (temp[i])->getAT() << " \t " << (temp[i])->getCT() << " \t "; //<< (temp[i])->getIO_D();
+			outputFile << (temp[i])->getWT() << " \t " << (temp[i])->getRT() << " \t " << (temp[i])->getTRT() << endl;
+			TRM.Enqueue(temp[i]);
 		}
-		*/
+		delete[] temp;
 		outputFile << endl << "Processes: " << PROCESS_NUM << endl;
 		outputFile << "AVG WT: " << totalwt / PROCESS_NUM << "\t\t AVG RT: " << totalrt / PROCESS_NUM << "\t\t AVG TRT: " << SUM_TRT / PROCESS_NUM << endl;
 		outputFile << "Processors: " << PROCESSOR_NUM <<  "[" << FCFS_NUM << " FCFS, " << SJF_NUM << " SJF, " << RR_NUM << "RR]" << endl;
@@ -538,7 +538,6 @@ void Scheduler::OutputFile() {
 			sumuti += int(((ProcessorList[i]->GetBusy()) / GetTotalIdleBusy())) * 100;
 		}
 		outputFile << endl << "Average Utilization : " << sumuti / PROCESSOR_NUM * 100;
-		delete ptr;
 		outputFile.close();
 	}
 	catch (const exception e) {
@@ -553,6 +552,8 @@ int Scheduler::GetTotalIdleBusy(){
 	}
 	return sum;
 }
+
+int Scheduler::getRunningProcess() { return RunningProcessesSum; }
 
 Scheduler::~Scheduler() {
 	Process** temp = new Process * [PROCESS_NUM];

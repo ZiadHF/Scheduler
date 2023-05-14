@@ -72,33 +72,6 @@ public:
 
 
 	bool RemoveByID(int pID,Process** pro) {
-		/*
-		if (head == nullptr && tail != nullptr) {
-			head = tail;
-			count=1;
-		}
-
-		Node<Process*>* ptr = head;
-		Node<Process*>* prevNode = head;
-		if (!head)
-			return false;
-		if (ptr->getItem()->getID() == pID) {
-			RemoveHead(pro);
-			return true;
-		}
-		while (ptr) {
-			Process* p = ptr->getItem();
-			if (p->getID() == pID) {
-				*pro = p;
-				prevNode->setNext(ptr->getNext());
-				delete ptr;
-				return true;
-			}
-			prevNode = ptr;
-			ptr = ptr->getNext();
-		}
-		return false;
-		*/
 		if (!head)
 			return false;
 		Process* temp;

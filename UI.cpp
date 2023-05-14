@@ -74,7 +74,7 @@ void UI::printTRM(Queue<Process*>& trm, int numOfTRMProcesses) {
 	cout << "\n";
 }
 void UI::PrintRunBase(int Numofcurrentproccesses) {
-	cout <<"\n" << "-----------------     Run processes     -----------------" << endl;
+	cout <<"\n" << "-----------------     RUN processes     -----------------" << endl;
 	cout << Numofcurrentproccesses << " RUN: ";
 }
 void UI::printRunloop(int processorID, Process* running) {

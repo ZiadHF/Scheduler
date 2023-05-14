@@ -18,10 +18,9 @@ bool EDF::MoveToRun(int& RunningNum,int time){
 		return false;
 	}
 	else {
-		IncrementBusy();
-		RunningNum++;
 		if (!currentProcess) {
 			currentProcess = list.getMin();
+			RunningNum++;
 			return true;
 		}
 		if (currentProcess->getDL() > list.PeekMin()->getDL()) {
@@ -34,6 +33,7 @@ bool EDF::MoveToRun(int& RunningNum,int time){
 }
 void EDF::RemoveRun() {
 	currentProcess = nullptr;
+	s->RunningProcessesSum--;
 	numOfProcesses--;
 }
 
@@ -41,10 +41,10 @@ void EDF::RemoveRun() {
 //Ticking
 
 void EDF::tick(){
-	int tmp = s->GetSystemTime();
-	int tmp2 = s->GetSTL_Time();
-	MoveToRun(tmp,tmp2);
+	int tmp2 = s->GetSystemTime();
+	MoveToRun(s->RunningProcessesSum,tmp2);
 	if (currentProcess) {
+		IncrementBusy();
 		totalTime--;
 		if (!currentProcess->DecrementWorkingTime()) {
 			Process* rem = currentProcess;
@@ -56,6 +56,7 @@ void EDF::tick(){
 			return;
 		if (currentProcess->getCT() - currentProcess->getWorkingTime() == currentProcess->getIO().R) {
 			Process* blk = currentProcess;
+			totalTime -= currentProcess->getWorkingTime();
 			RemoveRun();
 			s->SendToBLK(blk);
 			return;

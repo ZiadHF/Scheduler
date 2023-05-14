@@ -16,7 +16,7 @@ using namespace std;
 class Scheduler {
 public:
 private:
-	int RR_TS,RTF, MaxW, STL, ForkProb, FCFS_NUM, SJF_NUM, RR_NUM, EDF_NUM, PROCESS_NUM,SystemTime,PROCESSOR_NUM,RunningProcessesSum, SUM_TRT,DLPass;
+	int RR_TS,RTF, MaxW, STL, ForkProb, FCFS_NUM, SJF_NUM, RR_NUM, EDF_NUM, PROCESS_NUM,SystemTime,PROCESSOR_NUM, SUM_TRT,DLPass;
 	Queue<Process*>NEW, BLK, TRM;
 	LinkedList<SIGKILL> Kill_Process;
 	Processor** ProcessorList;
@@ -42,6 +42,7 @@ private:
 	void RemoveRandomProcessPhase1();
 	bool KillSignalProcessing();
 public:
+	int RunningProcessesSum;
 	void Processing();
 	//Functions called by Processors
 	void AddForkedProcess(Process*);
@@ -54,6 +55,7 @@ public:
 	bool Terminate();
 	void Phase1Processing();
 	//Getters
+	int getRunningProcess();
 	int Get_RR_TimeSlice();
 	int GetRTF();
 	int GetMaxW();

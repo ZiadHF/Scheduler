@@ -3,7 +3,6 @@
 #include <ctime>
 #include<iostream>
 FCFS::FCFS(float forkP,Scheduler* main) : busy(0),idle(0) {
-	//forkProb = forkP/100;
 	forkProb = forkP;
 	s = main;
 }
@@ -15,7 +14,6 @@ void FCFS::AddtoRDY(Process* x) {
 }
 bool FCFS::MoveToRun(int& RunningNum,int time) {
 	if (!(list.IsEmpty())) {
-		IncrementBusy();
 		if (!currentProcess) {
 			Process** temp = &currentProcess;
 			list.RemoveHead(temp);
@@ -41,7 +39,11 @@ bool FCFS::FindProcessByID(int id, Process* x) {
 bool FCFS::RemoveProcess(int id,Process** x) {
 	if (list.RemoveByID(id, x)) {
 		Process* temp = *x;
-		totalTime = totalTime - temp->getWorkingTime();
+		totalTime -= temp->getWorkingTime();
+		if (currentProcess->getID() == temp->getID()) {
+			RemoveRun();
+			return true;
+		}
 		numOfProcesses--;
 		return true;
 	}
@@ -49,22 +51,22 @@ bool FCFS::RemoveProcess(int id,Process** x) {
 }
 void FCFS::tick() {
 	//Case 1: no running process.
-	int tmp = s->GetSystemTime();
-	int tmp2 = s->GetSTL_Time();
-	MoveToRun(tmp,tmp2);
+	int tmp2 = s->GetSystemTime();
+	MoveToRun(s->RunningProcessesSum,tmp2);
 	if (currentProcess) {
+		IncrementBusy();
 		totalTime--;
 		// Removing the process if the CT ended.
 		if (!currentProcess->DecrementWorkingTime()) {
 			Process* rem = currentProcess;
-			currentProcess = nullptr;
+			RemoveRun();
 			s->SendToTRM(rem);
 			return;
 		}
 
 		// Checking the forking probability.
-			// Generate a random number between 0 and 100
-		int randomNumber = rand() % 101;
+		// Generate a random number between 0 and 100
+		int randomNumber = 1 + rand() % 100;
 		if (randomNumber <= forkProb)
 			if (!currentProcess->getLChild() || !currentProcess->getRChild())
 				s->AddForkedProcess(currentProcess);
@@ -72,7 +74,8 @@ void FCFS::tick() {
 			return;
 		if (currentProcess->getCT() - currentProcess->getWorkingTime() == currentProcess->getIO().R) {
 			Process* blk = currentProcess;
-			currentProcess = nullptr;
+			totalTime -= currentProcess->getWorkingTime();
+			RemoveRun();
 			s->SendToBLK(blk);
 		}
 	}
@@ -93,6 +96,7 @@ int FCFS::getNumOfProcesses(){
 }
 void FCFS::RemoveRun() { 
 	numOfProcesses--;
+	s->RunningProcessesSum--;
 	currentProcess = nullptr; }
 
 LinkedList<Process*>& FCFS::getlist() {

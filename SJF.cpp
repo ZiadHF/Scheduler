@@ -18,10 +18,9 @@ bool SJF::MoveToRun(int& RunningNum,int time) {
 	if (list.IsEmpty())
 		IncrementIdle();
 	else {
-		IncrementBusy();
-		RunningNum++;
 		if (!currentProcess) {
 			currentProcess = list.getMin();
+			RunningNum++;
 			return true;
 		}
 	}
@@ -39,10 +38,11 @@ void SJF::IncrementIdle() { idle++; }
 Process* SJF::GetRun() { return currentProcess; }
 
 void SJF::tick() {
-	int tmp = s->GetSystemTime();
-	int tmp2 = s->GetSTL_Time();
-	MoveToRun(tmp, tmp2);
+	int tmp2 = s->GetSystemTime();
+	MoveToRun(s->RunningProcessesSum, tmp2);
 	if (currentProcess) {
+		totalTime--;
+		IncrementBusy();
 		if (!currentProcess->DecrementWorkingTime()) {
 			Process* rem = currentProcess;
 			RemoveRun();
@@ -53,6 +53,7 @@ void SJF::tick() {
 			return;
 		if (currentProcess->getCT() - currentProcess->getWorkingTime() == currentProcess->getIO().R) {
 			Process* blk = currentProcess;
+			totalTime -= currentProcess->getWorkingTime();
 			RemoveRun();
 			s->SendToBLK(blk);
 			return;
@@ -66,8 +67,10 @@ int SJF::getTotalTime() {
 void SJF::SetScheduler(Scheduler* sc) { s = sc; }
 
 int SJF::getNumOfProcesses() { return numOfProcesses; }
+
 void SJF::RemoveRun() {
 	numOfProcesses--;
+	s->RunningProcessesSum--;
 	currentProcess = nullptr;
 }
 MinHeap& SJF::getlist() {
