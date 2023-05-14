@@ -59,7 +59,7 @@ void RR::tick() {
 		totalTime--;
 		if (remainingticks == 0) {
 			list.Enqueue(currentProcess);
-			RemoveRun();
+			currentProcess = nullptr;
 			list.Dequeue(&currentProcess);
 			return;
 		}
