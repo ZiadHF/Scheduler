@@ -288,7 +288,7 @@ bool Scheduler::KillProcess(int IDKill) {
 		if (ProcessorList[i]->GetRun() != nullptr) {
 			temp = ProcessorList[i]->GetRun();
 			if (temp->getID() == IDKill) {
-				ProcessorList[i]->RemoveRun();
+				ProcessorList[i]->RemoveProcess(IDKill,&temp);
 				SendToTRM(temp);
 				return true;
 			}
