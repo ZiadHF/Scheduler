@@ -5,7 +5,7 @@ bool SJF::RemoveProcess(int id, Process** x) {
 }
 void SJF::AddtoRDY(Process* x) {
 	numOfProcesses++;
-	totalTime = totalTime + x->getCT();
+	totalTime = totalTime + x->getWorkingTime();
 	list.Insert(x);
 }
 bool SJF::FindProcessByID(int id, Process* x) {
@@ -51,12 +51,11 @@ void SJF::tick() {
 				return;
 			}
 		}
-		totalTime--;
+			totalTime--;
 		if (!currentProcess->DecrementWorkingTime()) {
 			Process* rem = currentProcess;
 			RemoveRun();
 			s->SendToTRM(rem);
-			totalTime--;
 			return;
 		}
 	}

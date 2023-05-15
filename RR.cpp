@@ -8,7 +8,7 @@ RR::RR(int t,Scheduler* main) : busy(0), idle(0) {
 
 void RR::AddtoRDY(Process* x) {
 	numOfProcesses++;
-	totalTime = totalTime + x->getCT();
+	totalTime = totalTime + x->getWorkingTime();
 	list.Enqueue(x);
 }
 
@@ -58,13 +58,13 @@ void RR::tick() {
 				return;
 			}
 		}
+		totalTime--;
 		if (!currentProcess->DecrementWorkingTime()) {
 			Process* rem = currentProcess;
 			RemoveRun();
 			s->SendToTRM(rem);
 			return;
 		}
-		totalTime--;
 		remainingticks--;
 		if (remainingticks == 0) {
 			list.Enqueue(currentProcess);

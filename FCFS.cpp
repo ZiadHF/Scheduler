@@ -9,7 +9,7 @@ FCFS::FCFS(float forkP,Scheduler* main) : busy(0),idle(0) {
 
 void FCFS::AddtoRDY(Process* x) {
 	numOfProcesses++;
-	totalTime += x->getCT();
+	totalTime += x->getWorkingTime();
 	list.Insert(x);
 }
 bool FCFS::MoveToRun(int& RunningNum,int time) {
@@ -68,13 +68,14 @@ void FCFS::tick() {
 			}
 		}
 		
+			totalTime--;
 		if (!currentProcess->DecrementWorkingTime()) {
 			Process* rem = currentProcess;
 			RemoveRun();
 			s->SendToTRM(rem);
 			return;
 		}
-		totalTime--;
+
 
 		// Checking the forking probability.
 		// Generate a random number between 0 and 100

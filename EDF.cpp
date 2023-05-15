@@ -9,7 +9,7 @@ EDF::EDF(Scheduler* main) { s = main; }
 
 void EDF::AddtoRDY(Process* p) {
 	numOfProcesses++;
-	totalTime +=  p->getCT();
+	totalTime +=  p->getWorkingTime();
 	list.Insert(p);
 }
 bool EDF::MoveToRun(int& RunningNum,int time){
@@ -55,13 +55,13 @@ void EDF::tick(){
 				return;
 			}
 		}
+			totalTime--;
 		if (!currentProcess->DecrementWorkingTime()) {
 			Process* rem = currentProcess;
 			RemoveRun();
 			s->SendToTRM(rem);
 			return;
 		}
-		totalTime--;
 	}
 }
 
