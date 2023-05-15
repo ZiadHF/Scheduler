@@ -56,6 +56,7 @@ void SJF::tick() {
 			Process* rem = currentProcess;
 			RemoveRun();
 			s->SendToTRM(rem);
+			totalTime--;
 			return;
 		}
 	}
