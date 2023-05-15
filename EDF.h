@@ -2,10 +2,11 @@
 #include "Processor.h"
 #include "Scheduler.h"
 
-class EDF :
-    public Processor
+class Scheduler;
+class EDF : public Processor
 {
-	int busy, idle,totalTime, numOfProcesses = 0;
+	float busy, idle;
+	int totalTime, numOfProcesses = 0;
 	MinHeap list = MinHeap(100,false);
 	Process* currentProcess = nullptr;
 	Scheduler* s = nullptr;

@@ -8,14 +8,11 @@ RR::RR(int t,Scheduler* main) : busy(0), idle(0) {
 
 void RR::AddtoRDY(Process* x) {
 	numOfProcesses++;
-	totalTime = totalTime + x->getWorkingTime();
+	totalTime += x->getWorkingTime();
 	list.Enqueue(x);
 }
 
-bool RR::RemoveProcess(int id, Process** x) {
-	return false;
-
-}
+bool RR::RemoveProcess(int id, Process** x) { return false; }
 
 float RR::GetIdle() { return idle; }
 
@@ -28,17 +25,19 @@ void RR::IncrementIdle() { idle++; }
 bool RR::FindProcessByID(int id, Process* x) {
 	return false;
 }
-bool RR::MoveToRun(int& RunningNum,int time) {
-	if (!(list.IsEmpty())) {
+bool RR::MoveToRun(int& RunningNum, int time) {
+	if (list.IsEmpty()) {
+		if (!currentProcess)
+			IncrementIdle();
+	}
+	else {
 		if (!currentProcess) {
 			list.Dequeue(&currentProcess);
 			remainingticks = TimeSlice;
 			RunningNum++;
 			return true;
 		}
-		return false;
 	}
-	IncrementIdle();
 	return false;
 }
 Process* RR::GetRun() { return currentProcess; }
@@ -47,7 +46,7 @@ void RR::tick() {
 	int tmp2 = s->GetSystemTime();
 	MoveToRun(s->RunningProcessesSum, tmp2);
 	//Case 2 Already one process in run 
-	if (currentProcess){
+	if (currentProcess) {
 		IncrementBusy();
 		if (!currentProcess->CheckIO()) {
 			if (currentProcess->getCT() - currentProcess->getWorkingTime() == currentProcess->getIO().R) {
@@ -74,7 +73,6 @@ void RR::tick() {
 			return;
 		}
 	}
-	
 }
 
 void RR::SetScheduler(Scheduler* sc) { s = sc; }

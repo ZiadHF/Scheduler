@@ -28,7 +28,7 @@ public:
         int i = size;
         Heap[size++] = p;
         if (SJF)
-            while (i != 0 && (Heap[Parent(i)]->getCT()) > (Heap[i]->getCT())) {
+            while (i != 0 && (Heap[Parent(i)]->getWorkingTime()) > (Heap[i]->getWorkingTime())) {
             swap(Heap[i], Heap[Parent(i)]);
             i = Parent(i);
             }
@@ -45,9 +45,9 @@ public:
         int r = ChildR(i);
         int smallest = i;
         if (SJF) {
-            if (l < size && (Heap[l]->getCT()) < (Heap[i]->getCT()))
+            if (l < size && (Heap[l]->getWorkingTime()) < (Heap[i]->getWorkingTime()))
                 smallest = l;
-            if (r < size && (Heap[r]->getCT()) < (Heap[smallest]->getCT()))
+            if (r < size && (Heap[r]->getWorkingTime()) < (Heap[smallest]->getWorkingTime()))
                 smallest = r;
             if (smallest != i) {
                 swap(Heap[i], Heap[smallest]);

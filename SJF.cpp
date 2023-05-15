@@ -5,7 +5,7 @@ bool SJF::RemoveProcess(int id, Process** x) {
 }
 void SJF::AddtoRDY(Process* x) {
 	numOfProcesses++;
-	totalTime = totalTime + x->getWorkingTime();
+	totalTime += x->getWorkingTime();
 	list.Insert(x);
 }
 bool SJF::FindProcessByID(int id, Process* x) {
@@ -15,8 +15,10 @@ SJF::SJF(Scheduler* main) : busy(0),idle(0){
 	s = main;
 }
 bool SJF::MoveToRun(int& RunningNum,int time) {
-	if (list.IsEmpty())
-		IncrementIdle();
+	if (list.IsEmpty()) {
+		if (!currentProcess)
+			IncrementIdle();
+	}
 	else {
 		if (!currentProcess) {
 			currentProcess = list.getMin();

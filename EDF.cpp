@@ -2,7 +2,7 @@
 
 //Constructor
 
-EDF::EDF(Scheduler* main) { s = main; }
+EDF::EDF(Scheduler* main) :busy(0),idle(0),totalTime(0) { s = main; }
 
 
 //Adding, Moving and Removing
@@ -14,8 +14,8 @@ void EDF::AddtoRDY(Process* p) {
 }
 bool EDF::MoveToRun(int& RunningNum,int time){
 	if (list.IsEmpty()){
-		IncrementIdle();
-		return false;
+		if (!currentProcess)
+			IncrementIdle();
 	}
 	else {
 		if (!currentProcess) {
@@ -29,9 +29,10 @@ bool EDF::MoveToRun(int& RunningNum,int time){
 			currentProcess = list.getMin();
 			return true;
 		}
-		return false;
 	}
+	return false;
 }
+
 void EDF::RemoveRun() {
 	currentProcess = nullptr;
 	s->RunningProcessesSum--;

@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include <ctime>
 #include<iostream>
-FCFS::FCFS(float forkP,Scheduler* main) : busy(0),idle(0) {
+FCFS::FCFS(int forkP,Scheduler* main) : busy(0),idle(0) {
 	forkProb = forkP;
 	s = main;
 }
@@ -13,16 +13,18 @@ void FCFS::AddtoRDY(Process* x) {
 	list.Insert(x);
 }
 bool FCFS::MoveToRun(int& RunningNum,int time) {
-	if (!(list.IsEmpty())) {
+	if (list.IsEmpty()) {
+		if (!currentProcess)
+			IncrementIdle();
+	}
+	else{
 		if (!currentProcess) {
 			Process** temp = &currentProcess;
 			list.RemoveHead(temp);
 			RunningNum++;
 			return true;
 		}
-		return false;
 	}
-	IncrementIdle();
 	return false;
 }
 Process* FCFS::GetRun() {
@@ -75,15 +77,12 @@ void FCFS::tick() {
 			s->SendToTRM(rem);
 			return;
 		}
-
-
 		// Checking the forking probability.
 		// Generate a random number between 0 and 100
 		int randomNumber = 1 + rand() % 100;
 		if (randomNumber <= forkProb)
 			if (!currentProcess->getLChild() || !currentProcess->getRChild())
 				s->AddForkedProcess(currentProcess);
-		
 	}
 }
 

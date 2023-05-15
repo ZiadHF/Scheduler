@@ -8,12 +8,12 @@ private:
 	LinkedList<Process*> list;
 	Process* currentProcess = nullptr;
 	int numOfProcesses = 0 ;
-	float forkProb;
+	int forkProb;
 	float busy,idle;
 	int totalTime = 0; // The variable that has the count
 	Scheduler* s = nullptr;
 public:
-	 FCFS(float forkP,Scheduler*);
+	 FCFS(int forkP,Scheduler*);
 	 void SetScheduler(Scheduler*);
 	 bool FindProcessByID(int id, Process* x);
 	 bool RemoveProcess(int id,Process** x);
