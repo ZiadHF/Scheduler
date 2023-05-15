@@ -51,13 +51,13 @@ void SJF::tick() {
 				return;
 			}
 		}
+		totalTime--;
 		if (!currentProcess->DecrementWorkingTime()) {
 			Process* rem = currentProcess;
 			RemoveRun();
 			s->SendToTRM(rem);
 			return;
 		}
-		totalTime--;
 	}
 }
 int SJF::getTotalTime() {

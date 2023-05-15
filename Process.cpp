@@ -105,9 +105,9 @@ int Process::ReturnTotalIO_D(){
 }
 
 bool Process::DecrementWorkingTime() {	
+	WorkingTime--;
 	if (WorkingTime == 0)
 		return false;
-	WorkingTime--;
 	return true;
 }
 
