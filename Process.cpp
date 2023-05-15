@@ -40,6 +40,8 @@ void Process::setTT(int tt) {
 		//WT = 0;
 }
 
+bool Process::getisForked() { return isForked; }
+
 bool Process::getfirstTime() { return firstTime; }
 
 void Process::setfirstTime(bool s) { firstTime = s; }

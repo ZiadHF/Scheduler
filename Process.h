@@ -38,6 +38,7 @@ public:
 	int getRemIOTime();
 	int getListChangeTime();
 	bool getfirstTime();
+	bool getisForked();
 	bool DecrementRemIOTime();
 	bool CheckIO();
 	int getWorkingTime();
