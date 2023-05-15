@@ -10,6 +10,8 @@ FCFS::FCFS(int forkP,Scheduler* main) : busy(0),idle(0) {
 void FCFS::AddtoRDY(Process* x) {
 	numOfProcesses++;
 	totalTime += x->getWorkingTime();
+	if (!x->getisForked())
+		totalTimeexc += x->getWorkingTime();
 	list.Insert(x);
 }
 bool FCFS::MoveToRun(int& RunningNum,int time) {
@@ -18,6 +20,14 @@ bool FCFS::MoveToRun(int& RunningNum,int time) {
 			IncrementIdle();
 	}
 	else{
+		if (currentProcess) {
+			if (currentProcess->getWorkingTime() > s->GetMaxW() && !currentProcess->getisForked()) {
+				Process* move = currentProcess;
+				totalTime -= currentProcess->getWorkingTime();
+				RemoveRun();
+				s->ProcessMigration(move, true);
+			}
+		}
 		if (!currentProcess) {
 			Process** temp = &currentProcess;
 			list.RemoveHead(temp);
@@ -60,9 +70,17 @@ bool FCFS::RemoveProcess(int id,Process** x) {
 }
 void FCFS::tick() {
 	//Case 1: no running process.
-	int tmp2 = s->GetSystemTime();
-	MoveToRun(s->RunningProcessesSum,tmp2);
+	MoveToRun(s->RunningProcessesSum,s->GetSystemTime());
 	if (currentProcess) {
+		if (currentProcess) {
+			if (currentProcess->getWorkingTime() > s->GetMaxW() && !currentProcess->getisForked()) {
+				Process* move = currentProcess;
+				totalTime -= currentProcess->getWorkingTime();
+				RemoveRun();
+				s->ProcessMigration(move, true);
+				return;
+			}
+		}
 		IncrementBusy();
 		// Removing the process if the CT ended.
 		if (!currentProcess->CheckIO())

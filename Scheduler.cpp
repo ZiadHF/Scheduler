@@ -141,7 +141,7 @@ void Scheduler::LoadFromFile(string file) {
 		Kill_Process.Insert(temp3);
 	}
 	//Creating the list of available processors
-	PROCESSOR_NUM = FCFS_NUM + SJF_NUM + RR_NUM+EDF_NUM;
+	PROCESSOR_NUM = FCFS_NUM + SJF_NUM + RR_NUM + EDF_NUM;
 	ProcessorList = new Processor*[PROCESSOR_NUM];
 	for (int i = 0; i < PROCESSOR_NUM; i++) {
 		if (i >= 0 && i < FCFS_NUM) {
@@ -232,8 +232,9 @@ void Scheduler::ScheduleToShortestFCFS(Process* added) {
 //Schedules processes in the shortest SJF RDY Queue
 void Scheduler::ScheduleToShortestSJF(Process* added) {
 	int index = FCFS_NUM;
+	int end = FCFS_NUM + SJF_NUM;
 	int shortest = ProcessorList[index]->getTotalTime();
-	for (int i = FCFS_NUM; i < PROCESS_NUM+FCFS_NUM; i++) {
+	for (int i = FCFS_NUM+1 ; i < end; i++) {
 		if (ProcessorList[i]->getTotalTime() < shortest) {
 			index = i;
 			shortest = ProcessorList[i]->getTotalTime();
@@ -244,9 +245,10 @@ void Scheduler::ScheduleToShortestSJF(Process* added) {
 
 //Schedules processes in the Shortest RR RDY Queue
 void Scheduler::ScheduleToShortestRR(Process* added) {
-	int index = SJF_NUM;
+	int index = FCFS_NUM + SJF_NUM;
+	int end = PROCESSOR_NUM - EDF_NUM;
 	int shortest = ProcessorList[index]->getTotalTime();
-	for (int i = SJF_NUM; i < PROCESS_NUM; i++) {
+	for (int i = FCFS_NUM + SJF_NUM + 1 ; i < end; i++) {
 		if (ProcessorList[i]->getTotalTime() < shortest) {
 			index = i;
 			shortest = ProcessorList[i]->getTotalTime();
@@ -369,7 +371,7 @@ bool Scheduler::CheckBLK(Process* ptr) {
 		return true;
 	return false;
 }
-void Scheduler::Processing() {
+void Scheduler::Processing(bool mode) {
 	//Check for kill signals before processing
 	while (KillSignalProcessing());
 	//Schedule Processes arriving at current timestep
@@ -379,7 +381,8 @@ void Scheduler::Processing() {
 		ProcessorList[i]->tick();
 	//Processing of IO
 	BLKProcessing();
-	PrintSystemInfo();
+	if (mode)
+		PrintSystemInfo();
 	SystemTime++;
 }
 bool Scheduler::KillSignalProcessing() {
@@ -390,6 +393,13 @@ bool Scheduler::KillSignalProcessing() {
 		return true;
 	}
 	return false;
+}
+
+void Scheduler::ProcessMigration(Process* p,bool x) {
+	if (x)
+		ScheduleToShortestRR(p);
+	else
+		ScheduleToShortestSJF(p);
 }
 void Scheduler::Phase1Processing() {
 	//Simple simulator function for Phase1
@@ -481,22 +491,15 @@ void Scheduler::PrintSystemInfo() {
 	for (int i = 0; i < PROCESSOR_NUM; i++) {
 		if (i >= 0 && i < FCFS_NUM) {
 			wind.printFCFSProcessorInfo((FCFS*)ProcessorList[i], i + 1);
-				cout <<endl<< ProcessorList[i]->getTotalTime()<<endl;
 		}
 		if (i >= FCFS_NUM && i < (FCFS_NUM + SJF_NUM)) {
 			wind.printSJFProcessorInfo((SJF*)ProcessorList[i], i + 1);
-			cout << endl <<"Total Time: "<< ProcessorList[i]->getTotalTime() << endl;
-			if (ProcessorList[i]->GetRun() != nullptr) {
-				cout << endl <<"Working Time: "<< ProcessorList[i]->GetRun()->getWorkingTime() << endl;
-			}
 		}
 		if (i >= FCFS_NUM + SJF_NUM && i < PROCESSOR_NUM - EDF_NUM) {
 			wind.printRRProcessorInfo((RR*)ProcessorList[i], i + 1);
-			cout << endl << ProcessorList[i]->getTotalTime() << endl;
 		}
 		if (i >= PROCESSOR_NUM - EDF_NUM && PROCESSOR_NUM) {
 			wind.printEDFProcessorInfo((EDF*)ProcessorList[i], i + 1);
-			cout << endl << ProcessorList[i]->getTotalTime() << endl;
 		}
 	}
 	wind.printBLK(BLK, BLK.getCount());
@@ -532,7 +535,7 @@ void Scheduler::OutputFile() {
 		delete[] temp;
 		outputFile << endl << "Processes: " << PROCESS_NUM << endl;
 		outputFile << "AVG WT: " << totalwt / PROCESS_NUM << "\t\t AVG RT: " << totalrt / PROCESS_NUM << "\t\t AVG TRT: " << SUM_TRT / PROCESS_NUM << endl;
-		outputFile << "Processors: " << PROCESSOR_NUM <<  "[" << FCFS_NUM << " FCFS, " << SJF_NUM << " SJF, " << RR_NUM << "RR]" << endl;
+		outputFile << "Processors: " << PROCESSOR_NUM <<  " [ " << FCFS_NUM << " FCFS, " << SJF_NUM << " SJF, " << RR_NUM << " RR, " << EDF_NUM << " EDF ]" << endl;
 		outputFile << "Processor Load" << endl;
 		for (int i = 0; i < PROCESSOR_NUM; i++) {
 			outputFile << "p" << i + 1 << "= " << (ProcessorList[i]->GetBusy() / SUM_TRT) * 100 << "% , \t\t";
@@ -543,7 +546,7 @@ void Scheduler::OutputFile() {
 		int sumuti = 0;
 		for (int i = 0; i < PROCESSOR_NUM; i++) {
 			outputFile << "p" << i + 1 << "= " << (ProcessorList[i]->GetBusy() / (ProcessorList[i]->GetBusy() + ProcessorList[i]->GetIdle())) * 100 << "% , \t\t";
-			sumuti += int(((ProcessorList[i]->GetBusy()) / GetTotalIdleBusy())) * 100;
+			sumuti += (ProcessorList[i]->GetBusy() / (ProcessorList[i]->GetBusy() + ProcessorList[i]->GetIdle())) * 100;
 		}
 		outputFile << endl << "Average Utilization : " << sumuti / PROCESSOR_NUM * 100;
 		outputFile.close();

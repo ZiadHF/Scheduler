@@ -3,7 +3,7 @@
 UI::UI(int timestep) {
 	cout<<"----------------------------------------\n";
 	cout << "Current Timestep:" << timestep << endl;
-	cout << "-----------------     RDY processes     -----------------" << endl;}
+	cout << "-----------------     RDY Processes     -----------------" << endl;}
 UI::UI() {}
 
 string UI::GetFileName() {
@@ -62,19 +62,19 @@ cin.get();
 return ;
 }
 void UI::printBLK(Queue<Process*>& blk,int numOfBlkProcesses) {
-	cout << "-----------------     BLK processes     -----------------" << endl;
+	cout << "-----------------     BLK Processes     -----------------" << endl;
 	cout << numOfBlkProcesses << " BLK: ";
 	blk.Print();
 }
 void UI::printTRM(Queue<Process*>& trm, int numOfTRMProcesses) {
 	cout << "\n";
-	cout << "-----------------     TRM processes     -----------------" << endl;
+	cout << "-----------------     TRM Processes     -----------------" << endl;
 	cout << numOfTRMProcesses << " TRM: ";
 	trm.Print();
 	cout << "\n";
 }
 void UI::PrintRunBase(int Numofcurrentproccesses) {
-	cout <<"\n" << "-----------------     RUN processes     -----------------" << endl;
+	cout <<"\n" << "-----------------     RUN Processes     -----------------" << endl;
 	cout << Numofcurrentproccesses << " RUN: ";
 }
 void UI::printRunloop(int processorID, Process* running) {

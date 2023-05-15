@@ -26,8 +26,8 @@ private:
 	bool ScheduleNewlyArrived();
 	void ScheduleToShortest(Process*);
 	void ScheduleToShortestFCFS(Process*);
-	void ScheduleToShortestSJF(Process*);
 	void ScheduleToShortestRR(Process*);
+	void ScheduleToShortestSJF(Process*);
 	//Process Addition And Removal;
 	bool KillProcess(int);
 	//Process Movement int lists
@@ -43,8 +43,9 @@ private:
 	bool KillSignalProcessing();
 public:
 	int RunningProcessesSum;
-	void Processing();
+	void Processing(bool mode);
 	//Functions called by Processors
+	void ProcessMigration(Process*,bool x);
 	void AddForkedProcess(Process*);
 	void SendToTRM(Process*);
 	void SendToBLK(Process*);

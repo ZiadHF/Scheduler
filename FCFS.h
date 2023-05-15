@@ -11,6 +11,7 @@ private:
 	int forkProb;
 	float busy,idle;
 	int totalTime = 0; // The variable that has the count
+	int totalTimeexc = 0;
 	Scheduler* s = nullptr;
 public:
 	 FCFS(int forkP,Scheduler*);

@@ -31,6 +31,14 @@ bool RR::MoveToRun(int& RunningNum, int time) {
 			IncrementIdle();
 	}
 	else {
+		if (currentProcess) {
+			if (currentProcess->getWorkingTime() < s->GetRTF()) {
+				Process* move = currentProcess;
+				totalTime -= currentProcess->getWorkingTime();
+				RemoveRun();
+				s->ProcessMigration(move, false);
+			}
+		}
 		if (!currentProcess) {
 			list.Dequeue(&currentProcess);
 			if (currentProcess->getfirstTime()) {
@@ -51,6 +59,15 @@ void RR::tick() {
 	MoveToRun(s->RunningProcessesSum, tmp2);
 	//Case 2 Already one process in run 
 	if (currentProcess) {
+		if (currentProcess) {
+			if (currentProcess->getWorkingTime() < s->GetRTF()) {
+				Process* move = currentProcess;
+				totalTime -= currentProcess->getWorkingTime();
+				RemoveRun();
+				s->ProcessMigration(move, false);
+				return;
+			}
+		}
 		IncrementBusy();
 		if (!currentProcess->CheckIO()) {
 			if (currentProcess->getCT() - currentProcess->getWorkingTime() == currentProcess->getIO().R) {
