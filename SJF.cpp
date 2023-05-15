@@ -22,6 +22,10 @@ bool SJF::MoveToRun(int& RunningNum,int time) {
 	else {
 		if (!currentProcess) {
 			currentProcess = list.getMin();
+			if (currentProcess->getfirstTime()) {
+				currentProcess->setRT(s->GetSystemTime() - currentProcess->getAT());
+				currentProcess->setfirstTime(false);
+			}
 			RunningNum++;
 			return true;
 		}

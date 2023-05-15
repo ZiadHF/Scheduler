@@ -21,6 +21,10 @@ bool FCFS::MoveToRun(int& RunningNum,int time) {
 		if (!currentProcess) {
 			Process** temp = &currentProcess;
 			list.RemoveHead(temp);
+			if (currentProcess->getfirstTime()) {
+				currentProcess->setRT(s->GetSystemTime() - currentProcess->getAT());
+				currentProcess->setfirstTime(false);
+			}
 			RunningNum++;
 			return true;
 		}
@@ -39,10 +43,12 @@ bool FCFS::FindProcessByID(int id, Process* x) {
 	return list.FindByID(id, x);
 }
 bool FCFS::RemoveProcess(int id,Process** x) {
-	if (currentProcess->getID() == id) {
-		totalTime -= currentProcess->getWorkingTime();
-		RemoveRun();
-		return true;
+	if (currentProcess) {
+		if (currentProcess->getID() == id) {
+			totalTime -= currentProcess->getWorkingTime();
+			RemoveRun();
+			return true;
+		}
 	}
 	if (list.RemoveByID(id, x)) {
 		Process* temp = *x;

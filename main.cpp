@@ -3,7 +3,7 @@
 #include<cstdlib>
 #include<ctime>
 int main() {
-	srand(time(0));
+	srand(1684159238);
 	cout << time(0);
 	Scheduler Test;
 	UI cmd;

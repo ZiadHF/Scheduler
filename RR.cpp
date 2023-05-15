@@ -33,6 +33,10 @@ bool RR::MoveToRun(int& RunningNum, int time) {
 	else {
 		if (!currentProcess) {
 			list.Dequeue(&currentProcess);
+			if (currentProcess->getfirstTime()) {
+				currentProcess->setRT(s->GetSystemTime() - currentProcess->getAT());
+				currentProcess->setfirstTime(false);
+			}
 			remainingticks = TimeSlice;
 			RunningNum++;
 			return true;

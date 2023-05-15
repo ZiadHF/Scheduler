@@ -539,7 +539,7 @@ void Scheduler::OutputFile() {
 		outputFile << endl << "Processors Utilization" << endl;
 		int sumuti = 0;
 		for (int i = 0; i < PROCESSOR_NUM; i++) {
-			outputFile << "p" << i + 1 << "= " << (ProcessorList[i]->GetBusy() / GetTotalIdleBusy()) * 100 << "% , \t\t";
+			outputFile << "p" << i + 1 << "= " << (ProcessorList[i]->GetBusy() / (ProcessorList[i]->GetBusy() + ProcessorList[i]->GetIdle())) * 100 << "% , \t\t";
 			sumuti += int(((ProcessorList[i]->GetBusy()) / GetTotalIdleBusy())) * 100;
 		}
 		outputFile << endl << "Average Utilization : " << sumuti / PROCESSOR_NUM * 100;
@@ -552,9 +552,6 @@ void Scheduler::OutputFile() {
 
 int Scheduler::GetTotalIdleBusy(){
 	int sum = 0;
-	for (int i = 0; i < PROCESSOR_NUM; i++) {
-		sum += ProcessorList[i]->GetBusy() + ProcessorList[i]->GetIdle();
-	}
 	return sum;
 }
 

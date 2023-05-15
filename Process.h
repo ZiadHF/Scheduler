@@ -11,6 +11,7 @@ class Process
 	Process* RChild = nullptr;
 	int currentIO = 0;
 	bool isForked;
+	bool firstTime = true;
 
 public:
 	Process();
@@ -22,6 +23,7 @@ public:
 	void setLChild(Process*);
 	void setRChild(Process*);
 	void setListChangeTime(int);
+	void setfirstTime(bool);
 	const int getID();
 	const int getAT();
 	int getDL();
@@ -35,6 +37,7 @@ public:
 	int getN();
 	int getRemIOTime();
 	int getListChangeTime();
+	bool getfirstTime();
 	bool DecrementRemIOTime();
 	bool CheckIO();
 	int getWorkingTime();

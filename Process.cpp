@@ -40,6 +40,10 @@ void Process::setTT(int tt) {
 		//WT = 0;
 }
 
+bool Process::getfirstTime() { return firstTime; }
+
+void Process::setfirstTime(bool s) { firstTime = s; }
+
 void Process::setLChild(Process* child) { LChild = child; }
 
 void Process::setRChild(Process* child) { RChild = child; }
