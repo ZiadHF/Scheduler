@@ -43,7 +43,7 @@ bool FCFS::FindProcessByID(int id, Process* x) {
 	return list.FindByID(id, x);
 }
 bool FCFS::RemoveProcess(int id,Process** x) {
-	if (currentProcess) {
+	if (currentProcess != nullptr) {
 		if (currentProcess->getID() == id) {
 			totalTime -= currentProcess->getWorkingTime();
 			RemoveRun();
