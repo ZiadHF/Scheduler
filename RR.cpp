@@ -49,27 +49,29 @@ void RR::tick() {
 	//Case 2 Already one process in run 
 	if (currentProcess){
 		IncrementBusy();
-		remainingticks = TimeSlice;
-		remainingticks--;
+		if (!currentProcess->CheckIO()) {
+			if (currentProcess->getCT() - currentProcess->getWorkingTime() == currentProcess->getIO().R) {
+				Process* blk = currentProcess;
+				totalTime -= currentProcess->getWorkingTime();
+				RemoveRun();
+				s->SendToBLK(blk);
+				return;
+			}
+		}
 		if (!currentProcess->DecrementWorkingTime()) {
 			Process* rem = currentProcess;
 			RemoveRun();
 			s->SendToTRM(rem);
 			return;
 		}
+		totalTime--;
+		remainingticks--;
 		if (remainingticks == 0) {
 			list.Enqueue(currentProcess);
 			currentProcess = nullptr;
 			list.Dequeue(&currentProcess);
+			remainingticks = TimeSlice;
 			return;
-		}
-		if (currentProcess->CheckIO())
-			return;
-		if (currentProcess->getCT() - currentProcess->getWorkingTime() == currentProcess->getIO().R) {
-			Process* blk = currentProcess;
-			totalTime -= currentProcess->getWorkingTime();
-			RemoveRun();
-			s->SendToBLK(blk);
 		}
 	}
 	

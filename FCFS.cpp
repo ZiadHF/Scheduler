@@ -57,6 +57,17 @@ void FCFS::tick() {
 	if (currentProcess) {
 		IncrementBusy();
 		// Removing the process if the CT ended.
+		if (!currentProcess->CheckIO())
+		{
+			if (currentProcess->getCT() - currentProcess->getWorkingTime() == currentProcess->getIO().R) {
+				Process* blk = currentProcess;
+				totalTime -= currentProcess->getWorkingTime();
+				RemoveRun();
+				s->SendToBLK(blk);
+				return;
+			}
+		}
+		
 		if (!currentProcess->DecrementWorkingTime()) {
 			Process* rem = currentProcess;
 			RemoveRun();
@@ -71,14 +82,7 @@ void FCFS::tick() {
 		if (randomNumber <= forkProb)
 			if (!currentProcess->getLChild() || !currentProcess->getRChild())
 				s->AddForkedProcess(currentProcess);
-		if (currentProcess->CheckIO())
-			return;
-		if (currentProcess->getCT() - currentProcess->getWorkingTime() == currentProcess->getIO().R) {
-			Process* blk = currentProcess;
-			totalTime -= currentProcess->getWorkingTime();
-			RemoveRun();
-			s->SendToBLK(blk);
-		}
+		
 	}
 }
 

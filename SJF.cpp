@@ -42,6 +42,15 @@ void SJF::tick() {
 	MoveToRun(s->RunningProcessesSum, tmp2);
 	if (currentProcess) {
 		IncrementBusy();
+		if (!currentProcess->CheckIO()) {
+			if (currentProcess->getCT() - currentProcess->getWorkingTime() == currentProcess->getIO().R) {
+				Process* blk = currentProcess;
+				totalTime -= currentProcess->getWorkingTime();
+				RemoveRun();
+				s->SendToBLK(blk);
+				return;
+			}
+		}
 		if (!currentProcess->DecrementWorkingTime()) {
 			Process* rem = currentProcess;
 			RemoveRun();
@@ -49,15 +58,6 @@ void SJF::tick() {
 			return;
 		}
 		totalTime--;
-		if (currentProcess->CheckIO())
-			return;
-		if (currentProcess->getCT() - currentProcess->getWorkingTime() == currentProcess->getIO().R) {
-			Process* blk = currentProcess;
-			totalTime -= currentProcess->getWorkingTime();
-			RemoveRun();
-			s->SendToBLK(blk);
-			return;
-		}
 	}
 }
 int SJF::getTotalTime() {

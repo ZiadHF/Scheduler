@@ -478,17 +478,19 @@ void Scheduler::PrintSystemInfo() {
 	for (int i = 0; i < PROCESSOR_NUM; i++) {
 		if (i >= 0 && i < FCFS_NUM) {
 			wind.printFCFSProcessorInfo((FCFS*)ProcessorList[i], i + 1);
-			if (i == 1)
-				cout << ProcessorList[i]->getTotalTime();
+				cout <<endl<< ProcessorList[i]->getTotalTime()<<endl;
 		}
 		if (i >= FCFS_NUM && i < (FCFS_NUM + SJF_NUM)) {
 			wind.printSJFProcessorInfo((SJF*)ProcessorList[i], i + 1);
+			cout << endl << ProcessorList[i]->getTotalTime() << endl;
 		}
 		if (i >= FCFS_NUM + SJF_NUM && i < PROCESSOR_NUM - EDF_NUM) {
 			wind.printRRProcessorInfo((RR*)ProcessorList[i], i + 1);
+			cout << endl << ProcessorList[i]->getTotalTime() << endl;
 		}
 		if (i >= PROCESSOR_NUM - EDF_NUM && PROCESSOR_NUM) {
 			wind.printEDFProcessorInfo((EDF*)ProcessorList[i], i + 1);
+			cout << endl << ProcessorList[i]->getTotalTime() << endl;
 		}
 	}
 	wind.printBLK(BLK, BLK.getCount());
