@@ -233,7 +233,7 @@ void Scheduler::ScheduleToShortestFCFS(Process* added) {
 void Scheduler::ScheduleToShortestSJF(Process* added) {
 	int index = FCFS_NUM;
 	int shortest = ProcessorList[index]->getTotalTime();
-	for (int i = FCFS_NUM; i < PROCESS_NUM-RR_NUM; i++) {
+	for (int i = FCFS_NUM; i < PROCESS_NUM+FCFS_NUM; i++) {
 		if (ProcessorList[i]->getTotalTime() < shortest) {
 			index = i;
 			shortest = ProcessorList[i]->getTotalTime();
@@ -308,12 +308,15 @@ void Scheduler::KillOrphans(Process* TRMParent) {
 	Process* tempL;
 	if (TRMParent != nullptr) {
 		tempL = TRMParent->getLChild();
-		if (tempL != nullptr)
+		if (tempL != nullptr) {
 			KillProcess(tempL->getID());
+		}
 		tempR = TRMParent->getRChild();
-		if (tempR != nullptr)
+		if (tempR != nullptr) {
 			KillProcess(tempR->getID());
+		}
 	}
+	return;
 }
 
 //Add to IO request list (BLK)
