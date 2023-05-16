@@ -610,6 +610,7 @@ int Scheduler::GetTotalIdleBusy(){
 }
 
 int Scheduler::getRunningProcess() { return RunningProcessesSum; }
+
 void Scheduler::WorkStealing() {
 	int min = INT_MAX;
 	int max = INT_MIN;
