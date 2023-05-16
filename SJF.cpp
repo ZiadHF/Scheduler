@@ -95,6 +95,9 @@ int SJF::getTT() {
 	return totalTime;
 }
 Process* SJF::gettopProcess() {
+	if (list.IsEmpty()) {
+		return nullptr;
+	}
 	numOfProcesses--;
 	Process* temp = list.PeekMin();
 	totalTime -= temp->getWorkingTime();

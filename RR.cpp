@@ -125,6 +125,9 @@ int RR::getTT() {
 	return totalTime;
 }
 Process* RR::gettopProcess() {
+	if (list.IsEmpty()) {
+		return nullptr;
+	}
 	Process* temp;
 	list.Dequeue(&temp);
 	totalTime -= temp->getWorkingTime();

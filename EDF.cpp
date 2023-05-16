@@ -103,6 +103,9 @@ int EDF::getTT() {
 	return totalTime;
 }
 Process* EDF::gettopProcess() {
+	if (list.IsEmpty()) {
+		return nullptr;
+	}
 	numOfProcesses--;
 	Process* temp =list.PeekMin();
 	totalTime -= temp->getWorkingTime();

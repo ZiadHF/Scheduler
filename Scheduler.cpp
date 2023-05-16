@@ -641,12 +641,12 @@ void Scheduler::WorkStealing() {
 	int TTmin = SQF->getTT();
 	float STLRatio = 100;
 	while (STLRatio > 40) {
-		STLRatio = ((TTmax - TTmin) / TTmax) * 100;
 		Process* tmpo= LQF->gettopProcess();
-		if (tmpo != nullptr)
-			SQF->AddtoRDY(tmpo);
+		if (tmpo==nullptr)
+			break;
 		TTmax = LQF->getTT();
 		TTmin = SQF->getTT();
+		STLRatio = ((TTmax - TTmin) / TTmax) * 100;
 	}
 
 }

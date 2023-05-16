@@ -153,9 +153,10 @@ Process* FCFS::gettopProcess() {
 	if (list.IsEmpty()) {
 		return nullptr;
 	}
-	Process** x = nullptr;
-	list.getNextNONforked(x);
-	return *x;
+	Process* x = nullptr;
+	list.getNextNONforked(&x);
+	totalTime -= x->getWorkingTime();
+	return x;
 }
 int FCFS::getNumOfProcesses(){
 	return numOfProcesses;
