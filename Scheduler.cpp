@@ -176,6 +176,11 @@ Scheduler::Scheduler() {
 	PROCESSOR_NUM = 0;
 	SUM_TRT = 0;
 	DLPass = 0;
+	RRMigration = 0;
+	SJFMigration = 0;
+	WRKSteal = 0;
+	ForkedProcess = 0;
+	KilledProcess = 0;
 }
 
 //
@@ -187,6 +192,7 @@ void Scheduler::AddForkedProcess(Process* parent) {
 		parent->setLChild(added);
 	else
 		parent->setRChild(added);
+	ForkedProcess++;
 	ScheduleToShortestFCFS(added);
 }
 
@@ -291,12 +297,14 @@ bool Scheduler::KillProcess(int IDKill) {
 			temp = ProcessorList[i]->GetRun();
 			if (temp->getID() == IDKill) {
 				ProcessorList[i]->RemoveProcess(IDKill,&temp);
+				KilledProcess++;
 				SendToTRM(temp);
 				return true;
 			}
 		}
 		if (ProcessorList[i]->FindProcessByID(IDKill,temp)) {
 			ProcessorList[i]->RemoveProcess(IDKill,&temp);
+			KilledProcess++;
 			SendToTRM(temp);
 			return true;
 		}
@@ -400,9 +408,11 @@ bool Scheduler::KillSignalProcessing() {
 
 void Scheduler::ProcessMigration(Process* p,bool x) {
 	if (x) {
+		RRMigration++;
 		ScheduleToShortestRR(p);
 	}
 	else {
+		SJFMigration++;
 		ScheduleToShortestSJF(p);
 	}
 }
@@ -552,10 +562,21 @@ void Scheduler::OutputFile() {
 		float avgwt = float(totalwt) / PROCESS_NUM;
 		float avgrt = float(totalrt) / PROCESS_NUM;
 		float avgtrt = float(totaltrt) / PROCESS_NUM;
+		float RRMig = (RRMigration / PROCESS_NUM) * 100;
+		float SJFMig = (SJFMigration / PROCESS_NUM) * 100;
+		float WRK = (WRKSteal / PROCESS_NUM) * 100;
+		float FRK = (ForkedProcess / PROCESS_NUM) * 100;
+		float KILL = (KilledProcess / PROCESS_NUM) * 100;
+		float DEADLINE = (DLPass / PROCESS_NUM) * 100;
 		delete[] temp;
-		fprintf(outputFile, "Processes: %d\n", PROCESS_NUM);
+		fprintf(outputFile, "\nProcesses: %d\n", PROCESS_NUM);
 		fprintf(outputFile, "AVG WT: %-10.3f AVG RT: %-10.3f AVG TRT: %-10.3f\n",avgwt,avgrt,avgtrt);
-		fprintf(outputFile, "Processes: [%d FCFS, %d SJF, %d RR, %d EDF]\n", FCFS_NUM, SJF_NUM, RR_NUM, EDF_NUM);
+		fprintf(outputFile, "TRM before deadline %%: %-0.3f%%\n", DEADLINE);
+		fprintf(outputFile, "Migration %%: \t RTF = %-0.3f%%\t\tMaxW = %-0.3f%%\n",SJFMig,RRMig);
+		fprintf(outputFile, "Work Steal %%: %-0.3f%%\n", WRK);
+		fprintf(outputFile, "Forked Processes %%: %-0.3f%%\n", FRK);
+		fprintf(outputFile, "Killed Processes %%: %-0.3f%%\n\n", KILL);
+		fprintf(outputFile, "Processes: %d [%d FCFS, %d SJF, %d RR, %d EDF]\n",PROCESSOR_NUM, FCFS_NUM, SJF_NUM, RR_NUM, EDF_NUM);
 		fprintf(outputFile, "Processor Load:\n");
 		float sumload = 0;
 		for (int i = 0; i < PROCESSOR_NUM; i++) {
@@ -564,6 +585,7 @@ void Scheduler::OutputFile() {
 			fprintf(outputFile, "p%d: %-0.3f%%\n", i + 1, load);
 		}
 		fprintf(outputFile, "Average Load: %-0.3f%%\n", sumload / PROCESSOR_NUM);
+		fprintf(outputFile, "\n");
 		fprintf(outputFile, "Processor Utilization:\n");
 		float sumuti = 0;
 		for (int i = 0; i < PROCESSOR_NUM; i++) {
