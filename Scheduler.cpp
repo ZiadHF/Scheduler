@@ -337,7 +337,7 @@ void Scheduler::SendToTRM(Process* temp) {
 	TRM.Enqueue(temp);
 	KillOrphans(temp);
 	temp->setTT(SystemTime);
-	if (temp->getisKilled())
+	 if (temp->getisKilled())
 		temp->setWT(temp->getTRT() - (temp->getCT() - temp->getWorkingTime()));
 	SUM_TRT += temp->getTRT();
 	if (temp->getDL() > SystemTime)
