@@ -2,7 +2,7 @@
 
 //Constructor
 
-EDF::EDF(Scheduler* main) :busy(0),idle(0),totalTime(0) { s = main; }
+EDF::EDF(Scheduler* main, int OverH, int prob) :busy(0), idle(0), totalTime(0) { s = main; Overheat = OverH; OverheatProb = prob; }
 
 
 //Adding, Moving and Removing
@@ -11,6 +11,9 @@ void EDF::AddtoRDY(Process* p) {
 	numOfProcesses++;
 	totalTime +=  p->getWorkingTime();
 	list.Insert(p);
+}
+int EDF::getTOH() {
+	return TOH;
 }
 bool EDF::MoveToRun(int& RunningNum,int time){
 	if (list.IsEmpty()){
@@ -47,6 +50,42 @@ void EDF::RemoveRun() {
 //Ticking
 
 void EDF::tick(){
+	int OverHeatRand = std::rand() % 100;
+	if (TOH > 0) {
+		TOH--;
+		while (!list.IsEmpty()) {
+			Process* temp = new Process;
+			Process* temp2 = temp;
+			temp = list.getMin();
+			s->SendToShortest(temp);
+			numOfProcesses--;
+			delete temp2;
+		}
+		return;
+	}
+
+	if (OverHeatRand < OverheatProb) {
+		TOH = Overheat;
+		if (currentProcess != nullptr) {
+			s->RunningProcessesSum--;
+			s->SendToShortest(currentProcess);
+			numOfProcesses--;
+			totalTime -= currentProcess->getWorkingTime();
+			currentProcess = nullptr;
+		}
+
+		while (!list.IsEmpty()) {
+			Process* temp = new Process;
+			Process* temp2 = temp;
+			temp = list.getMin();
+			numOfProcesses--;
+			totalTime -= (temp)->getWorkingTime();
+			s->SendToShortest(temp);
+			delete temp2;
+		}
+
+		return;
+	}
 	int tmp2 = s->GetSystemTime();
 	MoveToRun(s->RunningProcessesSum,tmp2);
 	if (currentProcess) {

@@ -10,9 +10,13 @@ private:
 	Process* currentProcess = nullptr;
 	int numOfProcesses = 0;
 	int totalTime = 0; // The variable that has the count
+	int Overheat;
+	int OverheatProb ;
 	Scheduler* s = nullptr;
+	int TOH = 0;
 public:
-	SJF(Scheduler*);
+	SJF(Scheduler*,int OverH,int prob);
+	int getTOH();
 	void SetScheduler(Scheduler*);
 	bool RemoveProcess(int id, Process** x);
 	bool MoveToRun(int&,int);

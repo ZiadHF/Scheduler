@@ -1,15 +1,20 @@
 #pragma once
 #include"RR.h"
-RR::RR(int t,Scheduler* main) : busy(0), idle(0) {
+RR::RR(int t,Scheduler* main,int overH,int prob) : busy(0), idle(0) {
 	TimeSlice = t;
 	remainingticks = t;
 	s = main;
+	OverheatProb = prob;
+	Overheat = overH;
 }
 
 void RR::AddtoRDY(Process* x) {
 	numOfProcesses++;
 	totalTime += x->getWorkingTime();
 	list.Enqueue(x);
+}
+int RR::getTOH() {
+	return TOH;
 }
 
 bool RR::RemoveProcess(int id, Process** x) { return false; }
@@ -34,9 +39,12 @@ bool RR::MoveToRun(int& RunningNum, int time) {
 		if (currentProcess) {
 			if (currentProcess->getWorkingTime() < s->GetRTF() && s->GetSJF_NUM() > 0) {
 				Process* move = currentProcess;
-				totalTime -= currentProcess->getWorkingTime();
-				RemoveRun();
-				s->ProcessMigration(move, false);
+				
+				if (s->ProcessMigration(move, false)) {
+					totalTime -= currentProcess->getWorkingTime();
+					RemoveRun();
+				}
+				
 			}
 		}
 		if (!currentProcess) {
@@ -55,16 +63,54 @@ bool RR::MoveToRun(int& RunningNum, int time) {
 Process* RR::GetRun() { return currentProcess; }
 
 void RR::tick() {
-	int tmp2 = s->GetSystemTime();
-	MoveToRun(s->RunningProcessesSum, tmp2);
+	int OverHeatRand = std::rand() % 100;
+	if (TOH > 0) {
+		TOH--;
+		while (!list.IsEmpty()) {
+			Process** temp = new Process*;
+			Process** temp2 = temp;
+			list.Dequeue(temp);
+			s->SendToShortest(*temp);
+			numOfProcesses--;
+			delete temp2;
+		}
+		return;
+	}
+
+	if (OverHeatRand < OverheatProb) {
+		TOH = Overheat;
+		if (currentProcess != nullptr) {
+			s->RunningProcessesSum--;
+			s->SendToShortest(currentProcess);
+			numOfProcesses--;
+			totalTime -= currentProcess->getWorkingTime();
+			currentProcess = nullptr;
+		}
+
+		while (!list.IsEmpty()) {
+			Process** temp = new Process*;
+			Process** temp2 = temp;
+			list.Dequeue(temp);
+			numOfProcesses--;
+			totalTime -= (*temp)->getWorkingTime();
+			s->SendToShortest(*temp);
+			delete temp2;
+		}
+
+		return;
+	}
+
+	
+	MoveToRun(s->RunningProcessesSum, s->GetSystemTime());
 	//Case 2 Already one process in run 
 	if (currentProcess) {
 		if (currentProcess) {
 			if (currentProcess->getWorkingTime() < s->GetRTF() && s->GetSJF_NUM() > 0) {
 				Process* move = currentProcess;
-				totalTime -= currentProcess->getWorkingTime();
-				RemoveRun();
-				s->ProcessMigration(move, false);
+				if (s->ProcessMigration(move, false)) {
+					totalTime -= currentProcess->getWorkingTime();
+					RemoveRun();
+				}
 				return;
 			}
 		}
