@@ -67,6 +67,7 @@ void EDF::tick(){
 	if (OverHeatRand <= OverheatProb) {
 		TOH = Overheat;
 		if (currentProcess != nullptr) {
+			s->RunningProcessesSum--;
 			s->SendToShortest(currentProcess);
 			numOfProcesses--;
 			totalTime -= currentProcess->getWorkingTime();
