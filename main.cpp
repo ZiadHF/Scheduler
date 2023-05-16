@@ -9,7 +9,7 @@ int main() {
 	Scheduler Test;
 	UI cmd;
 	string s;
-	Test.LoadFromFile("test.txt");
+	Test.LoadFromFile("input.txt");
 	while (!Test.Terminate()) {
 		Test.Processing(true);
 	}
