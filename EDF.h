@@ -33,6 +33,8 @@ public:
 	//Useless Functions
 	bool FindProcessByID(int id, Process* x);
 	bool RemoveProcess(int id, Process** x);
+	int getTT();
+	Process* gettopProcess();
 	~EDF();
 };
 

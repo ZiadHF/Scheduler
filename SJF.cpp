@@ -79,6 +79,22 @@ void SJF::RemoveRun() {
 	s->RunningProcessesSum--;
 	currentProcess = nullptr;
 }
+
 MinHeap& SJF::getlist() {
 	return list;
+}
+
+//Work Stealing
+
+int SJF::getTT() {
+	return totalTime;
+}
+Process* SJF::gettopProcess() {
+	if (list.IsEmpty()) {
+		return nullptr;
+	}
+	Process* temp = list.PeekMin();
+	numOfProcesses--;
+	totalTime -= temp->getWorkingTime();
+	return list.getMin();
 }

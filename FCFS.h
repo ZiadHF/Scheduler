@@ -13,6 +13,7 @@ private:
 	int totalTime = 0; // The variable that has the count
 	int totalTimeexc = 0;
 	Scheduler* s = nullptr;
+
 public:
 	 FCFS(int forkP,Scheduler*);
 	 void SetScheduler(Scheduler*);
@@ -29,6 +30,8 @@ public:
 	 void IncrementIdle();
 	 float GetBusy();
 	 float GetIdle();
+	 int getTT() ;
+	 Process* gettopProcess();
 	 LinkedList<Process*>& getlist();
 };
  

@@ -7,9 +7,10 @@ class Queue
 	Node<T>* head;
 	Node<T>* tail;
 public:
-	Queue() : head(nullptr), tail(nullptr) , count(0){}
+	Queue() : head(nullptr), tail(nullptr), count(0) {}
 
 	int getCount() { return count; }
+
 	bool IsEmpty() {
 		if (head)
 			return false;
@@ -33,9 +34,17 @@ public:
 	}
 
 	bool Dequeue(T* item) {
-		Node<T>* temp=head;
+		Node<T>* temp = head;
 		if (IsEmpty())
 			return false;
+		if (head == tail) {
+			*item = head->getItem();
+			delete head;
+			head = nullptr;
+			tail = nullptr;
+			count = 0;
+			return true;
+		}
 		*item = head->getItem();
 		head = head->getNext();
 		delete temp;
@@ -43,10 +52,9 @@ public:
 		return true;
 	}
 
-
 	T Peek() {
-		if(head)
-		return head->getItem();
+		if (head)
+			return head->getItem();
 		return nullptr;
 	}
 
@@ -55,7 +63,7 @@ public:
 		Node<Process*>* ptr = head;
 		while (ptr) {
 			temp = ptr->getItem();
-			cout <<temp << " ";
+			cout << temp << " ";
 			ptr = ptr->getNext();
 		}
 	}

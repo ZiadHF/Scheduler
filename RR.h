@@ -29,5 +29,7 @@ public:
 	void IncrementIdle();
 	float GetBusy();
 	float GetIdle();
+	int getTT();
+	Process* gettopProcess();
 	Queue<Process*>& getlist();
 };

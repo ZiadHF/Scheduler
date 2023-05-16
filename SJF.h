@@ -27,5 +27,7 @@ public:
 	void IncrementIdle();
 	float GetBusy();
 	float GetIdle();
+	int getTT();
+	Process* gettopProcess();
 	MinHeap& getlist();
 };
