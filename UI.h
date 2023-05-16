@@ -34,6 +34,7 @@ public:
 	void nextTS();
 	void printBLK(Queue<Process*>& blk, int numOfBlkProcesses);
 	void printTRM(Queue<Process*>& trm, int numOfTRMProcesses);
+	void printPRK(Queue<Process*>& PRK, int numOfPrkProcesses);
 	void PrintRunBase(int Numofcurrentproccesses);
 	void printRunloop(int processorID, Process* running);
 };

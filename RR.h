@@ -11,10 +11,14 @@ private:
 	int totalTime = 0; // The variable that has the count
 	int remainingticks;
 	int TimeSlice;
+	int OverheatProb;
+	int TOH = 0;
+	int Overheat;
 	float busy,idle;
 	Scheduler* s = nullptr;
 public:
-	RR(int t,Scheduler*);
+	RR(int t,Scheduler*,int overH,int prob);
+	int getTOH();
 	void SetScheduler(Scheduler* );
 	bool RemoveProcess(int id, Process** x);
 	bool MoveToRun(int&,int); 

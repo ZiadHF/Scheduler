@@ -2,9 +2,11 @@
 #include <cstdlib>
 #include <ctime>
 #include<iostream>
-FCFS::FCFS(int forkP,Scheduler* main) : busy(0),idle(0) {
+FCFS::FCFS(int forkP,Scheduler* main,int OverH,int prob) : busy(0),idle(0) {
 	forkProb = forkP;
 	s = main;
+	Overheat = OverH;
+	OverheatProb = prob;
 }
 
 void FCFS::AddtoRDY(Process* x) {
@@ -23,12 +25,12 @@ bool FCFS::MoveToRun(int& RunningNum,int time) {
 		if (currentProcess) {
 			if (currentProcess->getWorkingTime() > s->GetMaxW() && !currentProcess->getisForked() && s->GetRR_NUM() > 0) {
 				Process* move = currentProcess;
-				totalTime -= currentProcess->getWorkingTime();
-				if (!currentProcess->getisForked())
+					if (s->ProcessMigration(move, true)) {
+            if (!currentProcess->getisForked())
 					totalTimeexc -= currentProcess->getWorkingTime();
-				RemoveRun();
-				if (s->GetRR_NUM() > 0)
-					s->ProcessMigration(move, true);
+						totalTime -= currentProcess->getWorkingTime();
+						RemoveRun();
+					}
 			}
 		}
 		if (!currentProcess) {
@@ -55,6 +57,9 @@ float FCFS::GetIdle() { return idle; }
 bool FCFS::FindProcessByID(int id, Process* x) {
 	return list.FindByID(id, x);
 }
+int FCFS::getTOH() {
+	return TOH;
+}
 bool FCFS::RemoveProcess(int id,Process** x) {
 	if (currentProcess != nullptr) {
 		if (currentProcess->getID() == id) {
@@ -78,17 +83,63 @@ bool FCFS::RemoveProcess(int id,Process** x) {
 	return false;
 }
 void FCFS::tick() {
+	int OverHeatRand = std::rand() % 100;
+	if (TOH > 0) {
+		TOH--;
+		while (!list.IsEmpty()) {
+			Process** temp = new Process*;
+			Process** temp2 = temp;
+			list.RemoveHead(temp);
+			s->SendToShortest(*temp);
+			numOfProcesses--;
+			delete temp2;
+		}
+		return;
+	}
+	
+	if (OverHeatRand < OverheatProb) {
+		TOH = Overheat;
+		if (currentProcess != nullptr) {
+			s->RunningProcessesSum--;
+			s->SendToShortest(currentProcess);
+			numOfProcesses--;
+			totalTime -= currentProcess->getWorkingTime();
+			currentProcess = nullptr;
+		}
+		
+		while (!list.IsEmpty()) {
+			Process** temp = new Process *;
+			Process** temp2 = temp;
+			list.RemoveHead(temp);
+			numOfProcesses--;
+			totalTime -= (*temp)->getWorkingTime();
+			if ((*temp)->getisForked()) {
+				s->ScheduleToShortestFCFS(*temp);
+			}
+			else {
+				s->SendToShortest(*temp);
+			}
+			
+			delete temp2;
+		}
+	 
+			return;
+	}
+	 
+	
 	//Case 1: no running process.
 	MoveToRun(s->RunningProcessesSum,s->GetSystemTime());
 	if (currentProcess) {
 		if (currentProcess) {
 			if (currentProcess->getWorkingTime() > s->GetMaxW() && !currentProcess->getisForked() && s->GetRR_NUM() > 0) {
-				Process* move = currentProcess;
-				totalTime -= currentProcess->getWorkingTime();
-				if (!currentProcess->getisForked())
+				Process* move = currentProcess;				 
+				if (s->ProcessMigration(move, true)) {
+					totalTime -= currentProcess->getWorkingTime();
+          if (!currentProcess->getisForked())
 					totalTimeexc -= currentProcess->getWorkingTime();
-				RemoveRun();
-				s->ProcessMigration(move, true);
+					RemoveRun();
+				}
+
 				return;
 			}
 		}

@@ -16,20 +16,23 @@ using namespace std;
 class Scheduler {
 public:
 private:
-	int RR_TS,RTF, MaxW, STL, ForkProb, FCFS_NUM, SJF_NUM, RR_NUM, EDF_NUM, PROCESS_NUM,SystemTime,PROCESSOR_NUM, SUM_TRT;
-	float DLPass, RRMigration, SJFMigration, WRKSteal, ForkedProcess, KilledProcess;
-	Queue<Process*>NEW, BLK, TRM;
+
+	int RR_TS,RTF, MaxW, STL, ForkProb, FCFS_NUM, SJF_NUM, RR_NUM, EDF_NUM, PROCESS_NUM,SystemTime,PROCESSOR_NUM, SUM_TRT,OverheatNum,RROverHeated,SJFOverHeated;
+  float DLPass, RRMigration, SJFMigration, WRKSteal, ForkedProcess, KilledProcess;
+	Queue<Process*>NEW, BLK, TRM,PRK;
+
+	
 	LinkedList<SIGKILL> Kill_Process;
 	Processor** ProcessorList;
 	//Scheduling Functions
 	void ScheduleByLeastCount(Process*);
 	bool ScheduleNewlyArrivedPhase1();
+	void ScheduleToShortestOverHeat(Process* added);
 	bool ScheduleNewlyArrived();
-	void ScheduleToShortest(Process*);
-	void ScheduleToShortestFCFS(Process*);
-	void ScheduleToShortestRR(Process*);
-	void ScheduleToShortestSJF(Process*);
-	void WorkStealing();
+	bool ScheduleToShortest(Process*);
+	bool ScheduleToShortestRR(Process*);
+	bool ScheduleToShortestSJF(Process*);
+  void WorkStealing();
 	//Process Addition And Removal;
 	bool KillProcess(int);
 	//Process Movement int lists
@@ -43,11 +46,14 @@ private:
 	void BLKProcessingPhase1();
 	void RemoveRandomProcessPhase1();
 	bool KillSignalProcessing();
+	bool SchedulePRK();
 public:
 	int RunningProcessesSum;
+	void ScheduleToShortestFCFS(Process*);
+	void SendToShortest(Process * x);
 	void Processing(bool mode);
 	//Functions called by Processors
-	void ProcessMigration(Process*,bool x);
+	bool ProcessMigration(Process*,bool x);
 	void AddForkedProcess(Process*);
 	void SendToTRM(Process*);
 	void SendToBLK(Process*);
@@ -68,6 +74,10 @@ public:
 	int GetFCFS_NUM();
 	int GetSJF_NUM();
 	int GetRR_NUM();
+	void IncrementRROverheat();
+	void IncrementSJFOverheat();
+	void DecrementRROverheat();
+	void DecrementSJFOverheat();
 	int GetTotalIdleBusy();
 	int GetForkProb();
 	void PrintTRM();
