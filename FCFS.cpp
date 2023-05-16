@@ -2,9 +2,11 @@
 #include <cstdlib>
 #include <ctime>
 #include<iostream>
-FCFS::FCFS(int forkP,Scheduler* main) : busy(0),idle(0) {
+FCFS::FCFS(int forkP,Scheduler* main,int OverH) : busy(0),idle(0) {
 	forkProb = forkP;
 	s = main;
+	Overheat = OverH;
+	 
 }
 
 void FCFS::AddtoRDY(Process* x) {
@@ -53,6 +55,9 @@ float FCFS::GetIdle() { return idle; }
 bool FCFS::FindProcessByID(int id, Process* x) {
 	return list.FindByID(id, x);
 }
+int FCFS::getTOH() {
+	return TOH;
+}
 bool FCFS::RemoveProcess(int id,Process** x) {
 	if (currentProcess != nullptr) {
 		if (currentProcess->getID() == id) {
@@ -72,6 +77,43 @@ bool FCFS::RemoveProcess(int id,Process** x) {
 	return false;
 }
 void FCFS::tick() {
+	int OverHeatRand = std::rand() % 100;
+	if (TOH > 0) {
+		TOH--;
+		while (!list.IsEmpty()) {
+			Process** temp = new Process*;
+			Process** temp2 = temp;
+			list.RemoveHead(temp);
+			s->SendToShortest(*temp);
+			numOfProcesses--;
+			delete temp2;
+		}
+		return;
+	}
+	
+	if (OverHeatRand <= OverheatProb) {
+		TOH = Overheat;
+		if (currentProcess != nullptr) {
+			s->SendToShortest(currentProcess);
+			numOfProcesses--;
+			totalTime -= currentProcess->getWorkingTime();
+			currentProcess = nullptr;
+		}
+		
+		while (!list.IsEmpty()) {
+			Process** temp = new Process *;
+			Process** temp2 = temp;
+			list.RemoveHead(temp);
+			numOfProcesses--;
+			totalTime -= (*temp)->getWorkingTime();
+			s->SendToShortest(*temp);
+			delete temp2;
+		}
+	 
+			return;
+	}
+	 
+	
 	//Case 1: no running process.
 	MoveToRun(s->RunningProcessesSum,s->GetSystemTime());
 	if (currentProcess) {

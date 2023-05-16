@@ -11,8 +11,9 @@ void SJF::AddtoRDY(Process* x) {
 bool SJF::FindProcessByID(int id, Process* x) {
 	return false;
 }
-SJF::SJF(Scheduler* main) : busy(0),idle(0){
+SJF::SJF(Scheduler* main,int OverH) : busy(0),idle(0){
 	s = main;
+	Overheat = OverH;
 }
 bool SJF::MoveToRun(int& RunningNum,int time) {
 	if (list.IsEmpty()) {
@@ -40,10 +41,45 @@ float SJF::GetBusy() { return busy; }
 void SJF::IncrementBusy() { busy++; }
 
 void SJF::IncrementIdle() { idle++; }
-
+int SJF::getTOH() { return TOH; }
 Process* SJF::GetRun() { return currentProcess; }
 
 void SJF::tick() {
+	int OverHeatRand = std::rand() % 100;
+	if (TOH > 0) {
+		TOH--;
+		while (!list.IsEmpty()) {
+			Process* temp = new Process;
+			Process* temp2 = temp;
+			temp = list.getMin();
+			s->SendToShortest(temp);
+			numOfProcesses--;
+			delete temp2;
+		}
+		return;
+	}
+
+	if (OverHeatRand <= OverheatProb) {
+		TOH = Overheat;
+		if (currentProcess != nullptr) {
+			s->SendToShortest(currentProcess);
+			numOfProcesses--;
+			totalTime -= currentProcess->getWorkingTime();
+			currentProcess = nullptr;
+		}
+
+		while (!list.IsEmpty()) {
+			Process* temp = new Process;
+			Process* temp2 = temp;
+			temp = list.getMin();
+			numOfProcesses--;
+			totalTime -= (temp)->getWorkingTime();
+			s->SendToShortest(temp);
+			delete temp2;
+		}
+
+		return;
+	}
 	int tmp2 = s->GetSystemTime();
 	MoveToRun(s->RunningProcessesSum, tmp2);
 	if (currentProcess) {

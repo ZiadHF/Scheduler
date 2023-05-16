@@ -16,13 +16,14 @@ using namespace std;
 class Scheduler {
 public:
 private:
-	int RR_TS,RTF, MaxW, STL, ForkProb, FCFS_NUM, SJF_NUM, RR_NUM, EDF_NUM, PROCESS_NUM,SystemTime,PROCESSOR_NUM, SUM_TRT,DLPass;
+	int RR_TS,RTF, MaxW, STL, ForkProb, FCFS_NUM, SJF_NUM, RR_NUM, EDF_NUM, PROCESS_NUM,SystemTime,PROCESSOR_NUM, SUM_TRT,DLPass,OverheatNum;
 	Queue<Process*>NEW, BLK, TRM;
 	LinkedList<SIGKILL> Kill_Process;
 	Processor** ProcessorList;
 	//Scheduling Functions
 	void ScheduleByLeastCount(Process*);
 	bool ScheduleNewlyArrivedPhase1();
+	void ScheduleToShortestOverHeat(Process* added);
 	bool ScheduleNewlyArrived();
 	void ScheduleToShortest(Process*);
 	void ScheduleToShortestFCFS(Process*);
@@ -43,6 +44,7 @@ private:
 	bool KillSignalProcessing();
 public:
 	int RunningProcessesSum;
+	void SendToShortest(Process * x);
 	void Processing(bool mode);
 	//Functions called by Processors
 	void ProcessMigration(Process*,bool x);

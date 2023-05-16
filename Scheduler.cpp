@@ -7,8 +7,8 @@ void Scheduler::LoadFromFile(string file) {
 	ifstream read;
 	read.open(file);	
 	string temp;
-	//Looping on 1st 4 lines getting initial system values
-	for (int i = 1; i < 5; i++) {
+	//Looping on 1st 5 lines getting initial system values
+	for (int i = 1; i < 6; i++) {
 		getline(read, temp);
 		int k;
 		int c;
@@ -61,6 +61,8 @@ void Scheduler::LoadFromFile(string file) {
 			ForkProb = misc[3];
 			break;
 		case(4):
+			OverheatNum = stoi(temp);
+		case(5):
 			//Number of processes
 			PROCESS_NUM = stoi(temp);
 			break;
@@ -145,16 +147,16 @@ void Scheduler::LoadFromFile(string file) {
 	ProcessorList = new Processor*[PROCESSOR_NUM];
 	for (int i = 0; i < PROCESSOR_NUM; i++) {
 		if (i >= 0 && i < FCFS_NUM) {
-			ProcessorList[i] = new FCFS(ForkProb,this);
+			ProcessorList[i] = new FCFS(ForkProb,this,OverheatNum);
 		}
 		if (i >= FCFS_NUM && i < (FCFS_NUM+SJF_NUM)) {
-			ProcessorList[i] = new SJF(this);
+			ProcessorList[i] = new SJF(this, OverheatNum);
 		}
 		if (i >= FCFS_NUM + SJF_NUM && i < PROCESSOR_NUM-EDF_NUM) {
-			ProcessorList[i] = new RR(RR_TS,this);
+			ProcessorList[i] = new RR(RR_TS,this, OverheatNum);
 		}
 		if (i >= PROCESSOR_NUM - EDF_NUM && PROCESSOR_NUM) {
-			ProcessorList[i] = new EDF(this);
+			ProcessorList[i] = new EDF(this, OverheatNum);
 		}
 	}
 }
@@ -176,6 +178,7 @@ Scheduler::Scheduler() {
 	PROCESSOR_NUM = 0;
 	SUM_TRT = 0;
 	DLPass = 0;
+	OverheatNum = 0;
 }
 
 //
@@ -269,6 +272,20 @@ void Scheduler::ScheduleToShortest(Process* added) {
 	}
 	ProcessorList[index]->AddtoRDY(added);
 }
+void Scheduler::ScheduleToShortestOverHeat(Process* added) {
+	int index = 0;
+	int shortest = 2147483647;
+	for (int i = 0; i < PROCESSOR_NUM; i++) {
+		if (ProcessorList[i]->getTOH() > 0) {
+			continue;
+		}
+		if (ProcessorList[i]->getTotalTime() < shortest) {
+			index = i;
+			shortest = ProcessorList[i]->getTotalTime();
+		}
+	}
+	ProcessorList[index]->AddtoRDY(added);
+}
 
 //Schedule according to process count in RDY Queue(Phase 1 Function)
 void Scheduler::ScheduleByLeastCount(Process* added) {
@@ -334,6 +351,9 @@ void Scheduler::SendToTRM(Process* temp) {
 	SUM_TRT += temp->getTRT();
 	if (temp->getDL() > SystemTime)
 		DLPass++;
+}
+void Scheduler::SendToShortest(Process * x) {
+	this->ScheduleToShortestOverHeat(x);
 }
 
 //Getters of data members

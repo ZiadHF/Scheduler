@@ -14,4 +14,5 @@ public:
 	virtual void RemoveRun() = 0;
 	virtual float GetBusy() = 0;
 	virtual float GetIdle() = 0;
+	virtual int getTOH() = 0;
 };

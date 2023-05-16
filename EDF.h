@@ -9,11 +9,15 @@ class EDF : public Processor
 	int totalTime, numOfProcesses = 0;
 	MinHeap list = MinHeap(100,false);
 	Process* currentProcess = nullptr;
+	int OverheatProb = 10;
+	int Overheat;
 	Scheduler* s = nullptr;
+	int TOH = 0;
 public:
 	//Constructor
-	EDF(Scheduler*);
+	EDF(Scheduler*,int OverH);
 	//Increments
+	int getTOH();
 	void IncrementBusy();
 	void IncrementIdle();
 	//Setters and Getters

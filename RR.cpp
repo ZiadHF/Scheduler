@@ -1,15 +1,19 @@
 #pragma once
 #include"RR.h"
-RR::RR(int t,Scheduler* main) : busy(0), idle(0) {
+RR::RR(int t,Scheduler* main,int overH) : busy(0), idle(0) {
 	TimeSlice = t;
 	remainingticks = t;
 	s = main;
+	Overheat = overH;
 }
 
 void RR::AddtoRDY(Process* x) {
 	numOfProcesses++;
 	totalTime += x->getWorkingTime();
 	list.Enqueue(x);
+}
+int RR::getTOH() {
+	return TOH;
 }
 
 bool RR::RemoveProcess(int id, Process** x) { return false; }
@@ -55,6 +59,42 @@ bool RR::MoveToRun(int& RunningNum, int time) {
 Process* RR::GetRun() { return currentProcess; }
 
 void RR::tick() {
+	int OverHeatRand = std::rand() % 100;
+	if (TOH > 0) {
+		TOH--;
+		while (!list.IsEmpty()) {
+			Process** temp = new Process*;
+			Process** temp2 = temp;
+			list.Dequeue(temp);
+			s->SendToShortest(*temp);
+			numOfProcesses--;
+			delete temp2;
+		}
+		return;
+	}
+
+	if (OverHeatRand <= OverheatProb) {
+		TOH = Overheat;
+		if (currentProcess != nullptr) {
+			s->SendToShortest(currentProcess);
+			numOfProcesses--;
+			totalTime -= currentProcess->getWorkingTime();
+			currentProcess = nullptr;
+		}
+
+		while (!list.IsEmpty()) {
+			Process** temp = new Process*;
+			Process** temp2 = temp;
+			list.Dequeue(temp);
+			numOfProcesses--;
+			totalTime -= (*temp)->getWorkingTime();
+			s->SendToShortest(*temp);
+			delete temp2;
+		}
+
+		return;
+	}
+
 	int tmp2 = s->GetSystemTime();
 	MoveToRun(s->RunningProcessesSum, tmp2);
 	//Case 2 Already one process in run 
