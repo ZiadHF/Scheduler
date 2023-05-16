@@ -9,8 +9,6 @@ class EDF : public Processor
 	int totalTime, numOfProcesses = 0;
 	MinHeap list = MinHeap(100,false);
 	Process* currentProcess = nullptr;
-	bool LQF = false;
-	bool SQF = false;
 	Scheduler* s = nullptr;
 public:
 	//Constructor
@@ -36,10 +34,6 @@ public:
 	bool FindProcessByID(int id, Process* x);
 	bool RemoveProcess(int id, Process** x);
 	int getTT();
-	void setLQF(bool state);
-	void setSQF(bool state);
-	bool getLQF();
-	bool getSQF();
 	Process* gettopProcess();
 	~EDF();
 };

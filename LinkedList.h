@@ -153,9 +153,6 @@ public:
 	}
 
 	bool getNextNONforked(Process** x) {
-		if (IsEmpty()) {
-			return false; 
-		}
 		Process* temp = head->getItem();
 		if (!temp->getisForked()) {
 			RemoveByID(temp->getID(),x);
@@ -166,9 +163,8 @@ public:
 			Process* temp = ptr->getItem();
 			while (temp->getisForked()) {
 				ptr = ptr->getNext();
-				if (!ptr) {
+				if (!ptr)
 					break;
-				}
 				temp = ptr->getItem();
 			}
 			if (!temp->getisForked()) {

@@ -79,18 +79,13 @@ void SJF::RemoveRun() {
 	s->RunningProcessesSum--;
 	currentProcess = nullptr;
 }
-void SJF::setLQF(bool state) {
-	LQF = state;
+
+MinHeap& SJF::getlist() {
+	return list;
 }
-void SJF::setSQF(bool state) {
-	SQF = state;
-}
-bool SJF::getLQF() {
-	return LQF;
-}
-bool SJF::getSQF() {
-	return SQF;
-}
+
+//Work Stealing
+
 int SJF::getTT() {
 	return totalTime;
 }
@@ -98,11 +93,8 @@ Process* SJF::gettopProcess() {
 	if (list.IsEmpty()) {
 		return nullptr;
 	}
-	numOfProcesses--;
 	Process* temp = list.PeekMin();
+	numOfProcesses--;
 	totalTime -= temp->getWorkingTime();
 	return list.getMin();
-}
-MinHeap& SJF::getlist() {
-	return list;
 }

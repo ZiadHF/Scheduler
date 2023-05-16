@@ -388,7 +388,7 @@ void Scheduler::Processing(bool mode) {
 	//Schedule Processes arriving at current timestep
 	while (ScheduleNewlyArrived());
 	// Activate Work Stealing
-	if (SystemTime % STL == 0 && SystemTime!=0)
+	if (SystemTime % STL == 0 && SystemTime != 0)
 		WorkStealing();
 	//Check running processes
 	for (int i = 0; i < PROCESSOR_NUM; i++)
@@ -620,33 +620,29 @@ void Scheduler::WorkStealing() {
 	for (int i = 0; i < PROCESSOR_NUM; i++) {
 		if (ProcessorList[i]->getTT() < min) {
 			min = ProcessorList[i]->getTT();
-			if (tempindmin != -1) {
-				ProcessorList[tempindmin]->setSQF(false);
-			}
 			tempindmin = i;
-			ProcessorList[tempindmin]->setSQF(true);
 		}
 		if (ProcessorList[i]->getTT() > max) {
 			max = ProcessorList[i]->getTT();
-			if (tempindmax != -1) {
-				ProcessorList[tempindmax]->setLQF(false);
-			}
 			tempindmax = i;
-			ProcessorList[tempindmax]->setLQF(true);
 		}
 	}
 	LQF = ProcessorList[tempindmax];
 	SQF = ProcessorList[tempindmin];
-	int TTmax = LQF->getTT();
-	int TTmin = SQF->getTT();
-	float STLRatio = 100;
-	while (STLRatio > 40) {
-		Process* tmpo= LQF->gettopProcess();
-		if (tmpo==nullptr)
+	float TTmax = LQF->getTT();
+	float TTmin = SQF->getTT();
+	float STLRatio;
+	while (true) {
+		STLRatio = ((TTmax - TTmin) / TTmax) * 100;
+		if (STLRatio < 40)
 			break;
+		Process* tmpo= LQF->gettopProcess();
+		if (!tmpo)
+			break;
+		SQF->AddtoRDY(tmpo);
+		WRKSteal++;
 		TTmax = LQF->getTT();
 		TTmin = SQF->getTT();
-		STLRatio = ((TTmax - TTmin) / TTmax) * 100;
 	}
 
 }

@@ -12,8 +12,6 @@ private:
 	int remainingticks;
 	int TimeSlice;
 	float busy,idle;
-	bool LQF = false;
-	bool SQF = false;
 	Scheduler* s = nullptr;
 public:
 	RR(int t,Scheduler*);
@@ -32,10 +30,6 @@ public:
 	float GetBusy();
 	float GetIdle();
 	int getTT();
-	void setLQF(bool state);
-	void setSQF(bool state);
-	bool getLQF();
-	bool getSQF();
 	Process* gettopProcess();
 	Queue<Process*>& getlist();
 };

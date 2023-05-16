@@ -10,8 +10,6 @@ private:
 	Process* currentProcess = nullptr;
 	int numOfProcesses = 0;
 	int totalTime = 0; // The variable that has the count
-	bool LQF = false;
-	bool SQF = false;
 	Scheduler* s = nullptr;
 public:
 	SJF(Scheduler*);
@@ -30,10 +28,6 @@ public:
 	float GetBusy();
 	float GetIdle();
 	int getTT();
-	void setLQF(bool state);
-	void setSQF(bool state);
-	bool getLQF();
-	bool getSQF();
 	Process* gettopProcess();
 	MinHeap& getlist();
 };

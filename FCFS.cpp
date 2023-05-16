@@ -137,18 +137,6 @@ int FCFS::getTotalTime() {
 int FCFS::getTT() {
 	return totalTimeexc;
 }
-void FCFS::setLQF(bool state) {
-	LQF = state;
-}
-void FCFS::setSQF(bool state) {
-	SQF = state;
-}
-bool FCFS::getLQF() {
-	return LQF;
-}
-bool FCFS::getSQF() {
-	return SQF;
-}
 Process* FCFS::gettopProcess() {
 	if (list.IsEmpty()) {
 		return nullptr;

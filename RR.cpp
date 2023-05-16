@@ -109,18 +109,13 @@ void RR::RemoveRun() {
 	numOfProcesses--;
 	s->RunningProcessesSum--;
 	currentProcess = nullptr; }
-void RR::setLQF(bool state) {
-	LQF = state;
+
+Queue<Process*>& RR::getlist() {
+	return list;
 }
-void RR::setSQF(bool state) {
-	SQF = state;
-}
-bool RR::getLQF() {
-	return LQF;
-}
-bool RR::getSQF() {
-	return SQF;
-}
+
+//Work Stealing
+
 int RR::getTT() {
 	return totalTime;
 }
@@ -133,7 +128,4 @@ Process* RR::gettopProcess() {
 	totalTime -= temp->getWorkingTime();
 	numOfProcesses--;
 	return temp;
-}
-Queue<Process*>& RR::getlist() {
-	return list;
 }
