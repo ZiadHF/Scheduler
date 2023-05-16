@@ -11,9 +11,10 @@ void SJF::AddtoRDY(Process* x) {
 bool SJF::FindProcessByID(int id, Process* x) {
 	return false;
 }
-SJF::SJF(Scheduler* main,int OverH) : busy(0),idle(0){
+SJF::SJF(Scheduler* main,int OverH,int prob) : busy(0),idle(0){
 	s = main;
 	Overheat = OverH;
+	OverheatProb = prob;
 }
 bool SJF::MoveToRun(int& RunningNum,int time) {
 	if (list.IsEmpty()) {
@@ -59,7 +60,7 @@ void SJF::tick() {
 		return;
 	}
 
-	if (OverHeatRand <= OverheatProb) {
+	if (OverHeatRand < OverheatProb) {
 		TOH = Overheat;
 		if (currentProcess != nullptr) {
 			s->RunningProcessesSum--;

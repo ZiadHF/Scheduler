@@ -1,9 +1,10 @@
 #pragma once
 #include"RR.h"
-RR::RR(int t,Scheduler* main,int overH) : busy(0), idle(0) {
+RR::RR(int t,Scheduler* main,int overH,int prob) : busy(0), idle(0) {
 	TimeSlice = t;
 	remainingticks = t;
 	s = main;
+	OverheatProb = prob;
 	Overheat = overH;
 }
 
@@ -38,9 +39,12 @@ bool RR::MoveToRun(int& RunningNum, int time) {
 		if (currentProcess) {
 			if (currentProcess->getWorkingTime() < s->GetRTF() && s->GetSJF_NUM() > 0) {
 				Process* move = currentProcess;
-				totalTime -= currentProcess->getWorkingTime();
-				RemoveRun();
-				s->ProcessMigration(move, false);
+				
+				if (s->ProcessMigration(move, false)) {
+					totalTime -= currentProcess->getWorkingTime();
+					RemoveRun();
+				}
+				
 			}
 		}
 		if (!currentProcess) {
@@ -73,7 +77,7 @@ void RR::tick() {
 		return;
 	}
 
-	if (OverHeatRand <= OverheatProb) {
+	if (OverHeatRand < OverheatProb) {
 		TOH = Overheat;
 		if (currentProcess != nullptr) {
 			s->RunningProcessesSum--;
@@ -96,16 +100,17 @@ void RR::tick() {
 		return;
 	}
 
-	int tmp2 = s->GetSystemTime();
-	MoveToRun(s->RunningProcessesSum, tmp2);
+	
+	MoveToRun(s->RunningProcessesSum, s->GetSystemTime());
 	//Case 2 Already one process in run 
 	if (currentProcess) {
 		if (currentProcess) {
 			if (currentProcess->getWorkingTime() < s->GetRTF() && s->GetSJF_NUM() > 0) {
 				Process* move = currentProcess;
-				totalTime -= currentProcess->getWorkingTime();
-				RemoveRun();
-				s->ProcessMigration(move, false);
+				if (s->ProcessMigration(move, false)) {
+					totalTime -= currentProcess->getWorkingTime();
+					RemoveRun();
+				}
 				return;
 			}
 		}

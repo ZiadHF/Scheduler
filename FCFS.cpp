@@ -2,11 +2,11 @@
 #include <cstdlib>
 #include <ctime>
 #include<iostream>
-FCFS::FCFS(int forkP,Scheduler* main,int OverH) : busy(0),idle(0) {
+FCFS::FCFS(int forkP,Scheduler* main,int OverH,int prob) : busy(0),idle(0) {
 	forkProb = forkP;
 	s = main;
 	Overheat = OverH;
-	 
+	OverheatProb = prob;
 }
 
 void FCFS::AddtoRDY(Process* x) {
@@ -25,10 +25,11 @@ bool FCFS::MoveToRun(int& RunningNum,int time) {
 		if (currentProcess) {
 			if (currentProcess->getWorkingTime() > s->GetMaxW() && !currentProcess->getisForked() && s->GetRR_NUM() > 0) {
 				Process* move = currentProcess;
-				totalTime -= currentProcess->getWorkingTime();
-				RemoveRun();
-				if (s->GetRR_NUM() > 0)
-					s->ProcessMigration(move, true);
+					if (s->ProcessMigration(move, true)) {
+						totalTime -= currentProcess->getWorkingTime();
+						RemoveRun();
+					}
+
 			}
 		}
 		if (!currentProcess) {
@@ -91,7 +92,7 @@ void FCFS::tick() {
 		return;
 	}
 	
-	if (OverHeatRand <= OverheatProb) {
+	if (OverHeatRand < OverheatProb) {
 		TOH = Overheat;
 		if (currentProcess != nullptr) {
 			s->RunningProcessesSum--;
@@ -107,7 +108,13 @@ void FCFS::tick() {
 			list.RemoveHead(temp);
 			numOfProcesses--;
 			totalTime -= (*temp)->getWorkingTime();
-			s->SendToShortest(*temp);
+			if ((*temp)->getisForked()) {
+				s->ScheduleToShortestFCFS(*temp);
+			}
+			else {
+				s->SendToShortest(*temp);
+			}
+			
 			delete temp2;
 		}
 	 
@@ -121,9 +128,11 @@ void FCFS::tick() {
 		if (currentProcess) {
 			if (currentProcess->getWorkingTime() > s->GetMaxW() && !currentProcess->getisForked() && s->GetRR_NUM() > 0) {
 				Process* move = currentProcess;
-				totalTime -= currentProcess->getWorkingTime();
-				RemoveRun();
-				s->ProcessMigration(move, true);
+				 
+				if (s->ProcessMigration(move, true)) {
+					totalTime -= currentProcess->getWorkingTime();
+					RemoveRun();
+				}
 				return;
 			}
 		}

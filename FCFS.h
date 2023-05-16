@@ -11,14 +11,14 @@ private:
 	int numOfProcesses = 0 ;
 	int forkProb;
 	int Overheat;
-	int OverheatProb = 10;
+	int OverheatProb ;
 	int TOH = 0; // Time of overheating
 	float busy,idle;
 	int totalTime = 0; // The variable that has the count
 	int totalTimeexc = 0;
 	Scheduler* s = nullptr;
 public:
-	 FCFS(int forkP,Scheduler*,int Overheat);
+	 FCFS(int forkP,Scheduler*,int Overheat,int prob);
 	 int getTOH();
 	 void SetScheduler(Scheduler*);
 	 bool FindProcessByID(int id, Process* x);

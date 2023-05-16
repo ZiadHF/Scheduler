@@ -142,21 +142,22 @@ void Scheduler::LoadFromFile(string file) {
 		temp3.Kill_Time = misc[0];
 		Kill_Process.Insert(temp3);
 	}
+	int OverheatProbability = 1;
 	//Creating the list of available processors
 	PROCESSOR_NUM = FCFS_NUM + SJF_NUM + RR_NUM + EDF_NUM;
 	ProcessorList = new Processor*[PROCESSOR_NUM];
 	for (int i = 0; i < PROCESSOR_NUM; i++) {
 		if (i >= 0 && i < FCFS_NUM) {
-			ProcessorList[i] = new FCFS(ForkProb,this,OverheatNum);
+			ProcessorList[i] = new FCFS(ForkProb,this,OverheatNum,OverheatProbability);
 		}
 		if (i >= FCFS_NUM && i < (FCFS_NUM+SJF_NUM)) {
-			ProcessorList[i] = new SJF(this, OverheatNum);
+			ProcessorList[i] = new SJF(this, OverheatNum, OverheatProbability);
 		}
 		if (i >= FCFS_NUM + SJF_NUM && i < PROCESSOR_NUM-EDF_NUM) {
-			ProcessorList[i] = new RR(RR_TS,this, OverheatNum);
+			ProcessorList[i] = new RR(RR_TS,this, OverheatNum, OverheatProbability);
 		}
 		if (i >= PROCESSOR_NUM - EDF_NUM && PROCESSOR_NUM) {
-			ProcessorList[i] = new EDF(this, OverheatNum);
+			ProcessorList[i] = new EDF(this, OverheatNum, OverheatProbability);
 		}
 	}
 }
@@ -219,62 +220,86 @@ bool Scheduler::ScheduleNewlyArrived() {
 
 }
 
+bool Scheduler::SchedulePRK() {
+	Process* temp = nullptr;
+	PRK.Dequeue(&temp);
+	if (temp != nullptr) {
+		if (ScheduleToShortest(temp)) {
+			return true;
+		}
+	}
+	return false;
+
+}
+
 //Schedules processes in the shortest FCFS RDY Queue
 void Scheduler::ScheduleToShortestFCFS(Process* added) {
-	int index = 0;
-	int shortest = ProcessorList[0]->getTotalTime();
+	int index = -1;
+	int shortest = INT_MAX;
 	for (int i = 1; i < FCFS_NUM; i++) {
+		if (ProcessorList[i]->getTOH() > 0) {
+			continue;
+		}
 		if (ProcessorList[i]->getTotalTime() < shortest) {
 			index = i;
 			shortest = ProcessorList[i]->getTotalTime();
 		}
+	}
+	if (index == -1) {
+		SendToTRM(added);
+		return;
 	}
 	ProcessorList[index]->AddtoRDY(added);
 }
 
 //Schedules processes in the shortest SJF RDY Queue
-void Scheduler::ScheduleToShortestSJF(Process* added) {
-	int index = FCFS_NUM;
+bool Scheduler::ScheduleToShortestSJF(Process* added) {
+	int index = -1;
 	int end = FCFS_NUM + SJF_NUM;
-	int shortest = ProcessorList[index]->getTotalTime();
-	for (int i = FCFS_NUM+1 ; i < end; i++) {
+	int shortest = INT_MAX;
+	for (int i = FCFS_NUM ; i < end; i++) {
+		if (ProcessorList[i]->getTOH() > 0) {
+			continue;
+		}
 		if (ProcessorList[i]->getTotalTime() < shortest) {
 			index = i;
 			shortest = ProcessorList[i]->getTotalTime();
 		}
+
+	}
+	if (index == -1) {
+		return false;
 	}
 	ProcessorList[index]->AddtoRDY(added);
+	return true;
 }
 
 //Schedules processes in the Shortest RR RDY Queue
-void Scheduler::ScheduleToShortestRR(Process* added) {
-	int index = FCFS_NUM + SJF_NUM;
+bool Scheduler::ScheduleToShortestRR(Process* added) {
+	int index = -1;
 	int end = PROCESSOR_NUM - EDF_NUM;
-	int shortest = ProcessorList[index]->getTotalTime();
-	for (int i = FCFS_NUM + SJF_NUM + 1 ; i < end; i++) {
+	int shortest = INT_MAX;
+	for (int i = FCFS_NUM + SJF_NUM  ; i < end; i++) {
+		if (ProcessorList[i]->getTOH() > 0) {
+			continue;
+		}
 		if (ProcessorList[i]->getTotalTime() < shortest) {
 			index = i;
 			shortest = ProcessorList[i]->getTotalTime();
 		}
 	}
+	if (index == -1) {
+		return false;
+	}
 	ProcessorList[index]->AddtoRDY(added);
+	return true;
 }
 
 //Schedules processes in the shortest RDY Queue
-void Scheduler::ScheduleToShortest(Process* added) {
-	int index=0;
-	int shortest = ProcessorList[0]->getTotalTime();
-	for (int i = 1; i < PROCESSOR_NUM; i++) {
-		if (ProcessorList[i]->getTotalTime() < shortest) {
-			index = i;
-			shortest = ProcessorList[i]->getTotalTime();
-		}
-	}
-	ProcessorList[index]->AddtoRDY(added);
-}
-void Scheduler::ScheduleToShortestOverHeat(Process* added) {
-	int index = 0;
-	int shortest = 2147483647;
+bool Scheduler::ScheduleToShortest(Process* added) {
+	int index = -1;
+	
+	int shortest = INT_MAX;
 	for (int i = 0; i < PROCESSOR_NUM; i++) {
 		if (ProcessorList[i]->getTOH() > 0) {
 			continue;
@@ -284,7 +309,13 @@ void Scheduler::ScheduleToShortestOverHeat(Process* added) {
 			shortest = ProcessorList[i]->getTotalTime();
 		}
 	}
+	 
+	if (index == -1) {
+		PRK.Enqueue(added);
+		return false;
+	}
 	ProcessorList[index]->AddtoRDY(added);
+	return true;
 }
 
 //Schedule according to process count in RDY Queue(Phase 1 Function)
@@ -353,7 +384,7 @@ void Scheduler::SendToTRM(Process* temp) {
 		DLPass++;
 }
 void Scheduler::SendToShortest(Process * x) {
-	this->ScheduleToShortestOverHeat(x);
+	this->ScheduleToShortest(x);
 }
 
 //Getters of data members
@@ -399,6 +430,8 @@ void Scheduler::Processing(bool mode) {
 	while (KillSignalProcessing());
 	//Schedule Processes arriving at current timestep
 	while (ScheduleNewlyArrived());
+	// Tests if process is able to move from the PRK queue to the unoverheated processors
+	while (SchedulePRK());
 	//Check running processes
 	for (int i = 0; i < PROCESSOR_NUM; i++)
 		ProcessorList[i]->tick();
@@ -418,12 +451,12 @@ bool Scheduler::KillSignalProcessing() {
 	return false;
 }
 
-void Scheduler::ProcessMigration(Process* p,bool x) {
+bool Scheduler::ProcessMigration(Process* p,bool x) {
 	if (x) {
-		ScheduleToShortestRR(p);
+		return ScheduleToShortestRR(p);
 	}
 	else {
-		ScheduleToShortestSJF(p);
+		 return ScheduleToShortestSJF(p);
 	}
 }
 
@@ -529,6 +562,7 @@ void Scheduler::PrintSystemInfo() {
 		}
 	}
 	wind.printBLK(BLK, BLK.getCount());
+	wind.printPRK(PRK, PRK.getCount());
 	wind.PrintRunBase(RunningProcessesSum);
 	for (int i = 0; i < PROCESSOR_NUM; i++) {
 		Process* temp=ProcessorList[i]->GetRun();
@@ -604,6 +638,10 @@ int Scheduler::GetTotalIdleBusy(){
 	return sum;
 }
 
+void Scheduler::IncrementRROverheat() { this->RROverHeated++; }
+void Scheduler::IncrementSJFOverheat(){ this->SJFOverHeated++; }
+void Scheduler::DecrementRROverheat() { this->RROverHeated--; }
+void Scheduler::DecrementSJFOverheat() { this->SJFOverHeated--; }
 int Scheduler::getRunningProcess() { return RunningProcessesSum; }
 
 Scheduler::~Scheduler() {

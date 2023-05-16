@@ -34,25 +34,53 @@ ostream& operator << (ostream& output, EDF*& obj) {
 }
 void UI::printFCFSProcessorInfo(FCFS* obj, int ProccessorID) {
 	cout << "Processor " << ProccessorID;
-	string name = "FCFS";
+	string name;
+	if (obj->getTOH() > 0) {
+		name = "FCFS*";
+	}
+	else {
+		 name = "FCFS";
+	}
+	
 	printf("[%-4s]: ", name.c_str());
 	cout << obj << endl;
 }
 void UI::printRRProcessorInfo(RR* obj, int ProccessorID) {
 	cout << "Processor " << ProccessorID;
-	string name = "RR";
+	string name;
+	if (obj->getTOH() > 0) {
+		name = "RR*";
+	}
+	else {
+		name = "RR";
+	}
+	 
 	printf("[%-4s]: ", name.c_str());
 	cout << obj << endl;
 }
 void UI::printSJFProcessorInfo(SJF* obj, int ProccessorID) {
 	cout << "Processor " << ProccessorID;
-	string name = "SJF";
+	string name;
+	if (obj->getTOH() > 0) {
+		name = "SJF*";
+	}
+	else {
+		name = "SJF";
+	}
+	 
 	printf("[%-4s]: ", name.c_str());
 	cout << obj << endl;
 }
 void UI::printEDFProcessorInfo(EDF* obj, int ProccessorID) {
 	cout << "Processor " << ProccessorID;
-	string name = "EDF";
+
+	string name;
+	if (obj->getTOH() > 0) {
+		name = "EDF*";
+	}
+	else {
+		name = "EDF";
+	}
 	printf("[%-4s]: ", name.c_str());
 	cout << obj << endl;
 }
@@ -65,6 +93,12 @@ void UI::printBLK(Queue<Process*>& blk,int numOfBlkProcesses) {
 	cout << "-----------------     BLK Processes     -----------------" << endl;
 	cout << numOfBlkProcesses << " BLK: ";
 	blk.Print();
+}
+void UI::printPRK(Queue<Process*>& PRK, int numOfPrkProcesses) {
+	cout << "\n";
+	cout << "-----------------     PRK Processes     -----------------" << endl;
+	cout << numOfPrkProcesses << " PRK: ";
+	PRK.Print();
 }
 void UI::printTRM(Queue<Process*>& trm, int numOfTRMProcesses) {
 	cout << "\n";

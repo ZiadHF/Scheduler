@@ -2,7 +2,7 @@
 
 //Constructor
 
-EDF::EDF(Scheduler* main, int OverH) :busy(0), idle(0), totalTime(0) { s = main; Overheat = OverH; }
+EDF::EDF(Scheduler* main, int OverH, int prob) :busy(0), idle(0), totalTime(0) { s = main; Overheat = OverH; OverheatProb = prob; }
 
 
 //Adding, Moving and Removing
@@ -64,7 +64,7 @@ void EDF::tick(){
 		return;
 	}
 
-	if (OverHeatRand <= OverheatProb) {
+	if (OverHeatRand < OverheatProb) {
 		TOH = Overheat;
 		if (currentProcess != nullptr) {
 			s->RunningProcessesSum--;
