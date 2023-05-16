@@ -16,8 +16,12 @@ using namespace std;
 class Scheduler {
 public:
 private:
-	int RR_TS,RTF, MaxW, STL, ForkProb, FCFS_NUM, SJF_NUM, RR_NUM, EDF_NUM, PROCESS_NUM,SystemTime,PROCESSOR_NUM, SUM_TRT,DLPass,OverheatNum,RROverHeated,SJFOverHeated;
+
+	int RR_TS,RTF, MaxW, STL, ForkProb, FCFS_NUM, SJF_NUM, RR_NUM, EDF_NUM, PROCESS_NUM,SystemTime,PROCESSOR_NUM, SUM_TRT,OverheatNum,RROverHeated,SJFOverHeated;
+  float DLPass, RRMigration, SJFMigration, WRKSteal, ForkedProcess, KilledProcess;
 	Queue<Process*>NEW, BLK, TRM,PRK;
+
+	
 	LinkedList<SIGKILL> Kill_Process;
 	Processor** ProcessorList;
 	//Scheduling Functions
@@ -28,6 +32,7 @@ private:
 	bool ScheduleToShortest(Process*);
 	bool ScheduleToShortestRR(Process*);
 	bool ScheduleToShortestSJF(Process*);
+  void WorkStealing();
 	//Process Addition And Removal;
 	bool KillProcess(int);
 	//Process Movement int lists

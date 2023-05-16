@@ -124,11 +124,22 @@ int EDF::getNumOfProcesses() { return numOfProcesses; }
 float EDF::GetBusy() { return busy; }
 float EDF::GetIdle() { return idle; }
 MinHeap& EDF::getlist() { return list; }
+int EDF::getTotalTime() { return totalTime; }
+int EDF::getTT() { return totalTime; }
 
+//Work Stealing
 
+Process* EDF::gettopProcess() {
+	if (list.IsEmpty()) {
+		return nullptr;
+	}
+	numOfProcesses--;
+	Process* temp = list.PeekMin();
+	totalTime -= temp->getWorkingTime();
+	return list.getMin();
+}
 //Useless Functions
 
-int EDF::getTotalTime() { return totalTime; }
 bool EDF::FindProcessByID(int id, Process* x) { return true; }
 bool EDF::RemoveProcess(int id, Process** x) { return true; }
 EDF::~EDF() {}

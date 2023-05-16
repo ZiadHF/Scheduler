@@ -180,6 +180,11 @@ Scheduler::Scheduler() {
 	SUM_TRT = 0;
 	DLPass = 0;
 	OverheatNum = 0;
+	RRMigration = 0;
+	SJFMigration = 0;
+	WRKSteal = 0;
+	ForkedProcess = 0;
+	KilledProcess = 0;
 }
 
 //
@@ -191,6 +196,7 @@ void Scheduler::AddForkedProcess(Process* parent) {
 		parent->setLChild(added);
 	else
 		parent->setRChild(added);
+	ForkedProcess++;
 	ScheduleToShortestFCFS(added);
 }
 
@@ -339,12 +345,14 @@ bool Scheduler::KillProcess(int IDKill) {
 			temp = ProcessorList[i]->GetRun();
 			if (temp->getID() == IDKill) {
 				ProcessorList[i]->RemoveProcess(IDKill,&temp);
+				KilledProcess++;
 				SendToTRM(temp);
 				return true;
 			}
 		}
 		if (ProcessorList[i]->FindProcessByID(IDKill,temp)) {
 			ProcessorList[i]->RemoveProcess(IDKill,&temp);
+			KilledProcess++;
 			SendToTRM(temp);
 			return true;
 		}
@@ -377,7 +385,7 @@ void Scheduler::SendToTRM(Process* temp) {
 	TRM.Enqueue(temp);
 	KillOrphans(temp);
 	temp->setTT(SystemTime);
-	if (temp->getisKilled())
+	 if (temp->getisKilled())
 		temp->setWT(temp->getTRT() - (temp->getCT() - temp->getWorkingTime()));
 	SUM_TRT += temp->getTRT();
 	if (temp->getDL() > SystemTime)
@@ -432,6 +440,9 @@ void Scheduler::Processing(bool mode) {
 	while (ScheduleNewlyArrived());
 	// Tests if process is able to move from the PRK queue to the unoverheated processors
 	while (SchedulePRK());
+	// Activate Work Stealing
+	if (SystemTime % STL == 0 && SystemTime != 0)
+		WorkStealing();
 	//Check running processes
 	for (int i = 0; i < PROCESSOR_NUM; i++)
 		ProcessorList[i]->tick();
@@ -453,9 +464,12 @@ bool Scheduler::KillSignalProcessing() {
 
 bool Scheduler::ProcessMigration(Process* p,bool x) {
 	if (x) {
+
+  	RRMigration++;
 		return ScheduleToShortestRR(p);
 	}
 	else {
+    	SJFMigration++;
 		 return ScheduleToShortestSJF(p);
 	}
 }
@@ -606,10 +620,21 @@ void Scheduler::OutputFile() {
 		float avgwt = float(totalwt) / PROCESS_NUM;
 		float avgrt = float(totalrt) / PROCESS_NUM;
 		float avgtrt = float(totaltrt) / PROCESS_NUM;
+		float RRMig = (RRMigration / PROCESS_NUM) * 100;
+		float SJFMig = (SJFMigration / PROCESS_NUM) * 100;
+		float WRK = (WRKSteal / PROCESS_NUM) * 100;
+		float FRK = (ForkedProcess / PROCESS_NUM) * 100;
+		float KILL = (KilledProcess / PROCESS_NUM) * 100;
+		float DEADLINE = (DLPass / PROCESS_NUM) * 100;
 		delete[] temp;
-		fprintf(outputFile, "Processes: %d\n", PROCESS_NUM);
+		fprintf(outputFile, "\nProcesses: %d\n", PROCESS_NUM);
 		fprintf(outputFile, "AVG WT: %-10.3f AVG RT: %-10.3f AVG TRT: %-10.3f\n",avgwt,avgrt,avgtrt);
-		fprintf(outputFile, "Processes: [%d FCFS, %d SJF, %d RR, %d EDF]\n", FCFS_NUM, SJF_NUM, RR_NUM, EDF_NUM);
+		fprintf(outputFile, "TRM before deadline %%: %-0.3f%%\n", DEADLINE);
+		fprintf(outputFile, "Migration %%: \t RTF = %-0.3f%%\t\tMaxW = %-0.3f%%\n",SJFMig,RRMig);
+		fprintf(outputFile, "Work Steal %%: %-0.3f%%\n", WRK);
+		fprintf(outputFile, "Forked Processes %%: %-0.3f%%\n", FRK);
+		fprintf(outputFile, "Killed Processes %%: %-0.3f%%\n\n", KILL);
+		fprintf(outputFile, "Processors: %d [%d FCFS, %d SJF, %d RR, %d EDF]\n",PROCESSOR_NUM, FCFS_NUM, SJF_NUM, RR_NUM, EDF_NUM);
 		fprintf(outputFile, "Processor Load:\n");
 		float sumload = 0;
 		for (int i = 0; i < PROCESSOR_NUM; i++) {
@@ -618,6 +643,7 @@ void Scheduler::OutputFile() {
 			fprintf(outputFile, "p%d: %-0.3f%%\n", i + 1, load);
 		}
 		fprintf(outputFile, "Average Load: %-0.3f%%\n", sumload / PROCESSOR_NUM);
+		fprintf(outputFile, "\n");
 		fprintf(outputFile, "Processor Utilization:\n");
 		float sumuti = 0;
 		for (int i = 0; i < PROCESSOR_NUM; i++) {
@@ -644,6 +670,42 @@ void Scheduler::DecrementRROverheat() { this->RROverHeated--; }
 void Scheduler::DecrementSJFOverheat() { this->SJFOverHeated--; }
 int Scheduler::getRunningProcess() { return RunningProcessesSum; }
 
+void Scheduler::WorkStealing() {
+	int min = INT_MAX;
+	int max = INT_MIN;
+	int tempindmin = -1;
+	int tempindmax = -1;
+	Processor* LQF = nullptr;
+	Processor* SQF = nullptr;
+	for (int i = 0; i < PROCESSOR_NUM; i++) {
+		if (ProcessorList[i]->getTT() < min) {
+			min = ProcessorList[i]->getTT();
+			tempindmin = i;
+		}
+		if (ProcessorList[i]->getTT() > max) {
+			max = ProcessorList[i]->getTT();
+			tempindmax = i;
+		}
+	}
+	LQF = ProcessorList[tempindmax];
+	SQF = ProcessorList[tempindmin];
+	float TTmax = LQF->getTT();
+	float TTmin = SQF->getTT();
+	float STLRatio;
+	while (true) {
+		STLRatio = ((TTmax - TTmin) / TTmax) * 100;
+		if (STLRatio < 40)
+			break;
+		Process* tmpo= LQF->gettopProcess();
+		if (!tmpo)
+			break;
+		SQF->AddtoRDY(tmpo);
+		WRKSteal++;
+		TTmax = LQF->getTT();
+		TTmin = SQF->getTT();
+	}
+
+}
 Scheduler::~Scheduler() {
 	Process** temp = new Process * [PROCESS_NUM];
 	for (int i = 0; i < PROCESS_NUM; i++) {
