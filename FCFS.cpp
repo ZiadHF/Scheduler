@@ -24,6 +24,8 @@ bool FCFS::MoveToRun(int& RunningNum,int time) {
 			if (currentProcess->getWorkingTime() > s->GetMaxW() && !currentProcess->getisForked() && s->GetRR_NUM() > 0) {
 				Process* move = currentProcess;
 				totalTime -= currentProcess->getWorkingTime();
+				if (!currentProcess->getisForked())
+					totalTimeexc -= currentProcess->getWorkingTime();
 				RemoveRun();
 				if (s->GetRR_NUM() > 0)
 					s->ProcessMigration(move, true);
@@ -58,6 +60,8 @@ bool FCFS::RemoveProcess(int id,Process** x) {
 		if (currentProcess->getID() == id) {
 			currentProcess->setisKilled(true);
 			totalTime -= currentProcess->getWorkingTime();
+			if (!currentProcess->getisForked())
+				totalTimeexc -= currentProcess->getWorkingTime();
 			RemoveRun();
 			return true;
 		}
@@ -66,6 +70,8 @@ bool FCFS::RemoveProcess(int id,Process** x) {
 		Process* temp = *x;
 		temp->setisKilled(true);
 		totalTime -= temp->getWorkingTime();
+		if (!temp->getisForked())
+			totalTimeexc -= temp->getWorkingTime();
 		numOfProcesses--;
 		return true;
 	}
@@ -79,6 +85,8 @@ void FCFS::tick() {
 			if (currentProcess->getWorkingTime() > s->GetMaxW() && !currentProcess->getisForked() && s->GetRR_NUM() > 0) {
 				Process* move = currentProcess;
 				totalTime -= currentProcess->getWorkingTime();
+				if (!currentProcess->getisForked())
+					totalTimeexc -= currentProcess->getWorkingTime();
 				RemoveRun();
 				s->ProcessMigration(move, true);
 				return;
@@ -91,12 +99,16 @@ void FCFS::tick() {
 			if (currentProcess->getCT() - currentProcess->getWorkingTime() == currentProcess->getIO().R) {
 				Process* blk = currentProcess;
 				totalTime -= currentProcess->getWorkingTime();
+				if (!currentProcess->getisForked())
+					totalTimeexc -= currentProcess->getWorkingTime();
 				RemoveRun();
 				s->SendToBLK(blk);
 				return;
 			}
 		}
 			totalTime--;
+			if (!currentProcess->getisForked())
+				totalTimeexc --;
 		if (!currentProcess->DecrementWorkingTime()) {
 			Process* rem = currentProcess;
 			RemoveRun();
@@ -121,6 +133,29 @@ void FCFS::IncrementIdle() { idle++; }
 
 int FCFS::getTotalTime() {
 	return totalTime;
+}
+int FCFS::getTT() {
+	return totalTimeexc;
+}
+void FCFS::setLQF(bool state) {
+	LQF = state;
+}
+void FCFS::setSQF(bool state) {
+	SQF = state;
+}
+bool FCFS::getLQF() {
+	return LQF;
+}
+bool FCFS::getSQF() {
+	return SQF;
+}
+Process* FCFS::gettopProcess() {
+	if (list.IsEmpty()) {
+		return nullptr;
+	}
+	Process** x = nullptr;
+	list.getNextNONforked(x);
+	return *x;
 }
 int FCFS::getNumOfProcesses(){
 	return numOfProcesses;

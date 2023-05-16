@@ -109,7 +109,28 @@ void RR::RemoveRun() {
 	numOfProcesses--;
 	s->RunningProcessesSum--;
 	currentProcess = nullptr; }
-
+void RR::setLQF(bool state) {
+	LQF = state;
+}
+void RR::setSQF(bool state) {
+	SQF = state;
+}
+bool RR::getLQF() {
+	return LQF;
+}
+bool RR::getSQF() {
+	return SQF;
+}
+int RR::getTT() {
+	return totalTime;
+}
+Process* RR::gettopProcess() {
+	Process* temp;
+	list.Dequeue(&temp);
+	totalTime -= temp->getWorkingTime();
+	numOfProcesses--;
+	return temp;
+}
 Queue<Process*>& RR::getlist() {
 	return list;
 }

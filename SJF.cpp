@@ -79,6 +79,27 @@ void SJF::RemoveRun() {
 	s->RunningProcessesSum--;
 	currentProcess = nullptr;
 }
+void SJF::setLQF(bool state) {
+	LQF = state;
+}
+void SJF::setSQF(bool state) {
+	SQF = state;
+}
+bool SJF::getLQF() {
+	return LQF;
+}
+bool SJF::getSQF() {
+	return SQF;
+}
+int SJF::getTT() {
+	return totalTime;
+}
+Process* SJF::gettopProcess() {
+	numOfProcesses--;
+	Process* temp = list.PeekMin();
+	totalTime -= temp->getWorkingTime();
+	return list.getMin();
+}
 MinHeap& SJF::getlist() {
 	return list;
 }

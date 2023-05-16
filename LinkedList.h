@@ -1,5 +1,7 @@
 #pragma once
 #include "Node.h"
+class Process;
+class FCFS;
 template <typename T>
 class LinkedList
 {
@@ -146,6 +148,33 @@ public:
 			}
 			*ID = 0;
 			return false;
+		}
+		return false;
+	}
+
+	bool getNextNONforked(Process** x) {
+		if (IsEmpty()) {
+			return false; 
+		}
+		Process* temp = head->getItem();
+		if (!temp->getisForked()) {
+			RemoveByID(temp->getID(),x);
+			return true;
+		}
+		Node<Process*>* ptr = head->getNext();
+		while (ptr) {
+			Process* temp = ptr->getItem();
+			while (temp->getisForked()) {
+				ptr = ptr->getNext();
+				if (!ptr) {
+					break;
+				}
+				temp = ptr->getItem();
+			}
+			if (!temp->getisForked()) {
+				RemoveByID(temp->getID(),x);
+				return true;
+			}
 		}
 		return false;
 	}

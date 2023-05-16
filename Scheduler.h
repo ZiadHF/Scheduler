@@ -29,6 +29,7 @@ private:
 	void ScheduleToShortestFCFS(Process*);
 	void ScheduleToShortestRR(Process*);
 	void ScheduleToShortestSJF(Process*);
+	void WorkStealing();
 	//Process Addition And Removal;
 	bool KillProcess(int);
 	//Process Movement int lists

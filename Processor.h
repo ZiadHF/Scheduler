@@ -14,4 +14,10 @@ public:
 	virtual void RemoveRun() = 0;
 	virtual float GetBusy() = 0;
 	virtual float GetIdle() = 0;
+	virtual int getTT() = 0;
+	virtual void setLQF(bool state) = 0;
+	virtual void setSQF(bool state) = 0;
+	virtual bool getLQF() = 0;
+	virtual bool getSQF() = 0;
+	virtual Process* gettopProcess() = 0;
 };
