@@ -21,11 +21,12 @@ bool FCFS::MoveToRun(int& RunningNum,int time) {
 	}
 	else{
 		if (currentProcess) {
-			if (currentProcess->getWorkingTime() > s->GetMaxW() && !currentProcess->getisForked()) {
+			if (currentProcess->getWorkingTime() > s->GetMaxW() && !currentProcess->getisForked() && s->GetRR_NUM() > 0) {
 				Process* move = currentProcess;
 				totalTime -= currentProcess->getWorkingTime();
 				RemoveRun();
-				s->ProcessMigration(move, true);
+				if (s->GetRR_NUM() > 0)
+					s->ProcessMigration(move, true);
 			}
 		}
 		if (!currentProcess) {
@@ -55,6 +56,7 @@ bool FCFS::FindProcessByID(int id, Process* x) {
 bool FCFS::RemoveProcess(int id,Process** x) {
 	if (currentProcess != nullptr) {
 		if (currentProcess->getID() == id) {
+			currentProcess->setisKilled(true);
 			totalTime -= currentProcess->getWorkingTime();
 			RemoveRun();
 			return true;
@@ -62,6 +64,7 @@ bool FCFS::RemoveProcess(int id,Process** x) {
 	}
 	if (list.RemoveByID(id, x)) {
 		Process* temp = *x;
+		temp->setisKilled(true);
 		totalTime -= temp->getWorkingTime();
 		numOfProcesses--;
 		return true;
@@ -73,7 +76,7 @@ void FCFS::tick() {
 	MoveToRun(s->RunningProcessesSum,s->GetSystemTime());
 	if (currentProcess) {
 		if (currentProcess) {
-			if (currentProcess->getWorkingTime() > s->GetMaxW() && !currentProcess->getisForked()) {
+			if (currentProcess->getWorkingTime() > s->GetMaxW() && !currentProcess->getisForked() && s->GetRR_NUM() > 0) {
 				Process* move = currentProcess;
 				totalTime -= currentProcess->getWorkingTime();
 				RemoveRun();
@@ -93,7 +96,6 @@ void FCFS::tick() {
 				return;
 			}
 		}
-		
 			totalTime--;
 		if (!currentProcess->DecrementWorkingTime()) {
 			Process* rem = currentProcess;

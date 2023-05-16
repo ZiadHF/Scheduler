@@ -329,6 +329,8 @@ void Scheduler::SendToTRM(Process* temp) {
 	TRM.Enqueue(temp);
 	KillOrphans(temp);
 	temp->setTT(SystemTime);
+	if (temp->getisKilled())
+		temp->setWT(temp->getTRT() - (temp->getCT() - temp->getWorkingTime()));
 	SUM_TRT += temp->getTRT();
 	if (temp->getDL() > SystemTime)
 		DLPass++;
@@ -358,6 +360,7 @@ void Scheduler::DecrementSystemTime() { SystemTime--; }
 void Scheduler::BLKProcessing() {
 	Process* temp = BLK.Peek();
 	if (temp) {
+		temp->incrementtotalIO_D();
 		if (CheckBLK(temp)) {
 			Process** pt = &temp;
 			temp->incrementIO();
@@ -396,11 +399,14 @@ bool Scheduler::KillSignalProcessing() {
 }
 
 void Scheduler::ProcessMigration(Process* p,bool x) {
-	if (x)
+	if (x) {
 		ScheduleToShortestRR(p);
-	else
+	}
+	else {
 		ScheduleToShortestSJF(p);
+	}
 }
+
 void Scheduler::Phase1Processing() {
 	//Simple simulator function for Phase1
 	while (ScheduleNewlyArrivedPhase1());
@@ -513,12 +519,24 @@ void Scheduler::PrintSystemInfo() {
 	wind.printTRM(TRM, TRM.getCount());
 }
 
+void PrintProcesses(Process* p,FILE* outputFile){
+	int AT = p->getAT();
+	int TT = p->getTT();
+	int RT = p->getRT();
+	int CT = p->getCT();
+	int pID = p->getID();
+	int WT = p->getWT();
+	int TRT = p->getTRT();
+	int IO_D = p->getTotalIO_D();
+	fprintf(outputFile, "%-8d %-8d %-8d %-8d %-8d %-8d %-8d %-8d\n", TT, pID, AT, CT, IO_D, WT, RT, TRT);
+}
+
 void Scheduler::OutputFile() {
-	ofstream outputFile("output.txt");
+	FILE* outputFile;
 	try {
-		if (!outputFile.is_open())
-		throw runtime_error("Failed to open the file.");
-		outputFile << "TT \t pID \t AT \t CT \t IO_D \t\t WT \t RT \t TRT\n";
+		if (fopen_s(&outputFile,"output.txt", "w"))
+			throw runtime_error("Failed to open the file.");
+		fprintf(outputFile,"%-8s %-8s %-8s %-8s %-8s %-8s %-8s %-8s\n", "TT", "pID", "AT", "CT", "IO_D", "WT", "RT", "TRT");
 		int i = TRM.getCount();
 		int totalwt = 0;
 		int totalrt = 0;
@@ -528,28 +546,33 @@ void Scheduler::OutputFile() {
 			TRM.Dequeue(&temp[i]);
 			totalwt += (temp[i])->getWT();
 			totalrt += (temp[i])->getRT();
-			outputFile << (temp[i])->getTT() << " \t " << (temp[i])->getID() << " \t " << (temp[i])->getAT() << " \t " << (temp[i])->getCT() << " \t "; //<< (temp[i])->getIO_D();
-			outputFile << (temp[i])->getWT() << " \t " << (temp[i])->getRT() << " \t " << (temp[i])->getTRT() << endl;
+			PrintProcesses(temp[i], outputFile);
 			TRM.Enqueue(temp[i]);
 		}
+		float avgwt = float(totalwt) / PROCESS_NUM;
+		float avgrt = float(totalrt) / PROCESS_NUM;
+		float avgtrt = float(totaltrt) / PROCESS_NUM;
 		delete[] temp;
-		outputFile << endl << "Processes: " << PROCESS_NUM << endl;
-		outputFile << "AVG WT: " << totalwt / PROCESS_NUM << "\t\t AVG RT: " << totalrt / PROCESS_NUM << "\t\t AVG TRT: " << SUM_TRT / PROCESS_NUM << endl;
-		outputFile << "Processors: " << PROCESSOR_NUM <<  " [ " << FCFS_NUM << " FCFS, " << SJF_NUM << " SJF, " << RR_NUM << " RR, " << EDF_NUM << " EDF ]" << endl;
-		outputFile << "Processor Load" << endl;
+		fprintf(outputFile, "Processes: %d\n", PROCESS_NUM);
+		fprintf(outputFile, "AVG WT: %-10.3f AVG RT: %-10.3f AVG TRT: %-10.3f\n",avgwt,avgrt,avgtrt);
+		fprintf(outputFile, "Processes: [%d FCFS, %d SJF, %d RR, %d EDF]\n", FCFS_NUM, SJF_NUM, RR_NUM, EDF_NUM);
+		fprintf(outputFile, "Processor Load:\n");
+		float sumload = 0;
 		for (int i = 0; i < PROCESSOR_NUM; i++) {
-			outputFile << "p" << i + 1 << "= " << (ProcessorList[i]->GetBusy() / SUM_TRT) * 100 << "% , \t\t";
-			if (i == 3)
-				outputFile << endl;
+			float load = (ProcessorList[i]->GetBusy() / SUM_TRT) * 100;
+			sumload += load;
+			fprintf(outputFile, "p%d: %-0.3f%%\n", i + 1, load);
 		}
-		outputFile << endl << "Processors Utilization" << endl;
-		int sumuti = 0;
+		fprintf(outputFile, "Average Load: %-0.3f%%\n", sumload / PROCESSOR_NUM);
+		fprintf(outputFile, "Processor Utilization:\n");
+		float sumuti = 0;
 		for (int i = 0; i < PROCESSOR_NUM; i++) {
-			outputFile << "p" << i + 1 << "= " << (ProcessorList[i]->GetBusy() / (ProcessorList[i]->GetBusy() + ProcessorList[i]->GetIdle())) * 100 << "% , \t\t";
-			sumuti += (ProcessorList[i]->GetBusy() / (ProcessorList[i]->GetBusy() + ProcessorList[i]->GetIdle())) * 100;
+			float utilization = (ProcessorList[i]->GetBusy() / (ProcessorList[i]->GetBusy() + ProcessorList[i]->GetIdle())) * 100;
+			sumuti += utilization;
+			fprintf(outputFile, "p%d: %-0.3f%%\n", i + 1, utilization);
 		}
-		outputFile << endl << "Average Utilization : " << sumuti / PROCESSOR_NUM * 100;
-		outputFile.close();
+		fprintf(outputFile, "Average Utilization : %-0.3f%%\n", sumuti / PROCESSOR_NUM);
+		fclose(outputFile);
 	}
 	catch (const exception e) {
 		cerr << "Error: " << e.what() << std::endl;

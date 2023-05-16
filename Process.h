@@ -6,11 +6,13 @@ class Process
 {
 	const int pID,AT;
 	int RT, CT, TT, TRT, WT, N , DL , WorkingTime,RemIOTime,ListChangeTime;
+	int totalIO_D = 0;
 	IO* IOArr;
 	Process* LChild = nullptr;
 	Process* RChild = nullptr;
 	int currentIO = 0;
 	bool isForked;
+	bool isKilled = false;
 	bool firstTime = true;
 
 public:
@@ -37,6 +39,9 @@ public:
 	int getN();
 	int getRemIOTime();
 	int getListChangeTime();
+	void setisKilled(bool);
+	bool getisKilled();
+	void setWT(int);
 	bool getfirstTime();
 	bool getisForked();
 	bool DecrementRemIOTime();
@@ -44,6 +49,7 @@ public:
 	int getWorkingTime();
 	IO getIO();
 	void incrementIO();
+	void incrementtotalIO_D();
 	Process* getLChild();
 	Process* getRChild();
 	friend ostream& operator<<(ostream& os, Process*& p){
@@ -51,7 +57,7 @@ public:
 		os << temp;
 			return os;
 	}
-	int ReturnTotalIO_D();
+	int getTotalIO_D();
 	bool DecrementWorkingTime();
 	bool JustArrived(int);
 };

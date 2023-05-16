@@ -33,12 +33,14 @@ Process::Process(int a, int p, int ct, int dl,int io ,bool isFRK) : pID(p), AT(a
 void Process::setTT(int tt) {
 	TT = tt;
 	TRT = TT - AT;
-	WT = TRT - CT;
-	//if (TRT < 0)
-		//TRT = 0;
-	//if (WT < 0)
-		//WT = 0;
+	WT = TRT - CT + 1;
 }
+
+void Process::setWT(int x) { WT = x; }
+
+bool Process:: getisKilled() { return isKilled; }
+
+void Process::setisKilled(bool ch) { isKilled = ch; }
 
 bool Process::getisForked() { return isForked; }
 
@@ -103,12 +105,9 @@ int Process::getRemIOTime() { return RemIOTime; }
 
 void Process::setRemIOTime(int in) { RemIOTime = in; }
 
-int Process::ReturnTotalIO_D(){
-	int s = 0;
-	for (int i = 0; i < N; i++)
-		s += IOArr[i].D;
-	return s;
-}
+int Process::getTotalIO_D() { return totalIO_D; }
+
+void Process::incrementtotalIO_D() { totalIO_D++; }
 
 bool Process::DecrementWorkingTime() {	
 	WorkingTime--;

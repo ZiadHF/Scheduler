@@ -32,7 +32,7 @@ bool RR::MoveToRun(int& RunningNum, int time) {
 	}
 	else {
 		if (currentProcess) {
-			if (currentProcess->getWorkingTime() < s->GetRTF()) {
+			if (currentProcess->getWorkingTime() < s->GetRTF() && s->GetSJF_NUM() > 0) {
 				Process* move = currentProcess;
 				totalTime -= currentProcess->getWorkingTime();
 				RemoveRun();
@@ -60,7 +60,7 @@ void RR::tick() {
 	//Case 2 Already one process in run 
 	if (currentProcess) {
 		if (currentProcess) {
-			if (currentProcess->getWorkingTime() < s->GetRTF()) {
+			if (currentProcess->getWorkingTime() < s->GetRTF() && s->GetSJF_NUM() > 0) {
 				Process* move = currentProcess;
 				totalTime -= currentProcess->getWorkingTime();
 				RemoveRun();
