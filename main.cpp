@@ -9,7 +9,7 @@ int main() {
 	Scheduler Test;
 	UI cmd;
 	string s;
-	Test.LoadFromFile("test.txt");
+	Test.LoadFromFile("input.txt");
 	while (!Test.Terminate()) {
 		Test.Processing(true);
 	}
@@ -52,7 +52,7 @@ int main() {
 		}
 	}
 	if (x == 3)
-		cout << "The simulation has ended." << endl << "Output file created." << endl;
+		cout << "The simulation has ended." << endl << "Output file created." << endl << "The simulation took " << Test.GetSystemTime() << " timesteps.";
 	Test.OutputFile();
 	*/
 }
