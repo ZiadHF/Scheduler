@@ -576,7 +576,7 @@ void Scheduler::OutputFile() {
 		fprintf(outputFile, "Work Steal %%: %-0.3f%%\n", WRK);
 		fprintf(outputFile, "Forked Processes %%: %-0.3f%%\n", FRK);
 		fprintf(outputFile, "Killed Processes %%: %-0.3f%%\n\n", KILL);
-		fprintf(outputFile, "Processes: %d [%d FCFS, %d SJF, %d RR, %d EDF]\n",PROCESSOR_NUM, FCFS_NUM, SJF_NUM, RR_NUM, EDF_NUM);
+		fprintf(outputFile, "Processors: %d [%d FCFS, %d SJF, %d RR, %d EDF]\n",PROCESSOR_NUM, FCFS_NUM, SJF_NUM, RR_NUM, EDF_NUM);
 		fprintf(outputFile, "Processor Load:\n");
 		float sumload = 0;
 		for (int i = 0; i < PROCESSOR_NUM; i++) {
