@@ -387,11 +387,12 @@ void Scheduler::SendToTRM(Process* temp) {
 	KillOrphans(temp);
 	temp->setTT(SystemTime);
 	if (temp->getisKilled()) {
-		int num = temp->getTRT() - (temp->getCT() - temp->getWorkingTime());
-		if (num >= 0)
-			temp->setWT(num);
-		else
-			temp->setWT(0);
+		int num = (temp->getTT()-temp->getAT()) - (temp->getCT() - temp->getWorkingTime());
+		temp->setWT(num);
+	//	if (num >= 0)
+		//	temp->setWT(num);
+	//	else
+			//temp->setWT(0);
 	}
 	SUM_TRT += temp->getTRT();
 	if (temp->getDL() > SystemTime)
