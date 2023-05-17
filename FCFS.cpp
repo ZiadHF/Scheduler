@@ -194,6 +194,8 @@ Process* FCFS::gettopProcess() {
 	}
 	Process* x = nullptr;
 	list.getNextNONforked(&x);
+	if (!x)
+		return nullptr;
 	totalTime -= x->getWorkingTime();
 	return x;
 }
