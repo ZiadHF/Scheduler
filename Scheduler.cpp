@@ -3,6 +3,7 @@
 #include <fstream>
 #include "Scheduler.h"
 //Reads everything from an input file and does all necessary initializations
+
 void Scheduler::LoadFromFile(string file) {
 	ifstream read;
 	read.open(file);	
@@ -152,6 +153,7 @@ void Scheduler::LoadFromFile(string file) {
 	}
 }
 //Scheduler default constructor, initializes everything
+
 Scheduler::Scheduler() {
 	RR_TS = 0;
 	RTF = 0; 
@@ -177,8 +179,6 @@ Scheduler::Scheduler() {
 	KilledProcess = 0;
 }
 
-//
-
 //Creating the forked processes
 void Scheduler::AddForkedProcess(Process* parent) {
 	Process* added = new Process(SystemTime, ++PROCESS_NUM, parent->getWorkingTime(),parent->getDL(), 0, true);
@@ -188,19 +188,6 @@ void Scheduler::AddForkedProcess(Process* parent) {
 		parent->setRChild(added);
 	ForkedProcess++;
 	ScheduleToShortestFCFS(added);
-}
-
-//Schedule newly arrived process Phase1
-bool Scheduler::ScheduleNewlyArrivedPhase1() {
-	Process* temp;
-	temp = NEW.Peek();
-	if (temp!=nullptr && temp->getAT() == SystemTime) {
-		NEW.Dequeue(&temp);
-		ScheduleByLeastCount(temp);
-		return true;
-	}
-	return false;
-
 }
 
 //Phase 2 Scheduling of new items into shortest RDY queue
@@ -315,18 +302,12 @@ bool Scheduler::ScheduleToShortest(Process* added) {
 	return true;
 }
 
-//Schedule according to process count in RDY Queue(Phase 1 Function)
-void Scheduler::ScheduleByLeastCount(Process* added) {
-	int index=0;
-	int least = ProcessorList[0]->getNumOfProcesses();
-	for (int i = 1; i < PROCESSOR_NUM; i++) {
-		if (ProcessorList[i]->getNumOfProcesses() < least) {
-			index = i;
-			least = ProcessorList[i]->getNumOfProcesses();
-		}
-	}
-	ProcessorList[index]->AddtoRDY(added);
+//Extra Function used in cases of external classes
+void Scheduler::SendToShortest(Process* x) {
+	this->ScheduleToShortest(x);
 }
+
+
 
 //Searches for a process by id and terminates it(Only applicable in FCFS Processor)
 bool Scheduler::KillProcess(int IDKill) {
@@ -387,9 +368,7 @@ void Scheduler::SendToTRM(Process* temp) {
 	if (temp->getDL() > SystemTime)
 		DLPass++;
 }
-void Scheduler::SendToShortest(Process * x) {
-	this->ScheduleToShortest(x);
-}
+
 
 //Getters of data members
 int Scheduler::GetMaxW() { return MaxW; }
@@ -402,33 +381,19 @@ int Scheduler::GetFCFS_NUM() { return FCFS_NUM; }
 int Scheduler::GetSJF_NUM() { return SJF_NUM; }
 int Scheduler::GetRR_NUM() { return RR_NUM; }
 int Scheduler::GetForkProb() { return ForkProb; }
+int Scheduler::getRunningProcess() { return RunningProcessesSum; }
 
-//Manipulating ProcessNumbers
+//Manipulating DataMembers
 void Scheduler::IncrementProcessNum() { PROCESS_NUM++; }
 void Scheduler::DecrementProcessNum() { PROCESS_NUM--; }
 
-//Manipulating SystemTime
 void Scheduler::IncrementSystemTime() { SystemTime++; }
 void Scheduler::DecrementSystemTime() { SystemTime--; }
 
+void Scheduler::IncrementRunningProcessesSum() { RunningProcessesSum++; }
+void Scheduler::DecrementRunningProcessesSum() { RunningProcessesSum--; }
+
 //Processing functions
-void Scheduler::BLKProcessing() {
-	Process* temp = BLK.Peek();
-	if (temp) {
-		temp->incrementtotalIO_D();
-		if (CheckBLK(temp)) {
-			Process** pt = &temp;
-			temp->incrementIO();
-			BLK.Dequeue(pt);
-			ScheduleToShortest(temp);
-		}
-	}
-}
-bool Scheduler::CheckBLK(Process* ptr) {
-	if (!ptr->DecrementRemIOTime())
-		return true;
-	return false;
-}
 void Scheduler::Processing(bool mode) {
 	//Check for kill signals before processing
 	while (KillSignalProcessing());
@@ -448,6 +413,26 @@ void Scheduler::Processing(bool mode) {
 		PrintSystemInfo();
 	SystemTime++;
 }
+
+void Scheduler::BLKProcessing() {
+	Process* temp = BLK.Peek();
+	if (temp) {
+		temp->incrementtotalIO_D();
+		if (CheckBLK(temp)) {
+			Process** pt = &temp;
+			temp->incrementIO();
+			BLK.Dequeue(pt);
+			ScheduleToShortest(temp);
+		}
+	}
+}
+
+bool Scheduler::CheckBLK(Process* ptr) {
+	if (!ptr->DecrementRemIOTime())
+		return true;
+	return false;
+}
+
 bool Scheduler::KillSignalProcessing() {
 	int temp = 0;
 	Kill_Process.CheckKillSignal(&temp, SystemTime);
@@ -456,6 +441,43 @@ bool Scheduler::KillSignalProcessing() {
 		return true;
 	}
 	return false;
+}
+
+void Scheduler::WorkStealing() {
+	int min = INT_MAX;
+	int max = INT_MIN;
+	int tempindmin = -1;
+	int tempindmax = -1;
+	Processor* LQF = nullptr;
+	Processor* SQF = nullptr;
+	for (int i = 0; i < PROCESSOR_NUM; i++) {
+		if (ProcessorList[i]->getTT() < min) {
+			min = ProcessorList[i]->getTT();
+			tempindmin = i;
+		}
+		if (ProcessorList[i]->getTT() > max) {
+			max = ProcessorList[i]->getTT();
+			tempindmax = i;
+		}
+	}
+	LQF = ProcessorList[tempindmax];
+	SQF = ProcessorList[tempindmin];
+	float TTmax = LQF->getTT();
+	float TTmin = SQF->getTT();
+	float STLRatio;
+	while (true) {
+		STLRatio = ((TTmax - TTmin) / TTmax) * 100;
+		if (STLRatio < 40)
+			break;
+		Process* tmpo = LQF->gettopProcess();
+		if (!tmpo)
+			break;
+		SQF->AddtoRDY(tmpo);
+		WRKSteal++;
+		TTmax = LQF->getTT();
+		TTmin = SQF->getTT();
+	}
+
 }
 
 bool Scheduler::ProcessMigration(Process* p,bool x) {
@@ -470,91 +492,14 @@ bool Scheduler::ProcessMigration(Process* p,bool x) {
 	}
 }
 
-void Scheduler::Phase1Processing() {
-	//Simple simulator function for Phase1
-	while (ScheduleNewlyArrivedPhase1());
-	for (int i = 0; i < PROCESSOR_NUM; i++) {
-		ProcessorList[i]->MoveToRun(RunningProcessesSum, SystemTime);
-		if (ProcessorList[i]->GetRun() != nullptr)
-		{
-			Process* temp;
-			int random = 1 + rand() % 100;
-			if (random >= 1 && random <= 15) {
-				temp = ProcessorList[i]->GetRun();
-				ProcessorList[i]->RemoveRun();
-				RunningProcessesSum--;
-				SendToBLK(temp);
-			}
-			if (random >= 20 && random <= 30) {
-				temp = ProcessorList[i]->GetRun();
-				ProcessorList[i]->RemoveRun();
-				RunningProcessesSum--;
-				ScheduleByLeastCount(temp);
-			}
-			if (random >= 50 && random <= 60) {
-				temp = ProcessorList[i]->GetRun();
-				ProcessorList[i]->RemoveRun();
-				RunningProcessesSum--;
-				SendToTRM(temp);
-			}
-		}
-	}
-	BLKProcessing();
-	RemoveRandomProcessPhase1();
-	PrintSystemInfo();
-	SystemTime++;
-}
-void Scheduler::BLKProcessingPhase1() {
-	//BLK Processing using random numbers for Phase1
-	Process* temp;
-	temp = BLK.Peek();
-	int random;
-	random = 1 + rand() % 100;
-	if (temp) {
-		if (random < 10) {
-			BLK.Dequeue(&temp);
-			ScheduleByLeastCount(temp);
-		}
-	}
-}
-
-
-
 //Termination condition
 bool Scheduler::Terminate() {
-	if (TRM.getCount() == PROCESS_NUM)
+	if (TRM.getCount() == PROCESS_NUM||PROCESS_NUM==0||PROCESSOR_NUM==0)
 		return true;
 	return false;
 }
 
-//Removing random functions from ready for Phase1
-void Scheduler::RemoveRandomProcessPhase1() {
-	int random;
-	Process* temp=nullptr;
-	for (int i = 0; i < FCFS_NUM; i++) {
-		if (ProcessorList[i]->getNumOfProcesses() != 0&& ProcessorList[i]->getNumOfProcesses()!=1) {
-			while (1) {
-				random = 1 + rand() % PROCESS_NUM;
-				if (ProcessorList[i]->RemoveProcess(random, &temp)){
-					SendToTRM(temp);
-					break;
-				}
-			}
-		}
-	}
-}
-
-//Print Termination list
-void Scheduler::PrintTRM() {
-	TRM.Print();
-}
-
-//Increase the Num of processes in run state of processors
-void Scheduler::incrementRunningProcessCount() {
-	RunningProcessesSum++;
-}
-
-//Print all System information
+//Print all System information and needed functions
 void Scheduler::PrintSystemInfo() {
 	UI wind(SystemTime);
 	for (int i = 0; i < PROCESSOR_NUM; i++) {
@@ -583,18 +528,11 @@ void Scheduler::PrintSystemInfo() {
 	wind.printTRM(TRM, TRM.getCount());
 }
 
-void PrintProcesses(Process* p,FILE* outputFile){
-	int AT = p->getAT();
-	int TT = p->getTT();
-	int RT = p->getRT();
-	int CT = p->getCT();
-	int pID = p->getID();
-	int WT = p->getWT();
-	int TRT = p->getTRT();
-	int IO_D = p->getTotalIO_D();
-	fprintf(outputFile, "%-8d %-8d %-8d %-8d %-8d %-8d %-8d %-8d\n", TT, pID, AT, CT, IO_D, WT, RT, TRT);
+void Scheduler::PrintTRM() {
+	TRM.Print();
 }
 
+//Output File creation. Calculates all required percentages and handles formatting.
 void Scheduler::OutputFile() {
 	FILE* outputFile;
 	try {
@@ -660,50 +598,20 @@ void Scheduler::OutputFile() {
 	}
 }
 
-int Scheduler::GetTotalIdleBusy(){
-	int sum = 0;
-	return sum;
+void Scheduler::PrintProcesses(Process* p, FILE* outputFile) {
+	int AT = p->getAT();
+	int TT = p->getTT();
+	int RT = p->getRT();
+	int CT = p->getCT();
+	int pID = p->getID();
+	int WT = p->getWT();
+	int TRT = p->getTRT();
+	int IO_D = p->getTotalIO_D();
+	fprintf(outputFile, "%-8d %-8d %-8d %-8d %-8d %-8d %-8d %-8d\n", TT, pID, AT, CT, IO_D, WT, RT, TRT);
 }
 
-int Scheduler::getRunningProcess() { return RunningProcessesSum; }
-void Scheduler::IncrementRunningProcessesSum() { RunningProcessesSum++; }
-void Scheduler::DecrementRunningProcessesSum() { RunningProcessesSum--; }
-void Scheduler::WorkStealing() {
-	int min = INT_MAX;
-	int max = INT_MIN;
-	int tempindmin = -1;
-	int tempindmax = -1;
-	Processor* LQF = nullptr;
-	Processor* SQF = nullptr;
-	for (int i = 0; i < PROCESSOR_NUM; i++) {
-		if (ProcessorList[i]->getTT() < min) {
-			min = ProcessorList[i]->getTT();
-			tempindmin = i;
-		}
-		if (ProcessorList[i]->getTT() > max) {
-			max = ProcessorList[i]->getTT();
-			tempindmax = i;
-		}
-	}
-	LQF = ProcessorList[tempindmax];
-	SQF = ProcessorList[tempindmin];
-	float TTmax = LQF->getTT();
-	float TTmin = SQF->getTT();
-	float STLRatio;
-	while (true) {
-		STLRatio = ((TTmax - TTmin) / TTmax) * 100;
-		if (STLRatio < 40)
-			break;
-		Process* tmpo= LQF->gettopProcess();
-		if (!tmpo)
-			break;
-		SQF->AddtoRDY(tmpo);
-		WRKSteal++;
-		TTmax = LQF->getTT();
-		TTmin = SQF->getTT();
-	}
+//Scheduler class destructor, handling all necessary deallocations
 
-}
 Scheduler::~Scheduler() {
 	Process** temp = new Process * [PROCESS_NUM];
 	for (int i = 0; i < PROCESS_NUM; i++) {

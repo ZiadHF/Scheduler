@@ -54,7 +54,7 @@ bool RR::MoveToRun(int& RunningNum, int time) {
 				currentProcess->setfirstTime(false);
 			}
 			remainingticks = TimeSlice;
-			s->incrementRunningProcessCount();
+			s->IncrementRunningProcessesSum();
 			return true;
 		}
 	}

@@ -27,7 +27,7 @@ bool EDF::MoveToRun(int& RunningNum,int time){
 				currentProcess->setRT(s->GetSystemTime() - currentProcess->getAT());
 				currentProcess->setfirstTime(false);
 			}
-			s->incrementRunningProcessCount();
+			s->IncrementRunningProcessesSum();
 			return true;
 		}
 		if (currentProcess->getDL() > list.PeekMin()->getDL()) {

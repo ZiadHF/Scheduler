@@ -26,8 +26,6 @@ private:
 	LinkedList<SIGKILL> Kill_Process;
 	Processor** ProcessorList;
 	//Scheduling Functions
-	void ScheduleByLeastCount(Process*);
-	bool ScheduleNewlyArrivedPhase1();
 	bool ScheduleNewlyArrived();
 	bool ScheduleToShortest(Process*);
 	bool ScheduleToShortestRR(Process*);
@@ -43,8 +41,6 @@ private:
 	void IncrementProcessNum();
 	void DecrementProcessNum();
 	void BLKProcessing();
-	void BLKProcessingPhase1();
-	void RemoveRandomProcessPhase1();
 	bool KillSignalProcessing();
 	bool SchedulePRK();
 public:
@@ -63,7 +59,6 @@ public:
 	Scheduler();
 	void LoadFromFile(string);
 	bool Terminate();
-	void Phase1Processing();
 	//Getters
 	int getRunningProcess();
 	int Get_RR_TimeSlice();
@@ -75,11 +70,10 @@ public:
 	int GetFCFS_NUM();
 	int GetSJF_NUM();
 	int GetRR_NUM();
-	int GetTotalIdleBusy();
 	int GetForkProb();
 	void PrintTRM();
-	void incrementRunningProcessCount();
 	void PrintSystemInfo();
 	void OutputFile();
 	~Scheduler();
+	void PrintProcesses(Process* p, FILE* outputFile);
 };
