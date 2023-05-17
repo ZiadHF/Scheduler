@@ -16,22 +16,27 @@ private:
 	int TOH = 0;
 public:
 	SJF(Scheduler*,int OverH,int prob);
+	// OverHeating functions:
 	int getTOH();
-	void SetScheduler(Scheduler*);
-	bool RemoveProcess(int id, Process** x);
-	bool MoveToRun(int&,int);
-	Process* GetRun();
-	void AddtoRDY(Process* x);
-	void tick();
-	int getTotalTime();
-	int getNumOfProcesses();
-	bool FindProcessByID(int id, Process* x);
-	void RemoveRun();
-	void IncrementBusy();
-	void IncrementIdle();
+	// Setters and getters:
 	float GetBusy();
 	float GetIdle();
 	int getTT();
+	int getTotalTime();
+	int getNumOfProcesses();
+	Process* GetRun();
+	void SetScheduler(Scheduler*);
 	Process* gettopProcess();
 	MinHeap& getlist();
+	// Moving Processes
+	bool RemoveProcess(int id, Process** x);
+	bool MoveToRun(int&,int);
+	void AddtoRDY(Process* x);
+	void tick();
+	void RemoveRun();
+	// Helper Functions:
+	void IncrementBusy();
+	void IncrementIdle();
+	bool FindProcessByID(int id, Process* x);
+
 };

@@ -1,8 +1,9 @@
 #include"SJF.h"
-
+// Since Removing a process isn't supported in SJF its a dummy function.
 bool SJF::RemoveProcess(int id, Process** x) {
 	return false;
 }
+// Adding to the RDY queue.
 void SJF::AddtoRDY(Process* x) {
 	numOfProcesses++;
 	totalTime += x->getWorkingTime();
@@ -17,11 +18,13 @@ SJF::SJF(Scheduler* main,int OverH,int prob) : busy(0),idle(0){
 	OverheatProb = prob;
 }
 bool SJF::MoveToRun(int& RunningNum,int time) {
+	// Incrementing IDLE if nothing is the RDY and the RUN.
 	if (list.IsEmpty()) {
 		if (!currentProcess)
 			IncrementIdle();
 	}
 	else {
+		//	Things to be done if this is the first time the process is getting into the RUN.
 		if (!currentProcess) {
 			currentProcess = list.getMin();
 			if (currentProcess->getfirstTime()) {
@@ -46,7 +49,10 @@ int SJF::getTOH() { return TOH; }
 Process* SJF::GetRun() { return currentProcess; }
 
 void SJF::tick() {
+	// Overheating Logic 
 	int OverHeatRand = std::rand() % 100;
+	// TOH stands for Time OverHeated. Counts the timesteps left for the overheated processor.
+	// Used for checking if the processor is overheated too.
 	if (TOH > 0) {
 		TOH--;
 		while (!list.IsEmpty()) {
@@ -59,7 +65,7 @@ void SJF::tick() {
 		}
 		return;
 	}
-
+	// The condition that uses the overheat probability to check if the processor goes into overheat in this timestep.
 	if (OverHeatRand < OverheatProb) {
 		TOH = Overheat;
 		if (currentProcess != nullptr) {
@@ -82,11 +88,13 @@ void SJF::tick() {
 
 		return;
 	}
+	// SJF processing logic.
 	int tmp2 = s->GetSystemTime();
 	int tmp3 = s->getRunningProcess();
 	MoveToRun(tmp3, tmp2);
 	if (currentProcess) {
 		IncrementBusy();
+		// Checking if the process need to go to BLK.
 		if (!currentProcess->CheckIO()) {
 			if (currentProcess->getCT() - currentProcess->getWorkingTime() == currentProcess->getIO().R) {
 				Process* blk = currentProcess;
@@ -97,6 +105,7 @@ void SJF::tick() {
 			}
 		}
 			totalTime--;
+			// Termination logic.
 		if (!currentProcess->DecrementWorkingTime()) {
 			Process* rem = currentProcess;
 			RemoveRun();
@@ -123,7 +132,7 @@ MinHeap& SJF::getlist() {
 	return list;
 }
 
-//Work Stealing
+// Work Stealing.
 
 int SJF::getTT() {
 	return totalTime;
