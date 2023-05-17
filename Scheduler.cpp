@@ -616,8 +616,13 @@ void Scheduler::OutputFile() {
 		float avgwt = float(totalwt) / PROCESS_NUM;
 		float avgrt = float(totalrt) / PROCESS_NUM;
 		float avgtrt = float(totaltrt) / PROCESS_NUM;
-		float RRMig = (RRMigration / PROCESS_NUM) * 100;
-		float SJFMig = (SJFMigration / PROCESS_NUM) * 100;
+		float TotalMigration = RRMigration + SJFMigration;
+		float RRMig = 0;
+		float SJFMig = 0;
+		if (TotalMigration != 0) {
+			RRMig = (RRMigration / TotalMigration) * 100;
+			SJFMig = (SJFMigration / TotalMigration) * 100;
+		}
 		float WRK = (WRKSteal / PROCESS_NUM) * 100;
 		float FRK = (ForkedProcess / PROCESS_NUM) * 100;
 		float KILL = (KilledProcess / PROCESS_NUM) * 100;
