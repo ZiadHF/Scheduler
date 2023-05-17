@@ -12,9 +12,6 @@ void EDF::AddtoRDY(Process* p) {
 	totalTime +=  p->getWorkingTime();
 	list.Insert(p);
 }
-int EDF::getTOH() {
-	return TOH;
-}
 bool EDF::MoveToRun(int& RunningNum,int time){
 	if (list.IsEmpty()){
 		if (!currentProcess)
@@ -127,6 +124,7 @@ float EDF::GetIdle() { return idle; }
 MinHeap& EDF::getlist() { return list; }
 int EDF::getTotalTime() { return totalTime; }
 int EDF::getTT() { return totalTime; }
+int EDF::getTOH() { return TOH; }
 
 //Work Stealing
 

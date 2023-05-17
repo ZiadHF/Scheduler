@@ -19,24 +19,30 @@ private:
 	Scheduler* s = nullptr;
 
 public:
+	//Constructor
 	 FCFS(int forkP,Scheduler*,int Overheat,int prob);
-	 int getTOH();
+	 //Setters and Getters
 	 void SetScheduler(Scheduler*);
+	 int getTOH();
+	 float GetBusy();
+	 int getTT() ;
+	 Process* gettopProcess();
+	 LinkedList<Process*>& getlist();
+	 //Adding, Moving and Removing
+	 float GetIdle();
+	 void AddtoRDY(Process* x);
+	 void RemoveRun();
+	 //Ticking
+	 void tick();
+	 //Finding and Removing
 	 bool FindProcessByID(int id, Process* x);
 	 bool RemoveProcess(int id,Process** x);
-	 void AddtoRDY(Process* x);
-	 void tick();
 	 int getTotalTime();
 	 Process* GetRun();
 	 int getNumOfProcesses();
 	 bool MoveToRun(int& ,int);
-	 void RemoveRun();
+	 //Increments
 	 void IncrementBusy();
 	 void IncrementIdle();
-	 float GetBusy();
-	 float GetIdle();
-	 int getTT() ;
-	 Process* gettopProcess();
-	 LinkedList<Process*>& getlist();
 };
  
