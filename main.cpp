@@ -5,13 +5,20 @@
 #include <Windows.h>
 
 int main() {
+
 	srand(time(0));
 	Scheduler Test;
 	UI cmd;
 	string s;
 	try {
 		s = cmd.GetFileName();
-		Test.LoadFromFile(s);
+		if(!Test.LoadFromFile(s))
+			throw int(5);
+		
+	}
+	catch (int z) {
+		cout << "No Processors or Processes loaded";
+		return 5;
 	}
 	catch (const exception& e) {
 		cout << "An exception occured: " << e.what() << endl;
@@ -49,5 +56,4 @@ int main() {
 	if (x == 3)
 		cout << "The simulation has ended." << endl << "Output file created." << endl << "The simulation took " << Test.GetSystemTime() << " timesteps.";
 	Test.OutputFile();
-	
 }

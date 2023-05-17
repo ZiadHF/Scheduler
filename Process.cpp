@@ -98,6 +98,9 @@ bool Process::CheckIO() {
 		return true;
 	return false;
 }
+IO* Process::GetIOArr() {
+	return IOArr;
+}
 
 int Process::getIOIncrement() { return currentIO; }
 

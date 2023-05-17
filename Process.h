@@ -60,5 +60,6 @@ public:
 	int getTotalIO_D();
 	bool DecrementWorkingTime();
 	bool JustArrived(int);
+	IO* GetIOArr();
 };
 

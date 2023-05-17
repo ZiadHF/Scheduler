@@ -6,6 +6,7 @@ UI::UI(int timestep) {
 	cout << "-----------------     RDY Processes     -----------------" << endl;}
 UI::UI() {}
 
+
 string UI::GetFileName() {
 	string temp;
 	cout << "Enter the filename you want to run followed by .txt\n";
@@ -36,7 +37,7 @@ void UI::printFCFSProcessorInfo(FCFS* obj, int ProccessorID) {
 	cout << "Processor " << ProccessorID;
 	string name;
 	if (obj->getTOH() > 0) {
-		name = "FCFS*";
+		name = "\x1B[9mFCFS\x1B[0m OVHT";
 	}
 	else {
 		 name = "FCFS";
@@ -49,7 +50,7 @@ void UI::printRRProcessorInfo(RR* obj, int ProccessorID) {
 	cout << "Processor " << ProccessorID;
 	string name;
 	if (obj->getTOH() > 0) {
-		name = "RR*";
+		name = "\x1B[9mRR\x1B[0m OVHT";
 	}
 	else {
 		name = "RR";
@@ -62,7 +63,7 @@ void UI::printSJFProcessorInfo(SJF* obj, int ProccessorID) {
 	cout << "Processor " << ProccessorID;
 	string name;
 	if (obj->getTOH() > 0) {
-		name = "SJF*";
+		name = "\x1B[9mSJF\x1B[0m OVHT";
 	}
 	else {
 		name = "SJF";
@@ -76,7 +77,7 @@ void UI::printEDFProcessorInfo(EDF* obj, int ProccessorID) {
 
 	string name;
 	if (obj->getTOH() > 0) {
-		name = "EDF*";
+		name = "\x1B[9mEDF\x1B[0m OVHT";
 	}
 	else {
 		name = "EDF";

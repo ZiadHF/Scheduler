@@ -30,7 +30,7 @@ private:
 	bool ScheduleToShortest(Process*);
 	bool ScheduleToShortestRR(Process*);
 	bool ScheduleToShortestSJF(Process*);
-  void WorkStealing();
+    void WorkStealing();
 	//Process Addition And Removal;
 	bool KillProcess(int);
 	//Process Movement int lists
@@ -57,7 +57,7 @@ public:
 	void KillOrphans(Process*);
 	//Others
 	Scheduler();
-	void LoadFromFile(string);
+	bool LoadFromFile(string);
 	bool Terminate();
 	//Getters
 	int getRunningProcess();

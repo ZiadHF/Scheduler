@@ -4,7 +4,7 @@
 #include "Scheduler.h"
 //Reads everything from an input file and does all necessary initializations
 
-void Scheduler::LoadFromFile(string file) {
+bool Scheduler::LoadFromFile(string file) {
 	ifstream read;
 	read.open(file);	
 	string temp;
@@ -62,6 +62,7 @@ void Scheduler::LoadFromFile(string file) {
 			ForkProb = misc[3];
 			break;
 		case(4):
+			//Overheat duration input
 			OverheatNum = stoi(temp);
 		case(5):
 			//Number of processes
@@ -70,6 +71,9 @@ void Scheduler::LoadFromFile(string file) {
 		}
 	}
 	//Looping on N Process lines
+	PROCESSOR_NUM = FCFS_NUM + SJF_NUM + RR_NUM + EDF_NUM;
+	if (PROCESS_NUM == 0 || PROCESSOR_NUM == 0)
+		return false;
 	for (int i = 0; i < PROCESS_NUM; i++) {
 		getline(read, temp);
 		int k = 0;
@@ -108,6 +112,7 @@ void Scheduler::LoadFromFile(string file) {
 					k += 2;
 			}
 		}
+		//Adding the created Processes to the new queue
 		Process* tempPro=new Process(Process_Data[0], Process_Data[1], Process_Data[2], Process_Data[4],Process_Data[3],IOArr);
 		NEW.Enqueue(tempPro);
 	}
@@ -133,7 +138,9 @@ void Scheduler::LoadFromFile(string file) {
 		temp3.Kill_Time = misc[0];
 		Kill_Process.Insert(temp3);
 	}
-	int OverheatProbability = 1;
+	//Initializing the overheat probability with a low value, can be changed only from here
+	int OverheatProbability = 0;
+
 	//Creating the list of available processors
 	PROCESSOR_NUM = FCFS_NUM + SJF_NUM + RR_NUM + EDF_NUM;
 	ProcessorList = new Processor*[PROCESSOR_NUM];
@@ -151,6 +158,7 @@ void Scheduler::LoadFromFile(string file) {
 			ProcessorList[i] = new EDF(this, OverheatNum, OverheatProbability);
 		}
 	}
+	return true;
 }
 //Scheduler default constructor, initializes everything
 
@@ -200,9 +208,9 @@ bool Scheduler::ScheduleNewlyArrived() {
 		return true;
 	}
 	return false;
-
 }
 
+//Scheduling to the PRK queue in case of total system overheat
 bool Scheduler::SchedulePRK() {
 	Process* temp = nullptr;
 	PRK.Dequeue(&temp);
@@ -212,7 +220,6 @@ bool Scheduler::SchedulePRK() {
 		}
 	}
 	return false;
-
 }
 
 //Schedules processes in the shortest FCFS RDY Queue
@@ -307,12 +314,11 @@ void Scheduler::SendToShortest(Process* x) {
 	this->ScheduleToShortest(x);
 }
 
-
-
 //Searches for a process by id and terminates it(Only applicable in FCFS Processor)
 bool Scheduler::KillProcess(int IDKill) {
 	Process* temp=nullptr;
 	for (int i = 0; i < FCFS_NUM; i++) {
+		//Checks if the process to be removed is in the run state in the processor and removes it
 		if (ProcessorList[i]->GetRun() != nullptr) {
 			temp = ProcessorList[i]->GetRun();
 			if (temp->getID() == IDKill) {
@@ -322,6 +328,7 @@ bool Scheduler::KillProcess(int IDKill) {
 				return true;
 			}
 		}
+		//Checks the RDY queue for the process and removes it if found
 		if (ProcessorList[i]->FindProcessByID(IDKill,temp)) {
 			ProcessorList[i]->RemoveProcess(IDKill,&temp);
 			KilledProcess++;
@@ -332,15 +339,17 @@ bool Scheduler::KillProcess(int IDKill) {
 	return false;
 }
 
-//Kill Children with no parent
+//Checks for forked children of the process and terminates them.
 void Scheduler::KillOrphans(Process* TRMParent) {
 	Process* tempR;
 	Process* tempL;
 	if (TRMParent != nullptr) {
+		//Terminating left child
 		tempL = TRMParent->getLChild();
 		if (tempL != nullptr) {
 			KillProcess(tempL->getID());
 		}
+		//Terminating right child
 		tempR = TRMParent->getRChild();
 		if (tempR != nullptr) {
 			KillProcess(tempR->getID());
@@ -355,8 +364,11 @@ void Scheduler::SendToBLK(Process* temp) { BLK.Enqueue(temp); }
 //Add to the termination list(TRM)
 void Scheduler::SendToTRM(Process* temp) {
 	TRM.Enqueue(temp);
+	//Calls the kill orphan function to remove all forked processes related to it
 	KillOrphans(temp);
+	//Setting process termination time and other data members related to termination
 	temp->setTT(SystemTime);
+	//Checks if the process being terminated was removed abnormally and correctly sets is waiting time.
 	if (temp->getisKilled()) {
 		int num = (temp->getTT()-temp->getAT()) - (temp->getCT() - temp->getWorkingTime());
 		if (num >= 0)
@@ -364,11 +376,12 @@ void Scheduler::SendToTRM(Process* temp) {
 		else
 			temp->setWT(0);
 	}
+	//Adds to total turn around time of the system
 	SUM_TRT += temp->getTRT();
+	//Checks if process has terminated before deadline
 	if (temp->getDL() > SystemTime)
 		DLPass++;
 }
-
 
 //Getters of data members
 int Scheduler::GetMaxW() { return MaxW; }
@@ -535,6 +548,8 @@ void Scheduler::PrintTRM() {
 //Output File creation. Calculates all required percentages and handles formatting.
 void Scheduler::OutputFile() {
 	FILE* outputFile;
+	if (PROCESS_NUM == 0 || PROCESSOR_NUM == 0)
+		return;
 	try {
 		if (fopen_s(&outputFile,"output.txt", "w"))
 			throw runtime_error("Failed to open the file.");
@@ -598,6 +613,7 @@ void Scheduler::OutputFile() {
 	}
 }
 
+//Handles formatting of the printed processes in output file
 void Scheduler::PrintProcesses(Process* p, FILE* outputFile) {
 	int AT = p->getAT();
 	int TT = p->getTT();
@@ -613,14 +629,19 @@ void Scheduler::PrintProcesses(Process* p, FILE* outputFile) {
 //Scheduler class destructor, handling all necessary deallocations
 
 Scheduler::~Scheduler() {
-	Process** temp = new Process * [PROCESS_NUM];
-	for (int i = 0; i < PROCESS_NUM; i++) {
-		TRM.Dequeue(&temp[i]);
-		delete temp[i];
+	if (PROCESSOR_NUM != 0 && PROCESS_NUM != 0) {
+		Process** temp = new Process * [PROCESS_NUM];
+		for (int i = 0; i < PROCESS_NUM; i++) {
+			TRM.Dequeue(&temp[i]);
+			IO* arrtemp = temp[i]->GetIOArr();
+			if (arrtemp)
+				delete[] arrtemp;
+			delete temp[i];
+		}
+		delete[]temp;
+		for (int i = 0; i < PROCESSOR_NUM; i++) {
+			delete ProcessorList[i];
+		}
+		delete[] ProcessorList;
 	}
-	delete[]temp;
-	for (int i = 0; i < PROCESSOR_NUM; i++) {
-		delete ProcessorList[i];
-	}
-	
 }
