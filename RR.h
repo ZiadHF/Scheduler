@@ -18,22 +18,28 @@ private:
 	Scheduler* s = nullptr;
 public:
 	RR(int t,Scheduler*,int overH,int prob);
+	// OverHeating functions:
 	int getTOH();
-	void SetScheduler(Scheduler* );
-	bool RemoveProcess(int id, Process** x);
-	bool MoveToRun(int&,int); 
-	Process* GetRun();
-	void AddtoRDY(Process* x);
-	void tick();
-	int getTotalTime();
-	int getNumOfProcesses();
-	bool FindProcessByID(int id, Process* x);
-	void RemoveRun();
-	void IncrementBusy();
-	void IncrementIdle();
-	float GetBusy();
-	float GetIdle();
+	// Setters and getters:
 	int getTT();
 	Process* gettopProcess();
 	Queue<Process*>& getlist();
+	float GetBusy();
+	float GetIdle();
+	void SetScheduler(Scheduler* );
+	Process* GetRun();
+	int getTotalTime();
+	int getNumOfProcesses();
+	// Moving Processes
+	bool RemoveProcess(int id, Process** x);
+	bool MoveToRun(int&,int); 
+	void AddtoRDY(Process* x);
+	void tick();
+	void RemoveRun();
+	// Helper Functions:
+	bool FindProcessByID(int id, Process* x);
+	void IncrementBusy();
+	void IncrementIdle();
+	
+	
 };
