@@ -34,6 +34,8 @@ void Process::setTT(int tt) {
 	TT = tt;
 	TRT = TT - AT;
 	WT = TRT - CT + 1;
+	//if (WT < 0)
+	//	WT = 0;
 }
 
 void Process::setWT(int x) { WT = x; }
