@@ -24,7 +24,7 @@ bool SJF::MoveToRun(int& RunningNum,int time) {
 			IncrementIdle();
 	}
 	else {
-		//	Things to be done if this is the first time the process is getting into the RUN.
+		//	Adding to RUN and doing the things needed if this is the first time the process is getting into the RUN.
 		if (!currentProcess) {
 			currentProcess = list.getMin();
 			if (currentProcess->getfirstTime()) {

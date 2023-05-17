@@ -7,7 +7,7 @@ RR::RR(int t,Scheduler* main,int overH,int prob) : busy(0), idle(0) {
 	OverheatProb = prob;
 	Overheat = overH;
 }
-
+// Adding to the RDY queue.
 void RR::AddtoRDY(Process* x) {
 	numOfProcesses++;
 	totalTime += x->getWorkingTime();
@@ -31,12 +31,14 @@ bool RR::FindProcessByID(int id, Process* x) {
 	return false;
 }
 bool RR::MoveToRun(int& RunningNum, int time) {
+	// Incrementing IDLE if nothing is the RDY and the RUN.
 	if (list.IsEmpty()) {
 		if (!currentProcess)
 			IncrementIdle();
 	}
 	else {
 		if (currentProcess) {
+			// Conditions of Migrating the process in the RUN.
 			if (currentProcess->getWorkingTime() < s->GetRTF() && s->GetSJF_NUM() > 0) {
 				Process* move = currentProcess;
 				
@@ -47,6 +49,7 @@ bool RR::MoveToRun(int& RunningNum, int time) {
 				
 			}
 		}
+		//	Adding to RUN and doing the things needed if this is the first time the process is getting into the RUN.
 		if (!currentProcess) {
 			list.Dequeue(&currentProcess);
 			if (currentProcess->getfirstTime()) {
@@ -63,7 +66,10 @@ bool RR::MoveToRun(int& RunningNum, int time) {
 Process* RR::GetRun() { return currentProcess; }
 
 void RR::tick() {
+	// Overheating Logic 
 	int OverHeatRand = std::rand() % 100;
+	// TOH stands for Time OverHeated. Counts the timesteps left for the overheated processor.
+	// Used for checking if the processor is overheated too.
 	if (TOH > 0) {
 		TOH--;
 		while (!list.IsEmpty()) {
@@ -76,7 +82,7 @@ void RR::tick() {
 		}
 		return;
 	}
-
+	// The condition that uses the overheat probability to check if the processor goes into overheat in this timestep.
 	if (OverHeatRand < OverheatProb) {
 		TOH = Overheat;
 		if (currentProcess != nullptr) {
@@ -99,12 +105,13 @@ void RR::tick() {
 
 		return;
 	}
-
+	// RR processing logic.
 	int tmp3 = s->getRunningProcess();
 	MoveToRun(tmp3, s->GetSystemTime());
-	//Case 2 Already one process in run 
+	 
 	if (currentProcess) {
 		if (currentProcess) {
+			// Conditions for migration.
 			if (currentProcess->getWorkingTime() < s->GetRTF() && s->GetSJF_NUM() > 0) {
 				Process* move = currentProcess;
 				if (s->ProcessMigration(move, false)) {
@@ -115,6 +122,7 @@ void RR::tick() {
 			}
 		}
 		IncrementBusy();
+		// BLK checks.
 		if (!currentProcess->CheckIO()) {
 			if (currentProcess->getCT() - currentProcess->getWorkingTime() == currentProcess->getIO().R) {
 				Process* blk = currentProcess;
@@ -125,6 +133,7 @@ void RR::tick() {
 			}
 		}
 		totalTime--;
+		// Termination logic.
 		if (!currentProcess->DecrementWorkingTime()) {
 			Process* rem = currentProcess;
 			RemoveRun();
@@ -132,6 +141,7 @@ void RR::tick() {
 			return;
 		}
 		remainingticks--;
+		// Switching if Ticks are finished.
 		if (remainingticks == 0) {
 			list.Enqueue(currentProcess);
 			currentProcess = nullptr;

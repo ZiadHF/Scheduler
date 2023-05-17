@@ -139,7 +139,7 @@ bool Scheduler::LoadFromFile(string file) {
 		Kill_Process.Insert(temp3);
 	}
 	//Initializing the overheat probability with a low value, can be changed only from here
-	int OverheatProbability = 0;
+	int OverheatProbability = 1;
 
 	//Creating the list of available processors
 	PROCESSOR_NUM = FCFS_NUM + SJF_NUM + RR_NUM + EDF_NUM;
