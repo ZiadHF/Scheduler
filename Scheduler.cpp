@@ -463,6 +463,7 @@ void Scheduler::WorkStealing() {
 	int tempindmax = -1;
 	Processor* LQF = nullptr;
 	Processor* SQF = nullptr;
+	// get LQF and SQF  
 	for (int i = 0; i < PROCESSOR_NUM; i++) {
 		if (ProcessorList[i]->getTT() < min) {
 			min = ProcessorList[i]->getTT();
@@ -482,11 +483,14 @@ void Scheduler::WorkStealing() {
 		STLRatio = ((TTmax - TTmin) / TTmax) * 100;
 		if (STLRatio < 40)
 			break;
+		// migrate process to balance STL
 		Process* tmpo = LQF->gettopProcess();
 		if (!tmpo)
 			break;
 		SQF->AddtoRDY(tmpo);
 		WRKSteal++;
+		//update TT max and TT min
+		// getTT return total time for all processors except FCFS it return total time [ not considering forked process ]
 		TTmax = LQF->getTT();
 		TTmin = SQF->getTT();
 	}
@@ -494,8 +498,9 @@ void Scheduler::WorkStealing() {
 }
 
 bool Scheduler::ProcessMigration(Process* p,bool x) {
+	// bool x is to choose whether we will do RR migration or SJF migration
 	if (x) {
-
+		
   	RRMigration++;
 		return ScheduleToShortestRR(p);
 	}
