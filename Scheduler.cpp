@@ -108,17 +108,7 @@ void Scheduler::LoadFromFile(string file) {
 			}
 		}
 		Process* tempPro=new Process(Process_Data[0], Process_Data[1], Process_Data[2], Process_Data[4],Process_Data[3],IOArr);
-
 		NEW.Enqueue(tempPro);
-		
-		//Testing function for printing all processes.
-		/*
-			cout <<endl<< Process_Data[0] << " " << Process_Data[1] << " " << Process_Data[2] << " " << Process_Data[3] << " ";
-			for (int u = 0; u < Process_Data[3]; u++) {
-				cout << "(" << IOArr[u].R << "," << IOArr[u].D << ")";
-			}
-			cout << endl;
-		*/
 	}
 	//Looping on Kill Signals
 	getline(read, temp);
@@ -670,12 +660,9 @@ int Scheduler::GetTotalIdleBusy(){
 	return sum;
 }
 
-void Scheduler::IncrementRROverheat() { this->RROverHeated++; }
-void Scheduler::IncrementSJFOverheat(){ this->SJFOverHeated++; }
-void Scheduler::DecrementRROverheat() { this->RROverHeated--; }
-void Scheduler::DecrementSJFOverheat() { this->SJFOverHeated--; }
 int Scheduler::getRunningProcess() { return RunningProcessesSum; }
-
+void Scheduler::IncrementRunningProcessesSum() { RunningProcessesSum++; }
+void Scheduler::DecrementRunningProcessesSum() { RunningProcessesSum--; }
 void Scheduler::WorkStealing() {
 	int min = INT_MAX;
 	int max = INT_MIN;

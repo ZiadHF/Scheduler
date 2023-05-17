@@ -40,7 +40,7 @@ bool FCFS::MoveToRun(int& RunningNum,int time) {
 				currentProcess->setRT(s->GetSystemTime() - currentProcess->getAT());
 				currentProcess->setfirstTime(false);
 			}
-			RunningNum++;
+			s->IncrementRunningProcessesSum();
 			return true;
 		}
 	}
@@ -100,7 +100,7 @@ void FCFS::tick() {
 	if (OverHeatRand < OverheatProb) {
 		TOH = Overheat;
 		if (currentProcess != nullptr) {
-			s->RunningProcessesSum--;
+			s->DecrementRunningProcessesSum();
 			s->SendToShortest(currentProcess);
 			numOfProcesses--;
 			totalTime -= currentProcess->getWorkingTime();
@@ -128,7 +128,8 @@ void FCFS::tick() {
 	 
 	
 	//Case 1: no running process.
-	MoveToRun(s->RunningProcessesSum,s->GetSystemTime());
+	int tmp3 = s->getRunningProcess();
+	MoveToRun(tmp3,s->GetSystemTime());
 	if (currentProcess) {
 		if (currentProcess) {
 			if (currentProcess->getWorkingTime() > s->GetMaxW() && !currentProcess->getisForked() && s->GetRR_NUM() > 0) {
@@ -204,7 +205,7 @@ int FCFS::getNumOfProcesses(){
 }
 void FCFS::RemoveRun() { 
 	numOfProcesses--;
-	s->RunningProcessesSum--;
+	s->DecrementRunningProcessesSum();
 	currentProcess = nullptr; }
 
 LinkedList<Process*>& FCFS::getlist() {

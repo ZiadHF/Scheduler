@@ -54,7 +54,7 @@ bool RR::MoveToRun(int& RunningNum, int time) {
 				currentProcess->setfirstTime(false);
 			}
 			remainingticks = TimeSlice;
-			RunningNum++;
+			s->incrementRunningProcessCount();
 			return true;
 		}
 	}
@@ -80,7 +80,7 @@ void RR::tick() {
 	if (OverHeatRand < OverheatProb) {
 		TOH = Overheat;
 		if (currentProcess != nullptr) {
-			s->RunningProcessesSum--;
+			s->DecrementRunningProcessesSum();
 			s->SendToShortest(currentProcess);
 			numOfProcesses--;
 			totalTime -= currentProcess->getWorkingTime();
@@ -100,8 +100,8 @@ void RR::tick() {
 		return;
 	}
 
-	
-	MoveToRun(s->RunningProcessesSum, s->GetSystemTime());
+	int tmp3 = s->getRunningProcess();
+	MoveToRun(tmp3, s->GetSystemTime());
 	//Case 2 Already one process in run 
 	if (currentProcess) {
 		if (currentProcess) {
@@ -153,7 +153,7 @@ int RR::getNumOfProcesses() {
 }
 void RR::RemoveRun() { 
 	numOfProcesses--;
-	s->RunningProcessesSum--;
+	s->DecrementRunningProcessesSum();
 	currentProcess = nullptr; }
 
 Queue<Process*>& RR::getlist() {

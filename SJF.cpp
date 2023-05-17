@@ -28,7 +28,7 @@ bool SJF::MoveToRun(int& RunningNum,int time) {
 				currentProcess->setRT(s->GetSystemTime() - currentProcess->getAT());
 				currentProcess->setfirstTime(false);
 			}
-			RunningNum++;
+			s->incrementRunningProcessCount();
 			return true;
 		}
 	}
@@ -63,7 +63,7 @@ void SJF::tick() {
 	if (OverHeatRand < OverheatProb) {
 		TOH = Overheat;
 		if (currentProcess != nullptr) {
-			s->RunningProcessesSum--;
+			s->DecrementRunningProcessesSum();
 			s->SendToShortest(currentProcess);
 			numOfProcesses--;
 			totalTime -= currentProcess->getWorkingTime();
@@ -83,7 +83,8 @@ void SJF::tick() {
 		return;
 	}
 	int tmp2 = s->GetSystemTime();
-	MoveToRun(s->RunningProcessesSum, tmp2);
+	int tmp3 = s->getRunningProcess();
+	MoveToRun(tmp3, tmp2);
 	if (currentProcess) {
 		IncrementBusy();
 		if (!currentProcess->CheckIO()) {
@@ -114,7 +115,7 @@ int SJF::getNumOfProcesses() { return numOfProcesses; }
 
 void SJF::RemoveRun() {
 	numOfProcesses--;
-	s->RunningProcessesSum--;
+	s->DecrementRunningProcessesSum();
 	currentProcess = nullptr;
 }
 

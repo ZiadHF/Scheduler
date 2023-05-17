@@ -27,7 +27,7 @@ bool EDF::MoveToRun(int& RunningNum,int time){
 				currentProcess->setRT(s->GetSystemTime() - currentProcess->getAT());
 				currentProcess->setfirstTime(false);
 			}
-			RunningNum++;
+			s->incrementRunningProcessCount();
 			return true;
 		}
 		if (currentProcess->getDL() > list.PeekMin()->getDL()) {
@@ -42,7 +42,7 @@ bool EDF::MoveToRun(int& RunningNum,int time){
 
 void EDF::RemoveRun() {
 	currentProcess = nullptr;
-	s->RunningProcessesSum--;
+	s->DecrementRunningProcessesSum();
 	numOfProcesses--;
 }
 
@@ -67,7 +67,7 @@ void EDF::tick(){
 	if (OverHeatRand < OverheatProb) {
 		TOH = Overheat;
 		if (currentProcess != nullptr) {
-			s->RunningProcessesSum--;
+			s->DecrementRunningProcessesSum();
 			s->SendToShortest(currentProcess);
 			numOfProcesses--;
 			totalTime -= currentProcess->getWorkingTime();
@@ -87,7 +87,8 @@ void EDF::tick(){
 		return;
 	}
 	int tmp2 = s->GetSystemTime();
-	MoveToRun(s->RunningProcessesSum,tmp2);
+	int tmp3 = s->getRunningProcess();
+	MoveToRun(tmp3, tmp2);
 	if (currentProcess) {
 		IncrementBusy();
 		if (!currentProcess->CheckIO()) {
